@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:health_care_app/Presentation/log_in/view/login_view.dart';
-import 'package:health_care_app/Presentation/splash_screen/splash.dart';
+import 'package:health_care_app/Presentation/onboarding/onboarding.dart';
 
 void main() {
   runApp(const MainApp());
@@ -11,7 +11,7 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: LoginScreen(),
     );
