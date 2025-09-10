@@ -34,7 +34,7 @@ class _SplashState extends State<Splash> {
             Image.asset("lib/images/Group.png"),
             // const SizedBox(height: 20),
             Text(
-              "HealthCare",
+              "HealthCareeeee",
               style: TextStyle(
                 fontSize: 28,
                  color: AppColors.textColor,
