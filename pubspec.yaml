@@ -9,6 +9,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  cupertino_icons: ^1.0.8
+  emoji_picker_flutter: ^4.3.0
+  image_picker: ^1.2.0
+  file_picker: ^10.3.3
+  record: ^6.1.1
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
 
 dev_dependencies:
   flutter_test:
@@ -18,4 +25,10 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - lib/images/
+    - lib/images/doc1(chat).jpg
+    - lib/images/doc2(chat).jpg
+    - lib/images/doc3(chat).jpg
+    - lib/images/doc4(chat).jpg
+
+
+
