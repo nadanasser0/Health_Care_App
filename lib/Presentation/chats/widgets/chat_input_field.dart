@@ -81,7 +81,7 @@ class _ChatInputState extends State<ChatInput> {
         Row(
           children: [
             IconButton(
-              icon: const Icon(Icons.emoji_emotions_outlined,color: Colors.grey),
+              icon:  Icon(Icons.emoji_emotions_outlined,color:AppColors.greyColor),
               onPressed: _toggleEmojiPicker,
             ),
             const SizedBox(width: 15),
@@ -91,9 +91,9 @@ class _ChatInputState extends State<ChatInput> {
                 
                 
                 controller: _controller,
-                decoration: const InputDecoration(
+                decoration:  InputDecoration(
 
-                  hintText: "Type a message...",hintStyle: TextStyle(color: Colors.grey),
+                  hintText: "Type a message...",hintStyle: TextStyle(color: AppColors.greyColor),
                   border: InputBorder.none,
                 ),
                 onSubmitted: (_) => _sendMessage(),
@@ -101,12 +101,12 @@ class _ChatInputState extends State<ChatInput> {
             ),
 
             IconButton(
-              icon: const Icon(Icons.attach_file,color:  Colors.grey,),
+              icon:  Icon(Icons.attach_file,color:  AppColors.greyColor),
               onPressed: _pickFile,
             ),
 
             IconButton(
-              icon: const Icon(CupertinoIcons.camera_fill,color: Colors.grey),
+              icon: Icon(CupertinoIcons.camera_fill,color: AppColors.greyColor),
               onPressed: _openCamera,
             ),
             SizedBox(width: 10,),

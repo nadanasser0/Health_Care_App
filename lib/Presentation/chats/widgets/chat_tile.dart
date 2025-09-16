@@ -63,8 +63,8 @@ class _ChatTileState extends State<ChatTile> {
                       ),
                       Text(
                         widget.specialization,
-                        style: const TextStyle(
-                            fontSize: 12, color: Colors.grey),
+                        style:  TextStyle(
+                            fontSize: 12, color: AppColors.greyColor),
                       ),
                       const SizedBox(height: 8),
                       SizedBox(
@@ -94,7 +94,7 @@ class _ChatTileState extends State<ChatTile> {
                   children: [
                     Text(
                       widget.time,
-                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                      style:  TextStyle(fontSize: 12, color:AppColors.greyColor),
                     ),
                   const SizedBox(height: 38),
                     if (widget.unreadCount > 0)
@@ -108,8 +108,8 @@ class _ChatTileState extends State<ChatTile> {
                         ),
                         child: Text(
                           widget.unreadCount.toString(),
-                          style: const TextStyle(
-                              color: Colors.white, fontSize: 12),
+                          style:  TextStyle(
+                              color:AppColors.whiteColor, fontSize: 12),
                         ),
                       ),
                   ],

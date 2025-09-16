@@ -2,37 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 import '../widgets/chat_tile.dart';
 import 'package:flutter/cupertino.dart';
-import '../models/chat_model.dart'; // استدعاء الموديل
-
-class ChatListPage extends StatefulWidget {
-  const ChatListPage({super.key});
-
+import '../models/chat_model.dart';
+class ChatsListScreen extends StatefulWidget {
+  const ChatsListScreen({super.key});
   @override
-  State<ChatListPage> createState() => _ChatListPageState();
+  State<ChatsListScreen> createState() => _ChatsListScreen();
 }
 
-class _ChatListPageState extends State<ChatListPage> {
+class _ChatsListScreen extends State<ChatsListScreen> {
   final TextEditingController _searchController = TextEditingController();
 
   late List<Chat> filteredChats;
 
-  @override
-  void initState() {
-    super.initState();
-    filteredChats = List.from(allChats);
-  }
-
-  void _filterChats(String query) {
-    setState(() {
-      if (query.isEmpty) {
-        filteredChats = List.from(allChats);
-      } else {
-        filteredChats = allChats.where((chat) {
-          return chat.name.toLowerCase().contains(query.toLowerCase());
-        }).toList();
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +51,7 @@ class _ChatListPageState extends State<ChatListPage> {
                     borderSide: BorderSide.none,
                   ),
                   filled: true,
-                  fillColor: Colors.grey[200],
+                  fillColor:AppColors.greyColor,
                 ),
               ),
             ),
@@ -95,4 +76,22 @@ class _ChatListPageState extends State<ChatListPage> {
       ),
     );
   }
+
+    void _filterChats(String query) {
+    setState(() {
+      if (query.isEmpty) {
+        filteredChats = List.from(allChats);
+      } else {
+        filteredChats = allChats.where((chat) {
+          return chat.name.toLowerCase().contains(query.toLowerCase());
+        }).toList();
+      }
+    });
+  }
+    @override
+  void initState() {
+    super.initState();
+    filteredChats = List.from(allChats);
+  }
+
 }

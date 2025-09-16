@@ -16,7 +16,6 @@ class Chat {
   });
 }
 
-// قائمة المحادثات
 List<Chat> allChats = [
   Chat(
     name: "Dr. Randy Wigham",

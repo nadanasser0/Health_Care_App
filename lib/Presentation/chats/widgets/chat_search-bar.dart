@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:health_care_app/core/constants/colors.dart';
 
 class ChatSearchBar extends StatelessWidget {
   final TextEditingController controller;
@@ -20,13 +21,13 @@ class ChatSearchBar extends StatelessWidget {
         onChanged: onChanged,
         decoration: InputDecoration(
           hintText: "Search Message",
-          prefixIcon: const Icon(CupertinoIcons.search),
+          prefixIcon:  Icon(CupertinoIcons.search),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30),
             borderSide: BorderSide.none,
           ),
           filled: true,
-          fillColor: Colors.grey[200],
+          fillColor:AppColors.greyColor
         ),
       ),
     );

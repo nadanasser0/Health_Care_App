@@ -19,8 +19,7 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
-    _messages = demoMessages(widget.chatName); // جلب البيانات من الموديل
-  }
+    _messages = demoMessages(widget.chatName);}
 
   void _sendMessage(String msg) {
     if (msg.trim().isEmpty) return;
@@ -93,7 +92,7 @@ class _ChatPageState extends State<ChatPage> {
                             maxWidth: MediaQuery.of(context).size.width * 0.7,
                           ),
                           decoration: BoxDecoration(
-                            color: isMe ? Colors.blue[600] : Colors.white,
+                            color: isMe ? AppColors.blueColor :AppColors.whiteColor,
                             borderRadius: BorderRadius.only(
                               topLeft: const Radius.circular(16),
                               topRight: isMe ? Radius.zero : const Radius.circular(16),
@@ -102,7 +101,7 @@ class _ChatPageState extends State<ChatPage> {
                             ),
                             boxShadow: [
                               BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
+                                color:AppColors.blackColor,
                                 blurRadius: 4,
                               ),
                             ],
@@ -110,7 +109,7 @@ class _ChatPageState extends State<ChatPage> {
                           child: Text(
                             msg.text,
                             style: TextStyle(
-                              color: isMe ? Colors.white : Colors.black,
+                              color: isMe ? AppColors.whiteColor :AppColors.blackColor,
                             ),
                           ),
                         ),

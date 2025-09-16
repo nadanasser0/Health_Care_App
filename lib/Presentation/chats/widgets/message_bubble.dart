@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:health_care_app/core/constants/colors.dart';
 
 class MessageBubble extends StatelessWidget {
   final String text;
@@ -16,8 +17,8 @@ class MessageBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bubbleColor = isMe ?  Color(0xFF0B93F6) : Colors.grey.shade100;
-    final textColor = isMe ? Colors.white : Colors.black87;
+    final bubbleColor = isMe ?  AppColors.blueColor : AppColors.greyColor;
+    final textColor = isMe ? AppColors.whiteColor : AppColors.blackColor;
 
     final borderRadius = BorderRadius.only(
       topLeft: const Radius.circular(16),
@@ -57,7 +58,7 @@ class MessageBubble extends StatelessWidget {
                     boxShadow: isMe
                         ? [
                             BoxShadow(
-                                color: Colors.black.withOpacity(0.05),
+                                color:AppColors.blackColor.withOpacity(0.05),
                                 blurRadius: 4,
                                 offset: const Offset(0, 2))
                           ]
@@ -78,7 +79,7 @@ class MessageBubble extends StatelessWidget {
                     ),
                     child: Text(
                       time!,
-                      style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                      style: TextStyle(fontSize: 11, color:AppColors.greyColor),
                     ),
                   ),
               ],
