@@ -9,6 +9,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  emoji_picker_flutter: ^4.3.0
+  file_picker: ^10.3.3
+  image_picker: ^1.2.0
+  record: ^6.1.1
 
 dev_dependencies:
   flutter_test:
