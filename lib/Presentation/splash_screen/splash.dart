@@ -2,7 +2,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:health_care_app/Presentation/log_in/view/login_view.dart';
+import 'package:health_care_app/Presentation/auth/view/login_view.dart';
+import 'package:health_care_app/Presentation/onboarding/onboarding.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 
 class Splash extends StatefulWidget {
@@ -17,7 +18,7 @@ class _SplashState extends State<Splash> {
   void initState() {
    
     super.initState();
-     Timer( Duration(seconds: 3), ()=>Navigator.push(context, MaterialPageRoute(builder:(context) => LoginScreen())));
+     Timer( Duration(seconds: 3), ()=>Navigator.push(context, MaterialPageRoute(builder:(context) => OnboardingView())));
       }
 
   @override

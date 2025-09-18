@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:health_care_app/Presentation/loginORsignup/loginORsignup.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 class OnboardingView extends StatefulWidget {
+  const OnboardingView({super.key});
+
   @override
   _OnboardingViewState createState() => _OnboardingViewState();
 }
@@ -23,7 +26,9 @@ class _OnboardingViewState extends State<OnboardingView> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                    Text("skip", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-                   IconButton(onPressed: (){}, icon: Icon(Icons.arrow_forward_ios_sharp, size: 16,))
+                   IconButton(onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginOrSignup()));
+                   }, icon: Icon(Icons.arrow_forward_ios_sharp, size: 16,))
                    ,
                     // SizedBox(width: 20,),
             ],),
@@ -77,6 +82,7 @@ class _OnboardingViewState extends State<OnboardingView> {
                     ),
                     onPressed: () {
                       if (isLastPage) {
+                         Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginOrSignup()));
                       } else {
                         _controller.nextPage(
                           duration: Duration(milliseconds: 500),

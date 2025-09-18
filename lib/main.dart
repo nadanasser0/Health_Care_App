@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:health_care_app/Presentation/log_in/view/login_view.dart';
-import 'package:health_care_app/Presentation/onboarding/onboarding.dart';
+import 'package:health_care_app/Presentation/auth/view/login_view.dart';
+import 'package:health_care_app/Presentation/auth/view/signup_view.dart';
+import 'package:health_care_app/Presentation/splash_screen/splash.dart';
 
 void main() {
   runApp(const MainApp());
@@ -13,7 +14,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginScreen(),
+      home: Splash(),
     );
   }
 }
