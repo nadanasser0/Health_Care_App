@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:health_care_app/Presentation/log_in/view/login_view.dart';
+import 'package:health_care_app/Presentation/auth/view/login_view.dart';
+import 'package:health_care_app/Presentation/auth/view/signup_view.dart';
 import 'package:health_care_app/Presentation/splash_screen/splash.dart';
 
 void main() {
@@ -11,9 +12,9 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginScreen(),
+      home: Splash(),
     );
   }
 }
