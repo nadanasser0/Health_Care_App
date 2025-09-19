@@ -49,16 +49,14 @@ class _ChatsListScreen extends State<ChatsListScreen> {
     filled: true,
     fillColor: AppColors.whiteColor,
 
-    // الإطار لما التكست في الحالة العادية
     enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(30),
       borderSide: BorderSide(
-        color: AppColors.greyColor, // لون الإطار
-        width: 1.0, // سُمك الإطار
+        color: AppColors.greyColor, 
+        width: 1.0, 
       ),
     ),
 
-    // الإطار لما يكون الـ TextField واخد فوكس
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(30),
       borderSide: BorderSide(
