@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:health_care_app/Presentation/doctor_review/screens/doctor_details_about_screen.dart';
 import 'package:health_care_app/Presentation/log_in/view/login_view.dart';
 import 'package:health_care_app/Presentation/splash_screen/splash.dart';
 
@@ -13,7 +14,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginScreen(),
+      home: DoctorDetailsAboutScreen(),
     );
   }
 }

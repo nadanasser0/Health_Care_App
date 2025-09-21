@@ -8,5 +8,7 @@ static final Color textColor = Color(0xFF223A6A);
 static final Color spalshBackGroundColor = Color(0xFFE4EBF7);
 static final Color greyColor = Colors.grey[600]!;
 static final Color darkGreyColor = Color(0xFF454B60);
+static final Color lightGrey = Colors.grey.shade200;
+static final Color starColor = Colors.amber;
 
 }
