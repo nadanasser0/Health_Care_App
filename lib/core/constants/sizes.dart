@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 
 class AppFonts {
@@ -46,3 +47,9 @@ class AppFonts {
 
   //media query
 }
+
+class AppSizes{
+static double textFieldSize = 18;
+static double buttonReduisSize = 18;
+}
+
