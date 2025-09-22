@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:health_care_app/Presentation/doctor_review/screens/doctor_details_about_screen.dart';
+// import 'package:health_care_app/Presentation/log_in/view/login_view.dart';
 import 'package:health_care_app/Presentation/doctor%20speciality/Doctor_Speciality.dart';
 import 'package:health_care_app/Presentation/main%20screen/main_screen.dart';
 import 'package:health_care_app/Presentation/notification/notification_screen.dart';
@@ -21,7 +23,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Splash(),
-
     );
   }
 }
