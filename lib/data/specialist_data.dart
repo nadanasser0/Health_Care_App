@@ -1,4 +1,4 @@
-import 'package:health_care_app/model/specialist_model.dart';
+import 'package:health_care_app/models/specialist_model.dart';
 
 final List<SpecialistModel> items = [
   SpecialistModel(

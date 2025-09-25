@@ -1,14 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:health_care_app/Presentation/doctor_review/screens/doctor_details_about_screen.dart';
+import 'package:health_care_app/core/routes/app_routes.dart';
+import 'package:health_care_app/core/routes/route_generator.dart';
 // import 'package:health_care_app/Presentation/log_in/view/login_view.dart';
-import 'package:health_care_app/Presentation/doctor%20speciality/Doctor_Speciality.dart';
-import 'package:health_care_app/Presentation/main%20screen/main_screen.dart';
-import 'package:health_care_app/Presentation/notification/notification_screen.dart';
-import 'package:health_care_app/Presentation/recommendation%20doctor/recommendation_doctor_sort.dart';
-import 'package:health_care_app/Presentation/auth/view/login_view.dart';
-import 'package:health_care_app/Presentation/auth/view/signup_view.dart';
-import 'package:health_care_app/Presentation/splash_screen/splash.dart';
-import 'Presentation/book/book_appointment.dart';
 
 
 void main() {
@@ -20,9 +13,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Splash(),
+      initialRoute:AppRoutes.splash,
+      onGenerateRoute:RouteGenerator.generateRoute,
     );
   }
 }

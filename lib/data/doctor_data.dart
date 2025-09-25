@@ -1,4 +1,4 @@
-import 'package:health_care_app/model/doctors_model.dart';
+import 'package:health_care_app/models/doctors_model.dart';
 
 final List<DoctorsModel> docDetails = [
   DoctorsModel(
