@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:health_care_app/Features/patient_side/doctor_review/screens/doctor_details_about_screen.dart';
 import 'package:health_care_app/core/constants/sizes.dart';
 import 'package:health_care_app/data/doctor_data.dart';
 
@@ -22,7 +23,8 @@ class RecommendationList extends StatelessWidget {
             return InkWell(
               onTap: () {
                 // نحط named
-                Navigator.of(context, rootNavigator: true).pushNamed("");
+               Navigator.push(
+                context, MaterialPageRoute(builder: (context)=>DoctorDetailsAboutScreen()));
               },
               child: Card(
                 margin: const EdgeInsets.symmetric(vertical: 8.0),
