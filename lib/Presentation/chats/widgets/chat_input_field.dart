@@ -2,12 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:health_care_app/Presentation/chats/models/message_model.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:record/record.dart';
 class ChatInput extends StatefulWidget {
-  final Function(String) onSend;
-
+final Function(String, {MessageType type, String? filePath}) onSend;
   const ChatInput({super.key, required this.onSend});
 
   @override
@@ -53,14 +53,13 @@ class _ChatInputState extends State<ChatInput> {
       debugPrint("📂 File picked: ${file.name}");
     }
   }
-
-  Future<void> _openCamera() async {
-    final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
-    if (photo != null) {
-      debugPrint("📸 Photo taken: ${photo.path}");
-    }
+Future<void> _openCamera() async {
+  final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
+  if (photo != null) {
+    widget.onSend(photo.path); 
+    _controller.clear();
   }
-
+}
   Future<void> _startRecording() async {
     if (await _recorder.hasPermission()) {
       final path = '/storage/emulated/0/Download/my_record.m4a';
@@ -68,12 +67,17 @@ class _ChatInputState extends State<ChatInput> {
       debugPrint("🎤 Recording started...");
     }
   }
-
-  Future<void> _stopRecording() async {
-    final path = await _recorder.stop();
-    debugPrint("🛑 Recording saved at: $path");
+Future<void> _stopRecording() async {
+  final path = await _recorder.stop();
+  if (path != null) {
+    widget.onSend(
+      "Voice message",
+      type: MessageType.audio,
+      filePath: path,
+    );
   }
-
+  debugPrint("🛑 Recording saved at: $path");
+}
   @override
   Widget build(BuildContext context) {
     return Column(

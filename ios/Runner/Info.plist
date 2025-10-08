@@ -28,12 +28,34 @@
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
+
+	<!-- 🔹 Camera & Microphone permissions -->
+	<key>NSCameraUsageDescription</key>
+	<string>We need to access your camera so you can take and send photos to your doctor.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>We need access to your microphone to record and send voice messages.</string>
+
+	<!-- 🔹 Photo library access -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>We need access to your photo library so you can attach images in chat.</string>
+
+	<!-- 🔹 File picker or downloads -->
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>We need access to your files to upload and share documents with your doctor.</string>
+
+	<!-- 🔹 Optional: Speech recognition (if you plan to use voice-to-text later) -->
+	<!--
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>We use speech recognition to convert your voice messages into text.</string>
+	-->
+
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -41,6 +63,7 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
