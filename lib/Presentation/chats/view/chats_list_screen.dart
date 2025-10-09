@@ -17,7 +17,8 @@ class _ChatsListScreen extends State<ChatsListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return 
+    Scaffold(
       backgroundColor: AppColors.whiteColor,
       appBar: 
       AppBar(

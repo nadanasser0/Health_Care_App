@@ -100,8 +100,7 @@ class _ChatPageState extends State<ChatPage> {
             Expanded(
               child: ListView.builder(
                 controller:
-                    _scrollController, // ✅ نتحكم في حركة القائمة لما نضيف رسالة
-                padding: const EdgeInsets.all(12),
+                    _scrollController,                padding: const EdgeInsets.all(12),
                 itemCount: _messages.length,
                 itemBuilder: (context, index) {
                   final msg = _messages[index];
