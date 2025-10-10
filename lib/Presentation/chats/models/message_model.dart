@@ -5,8 +5,7 @@ class Message {
   final bool isMe;
   final String time;
   final MessageType type;
-  final String? filePath; // لو صورة أو صوت
-
+  final String? filePath;
   Message({
     required this.text,
     required this.isMe,
