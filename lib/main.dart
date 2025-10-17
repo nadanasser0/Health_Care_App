@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:health_care_app/Features/doctor_side/navigation_screen.dart';
 import 'package:health_care_app/core/routes/app_routes.dart';
 import 'package:health_care_app/core/routes/route_generator.dart';
 // import 'package:health_care_app/Presentation/log_in/view/login_view.dart';
-
 
 void main() {
   runApp(MyApp());
@@ -13,10 +13,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-     return MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute:AppRoutes.splash,
-      onGenerateRoute:RouteGenerator.generateRoute,
+      initialRoute: AppRoutes.splash,
+      onGenerateRoute: RouteGenerator.generateRoute,
+      // initialRoute: "/",
+      // routes: {"/": (context) => NavigationScreen()},
     );
   }
 }
