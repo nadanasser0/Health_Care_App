@@ -1,14 +1,20 @@
+enum MessageType { text, image, audio }
+
 class Message {
   final String text;
   final bool isMe;
   final String time;
-
+  final MessageType type;
+  final String? filePath;
   Message({
     required this.text,
     required this.isMe,
     required this.time,
+    this.type = MessageType.text,
+    this.filePath,
   });
 }
+
 
 List<Message> demoMessages(String chatName) => [
       Message(text: "Hi, $chatName 🙏", isMe: true, time: "09:10"),
