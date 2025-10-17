@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:health_care_app/Features/patient_side/chats/models/message_model.dart';
 import 'package:health_care_app/Features/patient_side/chats/widgets/chat_input_field.dart';
+
 import 'package:health_care_app/core/constants/colors.dart';
 
 class ChatPage extends StatefulWidget {
@@ -100,7 +101,8 @@ class _ChatPageState extends State<ChatPage> {
             Expanded(
               child: ListView.builder(
                 controller:
-                    _scrollController,                padding: const EdgeInsets.all(12),
+                    _scrollController, // ✅ نتحكم في حركة القائمة لما نضيف رسالة
+                padding: const EdgeInsets.all(12),
                 itemCount: _messages.length,
                 itemBuilder: (context, index) {
                   final msg = _messages[index];
