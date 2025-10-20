@@ -1,9 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:health_care_app/core/constants/methods.dart';
 import 'package:health_care_app/core/routes/app_routes.dart';
-import 'package:health_care_app/Features/patient_side/auth/widgets/custom_button.dart';
-import 'package:health_care_app/Features/patient_side/auth/widgets/login_form.dart';
-import 'package:health_care_app/Features/patient_side/auth/widgets/login_header.dart';
-import 'package:health_care_app/Features/patient_side/auth/widgets/login_tail.dart';
+import 'package:health_care_app/Features/patient_side/auth/widgets/shared/custom_button.dart';
+import 'package:health_care_app/Features/patient_side/auth/widgets/login_widgets/login_form.dart';
+import 'package:health_care_app/Features/patient_side/auth/widgets/login_widgets/login_header.dart';
+import 'package:health_care_app/Features/patient_side/auth/widgets/login_widgets/login_tail.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -17,6 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  bool loading = false;
 
   @override
   void dispose() {
@@ -28,51 +31,103 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
       backgroundColor: AppColors.whiteColor,
-      // appBar: AppBar(leading: BackButton()),
-      body: SafeArea(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            IconButton(onPressed: (){
-              Navigator.pushReplacementNamed(context,AppRoutes.loginOrSignup);
-
-            }, icon: Icon(Icons.arrow_back_ios_new_rounded , color: AppColors.greyColor,size: 20,)),
-            LoginHeader(),
-            SizedBox(height: 20),
-
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  LoginForm(
-                    emailController: emailController,
-                    passwordController: passwordController,
-                  ),
-                  SizedBox(height: 8),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pushReplacementNamed(context, AppRoutes.forgotPassowrd);
-                    },
-                    child: Text(
-                      "Forgot Password ?",
-                      style: TextStyle(
-                        color: AppColors.textColor,
-                        fontSize: 15,
-                        fontWeight: FontWeight.w400,
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+             
+              LoginHeader(),
+              SizedBox(height: 20),
+        
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    LoginForm(
+                      formKey: formKey,
+                      emailController: emailController,
+                      passwordController: passwordController,
+                    ),
+        
+                    SizedBox(height: 8),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(
+                          context,
+                          AppRoutes.forgotPassowrd,
+                        );
+                      },
+                      child: Text(
+                        "Forgot Password ?",
+                        style: TextStyle(
+                          color: AppColors.textColor,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 15),
-                  CustomButton(text: 'Login', onPressed:()=> Navigator.pushReplacementNamed(context, AppRoutes.mainScreen)),
-
-                  LoginTail(),
-                ],
+                    SizedBox(height: 15),
+                    CustomButton(
+                      text: 'Login',
+                      onPressed: () async {
+                        if (formKey.currentState!.validate()) {
+                          loading = true;
+                          setState(() {});
+                          try {
+                            var auth = FirebaseAuth.instance;
+                            UserCredential userCredential = await auth
+                                .signInWithEmailAndPassword(
+                                  email: emailController.text.trim(),
+                                  password: passwordController.text.trim(),
+                                );
+                            snackBarMessage(
+                              context,
+                              "Sign in successfully",
+                              color: Colors.green,
+                            );
+                            Navigator.pushReplacementNamed(
+                              context,
+                              AppRoutes.mainScreen,
+                            );
+                          } on FirebaseAuthException catch (e) {
+                            if (e.code == 'user-not-found') {
+                              snackBarMessage(
+                                context,
+                                'No user found for that email.',
+                                color: Colors.red,
+                              );
+                            } else if (e.code == 'wrong-password') {
+                              snackBarMessage(
+                                context,
+                                'Wrong password provided for that user.',
+                                color: Colors.red,
+                              );
+                            } else {
+                              snackBarMessage(
+                                context,
+                                'Something went wrong. Please try again later.',
+                                color: Colors.red,
+                              );
+                            }
+                          }
+                          loading = false;
+                          setState(() {});
+                        }
+                      },
+                    ),
+                    SizedBox(height: 20),
+        
+                    LoginTail(),
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

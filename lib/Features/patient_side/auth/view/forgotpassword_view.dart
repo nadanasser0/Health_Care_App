@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:health_care_app/Features/patient_side/forgot_password/widgets/forgot_password_header.dart';
-import 'package:health_care_app/Features/patient_side/forgot_password/widgets/forgotpassword_button.dart';
-import 'package:health_care_app/Features/patient_side/forgot_password/widgets/forgotpassword_field.dart';
+import 'package:health_care_app/Features/patient_side/auth/widgets/forgot_password_widgets/forgot_password_header.dart';
+import 'package:health_care_app/Features/patient_side/auth/widgets/forgot_password_widgets/forgotpassword_button.dart';
+import 'package:health_care_app/Features/patient_side/auth/widgets/forgot_password_widgets/forgotpassword_field.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 
 class ForgotpasswordView extends StatelessWidget {

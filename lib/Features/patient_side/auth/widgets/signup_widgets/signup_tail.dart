@@ -28,7 +28,7 @@ class SignupTail extends StatelessWidget {
           child: Text(
             "Login",
             style: TextStyle(
-              color: AppColors.darkGreyColor,
+              color: AppColors.blueColor,
               fontSize: 18,
               fontWeight: FontWeight.bold,
             ),
