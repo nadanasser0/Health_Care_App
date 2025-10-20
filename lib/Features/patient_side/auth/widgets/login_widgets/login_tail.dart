@@ -29,7 +29,7 @@ class LoginTail extends StatelessWidget {
           Navigator.push(context,
           MaterialPageRoute(builder:(context) => SignupView())
           );
-        }, child: Text("Register",style: TextStyle(color: AppColors.darkGreyColor,fontSize:18,fontWeight: FontWeight.bold),))
+        }, child: Text("Register",style: TextStyle(color: AppColors.blueColor,fontSize:18,fontWeight: FontWeight.bold),))
         ],)
       ],
     );

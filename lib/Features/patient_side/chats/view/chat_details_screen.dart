@@ -16,10 +16,13 @@ class _ChatPageState extends State<ChatPage> {
   final TextEditingController _controller = TextEditingController();
   late List<Message> _messages;
 
+
   @override
   void initState() {
     super.initState();
-    _messages = demoMessages(widget.chatName);}
+    _messages = demoMessages(widget.chatName);
+    }
+
 
   void _sendMessage(String msg) {
     if (msg.trim().isEmpty) return;
@@ -46,6 +49,7 @@ class _ChatPageState extends State<ChatPage> {
               icon: const Icon(Icons.arrow_back_ios_rounded),
               onPressed: () => Navigator.pop(context),
             ),
+            
             
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.center,

@@ -1,4 +1,3 @@
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -15,10 +14,12 @@ class Splash extends StatefulWidget {
 class _SplashState extends State<Splash> {
   @override
   void initState() {
-   
     super.initState();
-     Timer( Duration(seconds: 3), ()=> Navigator.pushReplacementNamed(context, AppRoutes.onboarding));
-      }
+    Timer(
+      Duration(seconds: 3),
+      () => Navigator.pushReplacementNamed(context, AppRoutes.onboarding),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,30 +27,25 @@ class _SplashState extends State<Splash> {
       backgroundColor: AppColors.spalshBackGroundColor,
 
       body: Center(
-
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-      
             Image.asset("lib/images/Group.png"),
-            // const SizedBox(height: 20),
             Text(
               "HealthCare",
               style: TextStyle(
                 fontSize: 28,
-                 color: AppColors.textColor,
+                color: AppColors.textColor,
                 fontWeight: FontWeight.bold,
-    
               ),
             ),
             SizedBox(height: 5),
-             Text(
+            Text(
               "Medical App",
               style: TextStyle(
                 fontSize: 14,
                 color: AppColors.textColor,
                 fontWeight: FontWeight.bold,
-
               ),
             ),
           ],
