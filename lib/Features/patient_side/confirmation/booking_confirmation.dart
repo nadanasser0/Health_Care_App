@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:health_care_app/Features/patient_side/confirmation/widgets/booking_details.dart';
 import 'package:health_care_app/Features/patient_side/confirmation/widgets/header_booking_confirmation.dart';
 import 'package:health_care_app/Features/patient_side/confirmation/widgets/instructions.dart';
-import 'package:health_care_app/Features/patient_side/home/home.dart';
 import 'package:health_care_app/Features/patient_side/confirmation/widgets/payment_details_widget.dart';
 import 'package:health_care_app/shared/widgets/custom_button.dart';
 
@@ -40,8 +39,8 @@ class BookingConfirmation extends StatelessWidget {
               BookingDetails(),
               PaymentDetailsConfirmation(),
               Instructions(),
-              SizedBox(height: 20,),
-              CustomButton(name: 'Back to Home', page: HomeScreen()),
+              SizedBox(height: 20),
+              // CustomButton(name: 'Back to Home', page: HomeScreen()),
             ],
           ),
         ),

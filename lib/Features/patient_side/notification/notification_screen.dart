@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:health_care_app/Features/patient_side/home/home.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 import 'package:health_care_app/core/constants/sizes.dart';
 import 'package:health_care_app/core/routes/app_routes.dart';
@@ -14,11 +13,12 @@ class NotificationScreen extends StatelessWidget {
         leading: IconButton(
           onPressed: () {
             // ترجع للصفحه اللي كنت واقف عليها تاني
-            // Navigator.of(context).pop();
+            Navigator.of(context, rootNavigator: true).pop();
             // Navigator.pushReplacementNamed(context, AppRoutes.home);
-             Navigator.push(context,
-                MaterialPageRoute(builder: (context) => HomeScreen()),
-              );
+
+            //  Navigator.push(context,
+            //     MaterialPageRoute(builder: (context) => HomeScreen()),
+            //   );
           },
           icon: Icon(Icons.arrow_back_ios_new, color: AppColors.blackColor),
         ),

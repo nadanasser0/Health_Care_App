@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 class AppFonts {
@@ -46,10 +45,59 @@ class AppFonts {
   static const double sizeBoxMedium = 15;
 
   //media query
+
+  // mazen sized
+
+  //  العناوين (Titles)
+  static const TextStyle titleLarge = TextStyle(
+    fontSize: 40, // العناوين الرئيسية
+    fontWeight: FontWeight.bold,
+  );
+
+  // static const TextStyle titleMedium = TextStyle(
+  //   fontSize: 26, // عنوان فرعي
+  //   fontWeight: FontWeight.w600,
+  // );
+
+  static const TextStyle titleSmall = TextStyle(
+    fontSize: 22, // عنوان صغير أو عنصر داخل صفحة
+    fontWeight: FontWeight.w500,
+  );
+
+  //  النصوص
+  static const TextStyle bodyLarge = TextStyle(
+    fontSize: 16, // نص واضح للقراءة
+    fontWeight: FontWeight.w600,
+  );
+
+  // static const TextStyle bodyMedium = TextStyle(
+  //   fontSize: 14, // النص الأساسي
+  //   fontWeight: FontWeight.normal,
+  // );
+
+  static const TextStyle bodySmall = TextStyle(
+    fontSize: 12, // نصوص ثانوية أو وصفية
+    fontWeight: FontWeight.normal,
+  );
+
+  //  النصوص الصغيرة جدًا (مثلاً ملاحظات أو حقوق)
+  static const TextStyle caption = TextStyle(
+    fontSize: 10,
+    fontWeight: FontWeight.w400,
+  );
+
+  //  حجم الأيقونات
+  static const double iconLarge = 32;
+  static const double iconMedium = 24;
+  static const double iconSmall = 18;
+
+  //  المسافات القياسية (SizedBox)
+  static const double spaceLarge = 26;
+  static const double spaceMedium = 18;
+  static const double spaceSmall = 12;
 }
 
-class AppSizes{
-static double textFieldSize = 18;
-static double buttonReduisSize = 18;
+class AppSizes {
+  static double textFieldSize = 18;
+  static double buttonReduisSize = 18;
 }
-
