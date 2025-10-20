@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 
+
 class ReviewCard extends StatelessWidget {
   final String reviewerName;
   final String reviewerImageUrl;
@@ -50,16 +51,13 @@ class ReviewCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textColor,
+                    color: AppColors.blackColor,
                   ),
                 ),
               ),
               Text(
                 timeAgo,
-                style: TextStyle(
-                  fontSize: 12,
-                  color: AppColors.greyColor,
-                ),
+                style: TextStyle(fontSize: 12, color: AppColors.greyColor),
               ),
             ],
           ),
@@ -76,10 +74,7 @@ class ReviewCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             reviewText,
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.darkGreyColor,
-            ),
+            style: TextStyle(fontSize: 14, color: AppColors.greyColor),
           ),
         ],
       ),

@@ -3,7 +3,7 @@ import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.da
 import 'package:health_care_app/Features/patient_side/calender/calender_screen.dart';
 import 'package:health_care_app/Features/patient_side/chats/view/chat_details_screen.dart';
 import 'package:health_care_app/Features/patient_side/home/home.dart';
-import 'package:health_care_app/Features/patient_side/profile/profile_screen.dart';
+// import 'package:health_care_app/Features/patient_side/profile/profile_screen.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 
 
@@ -21,7 +21,8 @@ class NavigationScreenState extends State<NavigationScreen> {
     HomeScreen(),
     CalenderScreen(),
     ChatPage(chatName:'Nada Nasser',),
-    ProfileScreen(),
+    ChatPage(chatName:'Nada Nasser',),
+    // ProfileScreen(),
   ];
 
   @override

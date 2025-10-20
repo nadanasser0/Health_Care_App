@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:health_care_app/Features/patient_side/chats/view/chat_details_screen.dart';
 import 'package:health_care_app/Features/patient_side/chats/view/chats_list_screen.dart';
 import 'package:health_care_app/Features/patient_side/calender/calender_screen.dart';
 import 'package:health_care_app/Features/patient_side/home/home.dart';
-import 'package:health_care_app/Features/patient_side/inbox/inbox_screen.dart';
-import 'package:health_care_app/Features/patient_side/profile/profile_screen.dart';
-import 'package:health_care_app/Features/patient_side/search/search_screen.dart';
+import 'package:health_care_app/Features/patient_side/profile/view/profile_view.dart';
+// import 'package:health_care_app/Features/patient_side/search/search_screen.dart';
 import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:badges/badges.dart' as badges;
 
@@ -40,9 +38,11 @@ class _MainScreenState extends State<MainScreen> {
     ChatsListScreen(),
     // ChatPage(chatName:'Rania Mohamed',),
       // InboxScreen(),
-    SearchScreen(),
+    // SearchScreen(),
     CalenderScreen(),
-    ProfileScreen(),
+    CalenderScreen(),
+    ProfilePatientScreen(),
+
     ];
   }
 
