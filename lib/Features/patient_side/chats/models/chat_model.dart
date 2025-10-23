@@ -34,7 +34,7 @@ List<Chat> allChats = [
     unreadCount: 1,
   ),
   Chat(
-    name: "Drg. Hanna Stanton",
+    name: "Dr. Hanna Stanton",
     specialization: "General Doctor | RSUD Gatot Subroto",
     lastMessage: "Fine, I’ll do a check. Does the patient have a history of certain diseases?",
     time: "7:11 PM",

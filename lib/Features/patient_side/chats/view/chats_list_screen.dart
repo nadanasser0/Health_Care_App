@@ -21,10 +21,10 @@ class _ChatsListScreen extends State<ChatsListScreen> {
       backgroundColor: AppColors.whiteColor,
       appBar: 
       AppBar(
-        leading: IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.arrow_back_ios_new),
-        ),
+        // leading: IconButton(
+        //   onPressed: () {},
+        //   icon: const Icon(Icons.arrow_back_ios_new),
+        // ),
         backgroundColor: AppColors.whiteColor,
         title: const Text(
           "Messages",

@@ -1,48 +1,53 @@
-import 'package:health_care_app/models/specialist_model.dart';
+class DoctorSpecialist {
+  final String imgUrl;
+  final String title;
 
-final List<SpecialistModel> items = [
-  SpecialistModel(
+  DoctorSpecialist({required this.imgUrl, required this.title});
+}
+
+List<DoctorSpecialist> items = [
+  DoctorSpecialist(
     imgUrl: "lib/images/DoctorSpecialist/general.png",
     title: "General",
   ),
-  SpecialistModel(imgUrl: "lib/images/DoctorSpecialist/ENT.png", title: "ENT"),
-  SpecialistModel(
+  DoctorSpecialist(imgUrl: "lib/images/DoctorSpecialist/ENT.png", title: "ENT"),
+  DoctorSpecialist(
     imgUrl: "lib/images/DoctorSpecialist/Pediatric.png",
     title: "Pediatric",
   ),
-  SpecialistModel(
+  DoctorSpecialist(
     imgUrl: "lib/images/DoctorSpecialist/Urologist.png",
     title: "Urologist",
   ),
-  SpecialistModel(
+  DoctorSpecialist(
     imgUrl: "lib/images/DoctorSpecialist/Dentistry.png",
     title: "Dentistry",
   ),
-  SpecialistModel(
+  DoctorSpecialist(
     imgUrl: "lib/images/DoctorSpecialist/intestine.png",
     title: "intestine",
   ),
-  SpecialistModel(
+  DoctorSpecialist(
     imgUrl: "lib/images/DoctorSpecialist/histologist.png",
     title: "histologist",
   ),
-  SpecialistModel(
+  DoctorSpecialist(
     imgUrl: "lib/images/DoctorSpecialist/Hepatology.png",
     title: "Hepatology",
   ),
-  SpecialistModel(
+  DoctorSpecialist(
     imgUrl: "lib/images/DoctorSpecialist/cardiologist.png",
     title: "cardiologist",
   ),
-  SpecialistModel(
+  DoctorSpecialist(
     imgUrl: "lib/images/DoctorSpecialist/Neurologic.png",
     title: "Neurologic",
   ),
-  SpecialistModel(
+  DoctorSpecialist(
     imgUrl: "lib/images/DoctorSpecialist/pulmonary.png",
     title: "pulmonary",
   ),
-  SpecialistModel(
+  DoctorSpecialist(
     imgUrl: "lib/images/DoctorSpecialist/Optometry.png",
     title: "Optometry",
   ),

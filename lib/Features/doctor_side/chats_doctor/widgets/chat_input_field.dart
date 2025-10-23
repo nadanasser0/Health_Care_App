@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:emoji_picker_flutter/emoji_picker_flutter.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:health_care_app/Features/patient_side/chats/models/message_model.dart';
+import 'package:health_care_app/Features/doctor_side/chats_doctor/models/message_model.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:record/record.dart';

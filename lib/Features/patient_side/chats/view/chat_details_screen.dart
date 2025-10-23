@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:health_care_app/Features/patient_side/chats/models/message_model.dart';
 import 'package:health_care_app/Features/patient_side/chats/widgets/chat_input_field.dart';
+
 import 'package:health_care_app/core/constants/colors.dart';
 
 class ChatPage extends StatefulWidget {
@@ -14,24 +16,45 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   final TextEditingController _controller = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
   late List<Message> _messages;
-
 
   @override
   void initState() {
     super.initState();
     _messages = demoMessages(widget.chatName);
-    }
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.jumpTo(_scrollController.position.maxScrollExtent);
+      }
+    });
+  }
 
-  void _sendMessage(String msg) {
-    if (msg.trim().isEmpty) return;
+  void _sendMessage(String msg,
+      {MessageType type = MessageType.text, String? filePath}) {
+    if (msg.trim().isEmpty && filePath == null) return;
+
     setState(() {
-      _messages.add(Message(
-        text: msg.trim(),
-        isMe: true,
-        time: TimeOfDay.now().format(context),
-      ));
+      _messages.add(
+        Message(
+          text: msg.trim(),
+          isMe: true,
+          time: TimeOfDay.now().format(context),
+          type: type,
+          filePath: filePath,
+        ),
+      );
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
     });
   }
 
@@ -39,7 +62,8 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
-      appBar: PreferredSize(
+      resizeToAvoidBottomInset:
+          true,       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(70),
         child: Padding(
           padding: const EdgeInsets.only(top: 17),
@@ -49,8 +73,6 @@ class _ChatPageState extends State<ChatPage> {
               icon: const Icon(Icons.arrow_back_ios_rounded),
               onPressed: () => Navigator.pop(context),
             ),
-            
-            
             title: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -78,49 +100,90 @@ class _ChatPageState extends State<ChatPage> {
           children: [
             Expanded(
               child: ListView.builder(
+                controller:
+                    _scrollController, // ✅ نتحكم في حركة القائمة لما نضيف رسالة
                 padding: const EdgeInsets.all(12),
                 itemCount: _messages.length,
                 itemBuilder: (context, index) {
                   final msg = _messages[index];
                   final isMe = msg.isMe;
 
+                  Widget messageContent;
+
+                  switch (msg.type) {
+                    case MessageType.text:
+                      messageContent = Text(
+                        msg.text,
+                        style: TextStyle(
+                          color: isMe
+                              ? AppColors.whiteColor
+                              : AppColors.blackColor,
+                        ),
+                      );
+                      break;
+                    case MessageType.image:
+                      messageContent = ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: Image.file(
+                          File(msg.filePath!),
+                          width: 200,
+                          fit: BoxFit.cover,
+                        ),
+                      );
+                      break;
+                    case MessageType.audio:
+                      messageContent = Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.play_arrow,
+                              color: isMe
+                                  ? AppColors.whiteColor
+                                  : AppColors.blueColor),
+                          const SizedBox(width: 8),
+                          Text(
+                            "Voice message",
+                            style: TextStyle(
+                              color: isMe
+                                  ? AppColors.whiteColor
+                                  : AppColors.blackColor,
+                            ),
+                          ),
+                        ],
+                      );
+                      break;
+                  }
+
                   return Align(
-                    alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+                    alignment:
+                        isMe ? Alignment.centerRight : Alignment.centerLeft,
                     child: Column(
-                      crossAxisAlignment:
-                          isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                      crossAxisAlignment: isMe
+                          ? CrossAxisAlignment.end
+                          : CrossAxisAlignment.start,
                       children: [
                         Container(
                           margin: const EdgeInsets.symmetric(vertical: 6),
                           padding: const EdgeInsets.all(12),
-                          constraints: BoxConstraints(
-                            maxWidth: MediaQuery.of(context).size.width * 0.7,
-                          ),
                           decoration: BoxDecoration(
-                            color: isMe ? AppColors.blueColor :AppColors.whiteColor,
-                            borderRadius: BorderRadius.only(
-                              topLeft: const Radius.circular(16),
-                              topRight: isMe ? Radius.zero : const Radius.circular(16),
-                              bottomLeft: const Radius.circular(16),
-                              bottomRight: const Radius.circular(16),
-                            ),
-
+                            color: isMe
+                                ? AppColors.blueColor
+                                : AppColors.whiteColor,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black12,
+                                blurRadius: 3,
+                                offset: const Offset(0, 2),
+                              )
+                            ],
                           ),
-                          child: Text(
-                            msg.text,
-                            style: TextStyle(
-                              color: isMe ? AppColors.whiteColor :AppColors.blackColor,
-                            ),
-                          ),
+                          child: messageContent,
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 4, right: 4, bottom: 4),
-                          child: Text(
-                            msg.time,
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: AppColors.greyColor,
-                            ),
+                        Text(
+                          msg.time,
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: AppColors.greyColor,
                           ),
                         ),
                       ],
@@ -131,7 +194,9 @@ class _ChatPageState extends State<ChatPage> {
             ),
             SafeArea(
               child: ChatInput(
-                onSend: _sendMessage,
+                onSend: (msg, {type = MessageType.text, filePath}) {
+                  _sendMessage(msg, type: type, filePath: filePath);
+                },
               ),
             ),
           ],
