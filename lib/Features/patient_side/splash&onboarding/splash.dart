@@ -1,0 +1,56 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
+import 'package:health_care_app/core/routes/app_routes.dart';
+import 'package:health_care_app/core/constants/colors.dart';
+
+class Splash extends StatefulWidget {
+  const Splash({super.key});
+
+  @override
+  State<Splash> createState() => _SplashState();
+}
+
+class _SplashState extends State<Splash> {
+  @override
+  void initState() {
+    super.initState();
+    Timer(
+      Duration(seconds: 3),
+      () => Navigator.pushReplacementNamed(context, AppRoutes.onboarding),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.spalshBackGroundColor,
+
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset("lib/images/Group.png"),
+            Text(
+              "HealthCare",
+              style: TextStyle(
+                fontSize: 28,
+                color: AppColors.textColor,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 5),
+            Text(
+              "Medical App",
+              style: TextStyle(
+                fontSize: 14,
+                color: AppColors.textColor,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

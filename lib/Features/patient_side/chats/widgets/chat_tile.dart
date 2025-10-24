@@ -1,6 +1,7 @@
+
 import 'package:flutter/material.dart';
-import 'package:health_care_app/core/constants/colors.dart';
 import 'package:health_care_app/Features/patient_side/chats/view/chat_details_screen.dart';
+import 'package:health_care_app/core/constants/colors.dart';
 
 class ChatTile extends StatefulWidget {
   final String name;

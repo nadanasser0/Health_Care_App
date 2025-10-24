@@ -5,6 +5,8 @@ import 'package:health_care_app/Features/patient_side/confirmation/widgets/instr
 import 'package:health_care_app/Features/patient_side/confirmation/widgets/payment_details_widget.dart';
 import 'package:health_care_app/shared/widgets/custom_button.dart';
 
+import '../../../shared/methods/navigator.dart';
+
 class BookingConfirmation extends StatelessWidget {
   const BookingConfirmation({super.key});
 
@@ -40,7 +42,7 @@ class BookingConfirmation extends StatelessWidget {
               PaymentDetailsConfirmation(),
               Instructions(),
               SizedBox(height: 20),
-              // CustomButton(name: 'Back to Home', page: HomeScreen()),
+              CustomButton(name: 'Back to Home', page: NavigationScreen()),
             ],
           ),
         ),

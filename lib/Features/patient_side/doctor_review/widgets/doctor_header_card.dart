@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:health_care_app/Features/doctor_side/chats_doctor/view/chat_details_screen.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 
 class DoctorHeaderCard extends StatelessWidget {
@@ -27,11 +28,16 @@ class DoctorHeaderCard extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CircleAvatar(
-            radius: 40,
-            backgroundImage: AssetImage(doctorImageUrl),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.asset(
+              doctorImageUrl,
+              width: 70,
+              height: 70,
+              fit: BoxFit.cover,
+            ),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -41,25 +47,17 @@ class DoctorHeaderCard extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textColor,
+                    color: AppColors.blackColor,
                   ),
                 ),
-                const SizedBox(height: 4),
                 Text(
                   specialty,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.greyColor,
-                  ),
+                  style: TextStyle(fontSize: 12, color: AppColors.greyColor),
                 ),
                 Text(
                   hospital,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: AppColors.greyColor,
-                  ),
+                  style: TextStyle(fontSize: 12, color: AppColors.greyColor),
                 ),
-                const SizedBox(height: 8),
                 Row(
                   children: [
                     Icon(
@@ -67,10 +65,11 @@ class DoctorHeaderCard extends StatelessWidget {
                       color: AppColors.starColor,
                       size: 20,
                     ),
+                    SizedBox(width: 5),
                     Text(
-                      '$rating ($numberOfReviews reviews)',
+                      '$rating (${numberOfReviews} reviews)',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 12,
                         color: AppColors.greyColor,
                       ),
                     ),
@@ -79,12 +78,16 @@ class DoctorHeaderCard extends StatelessWidget {
               ],
             ),
           ),
-          IconButton(
-            onPressed: () {
- 
+          // Spacer(),
+          GestureDetector(
+            onTap: (){
+              Navigator.push(
+               context , MaterialPageRoute(builder: (context)=>ChatPage(chatName:' ',)));
             },
-            icon: Icon(
-              Icons.chat_bubble_outline,
+            child: Image.asset(
+              'lib/images/message-text.png',
+              width: 25,
+              height: 25,
               color: AppColors.blueColor,
             ),
           ),

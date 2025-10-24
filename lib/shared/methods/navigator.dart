@@ -2,8 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:health_care_app/Features/patient_side/calender/calender_screen.dart';
 import 'package:health_care_app/Features/patient_side/chats/view/chats_list_screen.dart';
-import 'package:health_care_app/Features/patient_side/home_screen_mmmm/home_screen.dart';
+import 'package:health_care_app/Features/patient_side/home_screen/home_screen.dart';
 import 'package:health_care_app/Features/patient_side/profile/profile_screen.dart';
+import 'package:health_care_app/Features/patient_side/profile/view/profile_view.dart';
 import 'package:health_care_app/Features/patient_side/search/search_screen.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
@@ -23,10 +24,10 @@ class _NavigationScreenState extends State<NavigationScreen> {
   List<Widget> pages = [
     HomeScreen(), // 0
     CalenderScreen(), // 1
-    SearchScreen(), // 2
+    SearchScreen(), //2
     // ChatScreen(), // 3
     ChatsListScreen(),
-    ProfileScreen(), // 4
+    ProfilePatientScreen(), 
   ];
 
   @override
@@ -58,7 +59,7 @@ class _NavigationScreenState extends State<NavigationScreen> {
           CupertinoIcons.home,
           CupertinoIcons.calendar,
           CupertinoIcons.chat_bubble,
-          CupertinoIcons.settings,
+          CupertinoIcons.profile_circled,
         ],
         inactiveColor: Colors.black.withOpacity(0.5),
         activeColor: AppColors.backgroundColorBlue,
