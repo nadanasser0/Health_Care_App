@@ -42,7 +42,7 @@ class BookingConfirmation extends StatelessWidget {
               PaymentDetailsConfirmation(),
               Instructions(),
               SizedBox(height: 20),
-              CustomButton(name: 'Back to Home', page: NavigationScreen()),
+              CustomButton(name: 'Back to Home', page: NavigationnScreen()),
             ],
           ),
         ),

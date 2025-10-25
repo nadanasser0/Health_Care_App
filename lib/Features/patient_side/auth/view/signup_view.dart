@@ -8,6 +8,9 @@ import 'package:health_care_app/Features/patient_side/auth/widgets/signup_widget
 import 'package:health_care_app/Features/patient_side/auth/widgets/signup_widgets/signup_header.dart';
 import 'package:health_care_app/Features/patient_side/auth/widgets/signup_widgets/signup_tail.dart';
 import 'package:health_care_app/core/constants/colors.dart';
+import 'package:health_care_app/models/doctor_model.dart';
+import 'package:health_care_app/models/patient_model.dart';
+import 'package:health_care_app/models/user_model.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class SignupView extends StatefulWidget {
@@ -19,13 +22,19 @@ class SignupView extends StatefulWidget {
 
 class _SignupViewState extends State<SignupView> {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
-  CollectionReference doctors = FirebaseFirestore.instance.collection('doctors');
+  CollectionReference patients = FirebaseFirestore.instance.collection(
+    'patients',
+  );
+  CollectionReference doctors = FirebaseFirestore.instance.collection(
+    'doctors',
+  );
 
   final TextEditingController userNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneNumberController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
-  final TextEditingController confirmPasswordController = TextEditingController();
+  final TextEditingController confirmPasswordController =
+      TextEditingController();
 
   bool loading = false;
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
@@ -47,7 +56,7 @@ class _SignupViewState extends State<SignupView> {
       inAsyncCall: loading,
       child: Scaffold(
         backgroundColor: AppColors.whiteColor,
-        body: SingleChildScrollView( 
+        body: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -80,7 +89,9 @@ class _SignupViewState extends State<SignupView> {
                               _selectedSpecialization == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text("Please choose your specialization"),
+                                content: Text(
+                                  "Please choose your specialization",
+                                ),
                               ),
                             );
                             return;
@@ -90,22 +101,50 @@ class _SignupViewState extends State<SignupView> {
                           setState(() {});
                           try {
                             var auth = FirebaseAuth.instance;
-                            UserCredential userCredential =
-                                await auth.createUserWithEmailAndPassword(
+                            UserCredential userCredential = await auth
+                                .createUserWithEmailAndPassword(
+                                  email: emailController.text.trim(),
+                                  password: passwordController.text.trim(),
+                                );
+
+                            UserModel newUser = UserModel(
+                              user_id: userCredential.user!.uid,
+                              name: userNameController.text.trim(),
                               email: emailController.text.trim(),
                               password: passwordController.text.trim(),
+                              phoneNum: int.parse(
+                                phoneNumberController.text.trim(),
+                              ),
+                              // image:
+                              //     "",
+                              // gender:
+                              //     "male",
+                              role: _selectedType,
                             );
 
-                            await doctors.add({
-                              'id': userCredential.user!.uid,
-                              'userName': userNameController.text.trim(),
-                              'email': emailController.text.trim(),
-                              'phoneNumber': phoneNumberController.text.trim(),
-                              'password': passwordController.text.trim(),
-                              'role': _selectedType, // User / Doctor
-                              'specialization': _selectedSpecialization ?? '',
-                              'createdAt': DateTime.now(),
-                            });
+                            await users
+                                .doc(userCredential.user!.uid)
+                                .set(newUser.toMap());
+
+                            if (_selectedType == "Doctor") {
+                              DoctorModel newDoctor = DoctorModel(
+                                
+                                doctorId: userCredential.user!.uid,
+                                 speciality: _selectedSpecialization!,
+                              );
+
+                              await doctors
+                                  .doc(userCredential.user!.uid)
+                                  .set(newDoctor.toMap());
+                                  
+                            } else {
+                              PatientModel newPatient = PatientModel(
+                                patientId: userCredential.user!.uid,
+                              );
+                              await patients
+                                  .doc(userCredential.user!.uid)
+                                  .set(newPatient.toMap());
+                            }
 
                             Navigator.pushReplacement(
                               context,
@@ -117,13 +156,17 @@ class _SignupViewState extends State<SignupView> {
                             if (e.code == 'weak-password') {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text('The password provided is too weak.'),
+                                  content: Text(
+                                    'The password provided is too weak.',
+                                  ),
                                 ),
                               );
                             } else if (e.code == 'email-already-in-use') {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text('The account already exists for that email.'),
+                                  content: Text(
+                                    'The account already exists for that email.',
+                                  ),
                                 ),
                               );
                             }

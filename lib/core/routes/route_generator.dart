@@ -47,8 +47,8 @@ class RouteGenerator {
       //   return MaterialPageRoute(builder: (_) => const RecommendationDoctor());
       // case AppRoutes.notification:
       //   return MaterialPageRoute(builder: (_) => const NotificationScreen());
-      case AppRoutes.mainScreen:
-        return MaterialPageRoute(builder: (_) => NavigationScreen());
+      // case AppRoutes.mainScreen:
+        // return MaterialPageRoute(builder: (_) => NavigationScreen());
       // case AppRoutes.home:
       //   return MaterialPageRoute(builder: (_) => const HomeScreen());
 
