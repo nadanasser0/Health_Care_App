@@ -10,6 +10,9 @@ import 'package:health_care_app/Features/patient_side/auth/widgets/login_widgets
 import 'package:health_care_app/Features/patient_side/auth/widgets/login_widgets/login_header.dart';
 import 'package:health_care_app/Features/patient_side/auth/widgets/login_widgets/login_tail.dart';
 import 'package:health_care_app/core/constants/colors.dart';
+import 'package:health_care_app/models/user_model.dart';
+import 'package:health_care_app/services/firestore_services.dart';
+import 'package:health_care_app/shared/methods/navigator.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -34,7 +37,6 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       backgroundColor: AppColors.whiteColor,
       body: SingleChildScrollView(
         child: SafeArea(
@@ -42,10 +44,9 @@ class _LoginScreenState extends State<LoginScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-             
               LoginHeader(),
               SizedBox(height: 20),
-        
+
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
@@ -56,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       emailController: emailController,
                       passwordController: passwordController,
                     ),
-        
+
                     SizedBox(height: 8),
                     TextButton(
                       onPressed: () {
@@ -88,15 +89,33 @@ class _LoginScreenState extends State<LoginScreen> {
                                   email: emailController.text.trim(),
                                   password: passwordController.text.trim(),
                                 );
+                            FirestoreService firestoreService =
+                                FirestoreService();
+                            UserModel user =
+                                await firestoreService.getUser(
+                                      userCredential.user!.uid,
+                                    )
+                                    ;
                             snackBarMessage(
                               context,
                               "Sign in successfully",
                               color: Colors.green,
                             );
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context)=> NavigationScreen()) 
-                            );
+                            if (user.role == 'Doctor') {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => NavigationScreen(),
+                                ),
+                              );
+                            } else {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => NavigationnScreen(),
+                                ),
+                              );
+                            }
                           } on FirebaseAuthException catch (e) {
                             if (e.code == 'user-not-found') {
                               snackBarMessage(
@@ -124,7 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                     ),
                     SizedBox(height: 20),
-        
+
                     LoginTail(),
                   ],
                 ),

@@ -9,16 +9,16 @@ import 'package:health_care_app/Features/patient_side/search/search_screen.dart'
 import 'package:health_care_app/core/constants/colors.dart';
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 
-class NavigationScreen extends StatefulWidget {
-  NavigationScreen({super.key});
+class NavigationnScreen extends StatefulWidget {
+  NavigationnScreen({super.key});
 
   static String id = '/navBottom';
 
   @override
-  State<NavigationScreen> createState() => _NavigationScreenState();
+  State<NavigationnScreen> createState() => _NavigationScreenState();
 }
 
-class _NavigationScreenState extends State<NavigationScreen> {
+class _NavigationScreenState extends State<NavigationnScreen> {
   int pageIndex = 0;
 
   List<Widget> pages = [
