@@ -5,10 +5,6 @@ import 'package:health_care_app/Features/doctor_side/doctor_profile/view/doctor_
 import 'package:health_care_app/core/routes/app_routes.dart';
 import 'package:health_care_app/core/routes/route_generator.dart';
 import 'package:health_care_app/firebase_options.dart';
-
-
-
-
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
 

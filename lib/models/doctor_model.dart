@@ -36,6 +36,7 @@ class DoctorModel {
   Map<String, dynamic> toMap() {
     return {
       "doctorId": doctorId,
+      'speciality':speciality,
       "specialityId": speciality ?? "",
       "aboutMe": aboutMe ?? "",
       "workingTime": workingTime ?? "",

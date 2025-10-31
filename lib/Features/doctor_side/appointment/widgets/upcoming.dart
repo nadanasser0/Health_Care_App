@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:health_care_app/Features/doctor_side/chats_doctor/view/chat_details_screen.dart';
 import 'package:health_care_app/Features/patient_side/chats/view/chat_details_screen.dart';
 
 import '../../../../core/constants/colors.dart';
@@ -52,7 +53,7 @@ class Upcoming extends StatelessWidget {
                             Spacer(),
                             ElevatedButton(
                               onPressed: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context)=> ChatPage(chatName: " ")));
+                                Navigator.push(context, MaterialPageRoute(builder: (context)=> ChatsPageDoctor(doctorName: '', chatId: '', chatName: '',)));
                               },
                               style: ElevatedButton.styleFrom(
                                 padding: EdgeInsets.zero,

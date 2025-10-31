@@ -1,103 +1,47 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:health_care_app/Features/patient_side/chats/view/chat_details_screen.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(appBar: AppBar(title: Text("search"), centerTitle: true));
-  }
-  State<SearchScreen> createState() => _SearchScreenState();
+  State<SearchScreen> createState() => _SearchDoctorsFullUIState();
 }
 
-class _SearchScreenState extends State<SearchScreen> {
-  String selectedFilter = "All";
+class _SearchDoctorsFullUIState extends State<SearchScreen> {
+  final TextEditingController _searchController = TextEditingController();
   String searchText = "";
-  String selectedSpeciality = "All";
+  final String currentUserId = FirebaseAuth.instance.currentUser!.uid;
+  List searchHistory = [];
+
+  String? selectedSpeciality;
   double? selectedRating;
 
-  List<String> recentSearches = [
-    "Dental",
-    "General Medical Check",
-    "Nearest Hospital",
-    "Neurologic"
-  ];
+  List specialities = ["All"];
 
-  final List<Map<String, dynamic>> allDoctors = List.generate(20, (index) {
-    final baseDoctors = [
-      {
-        "name": "Dr. Randy Wigham",
-        "speciality": "General",
-        "hospital": "RSUD Gatot Subroto",
-        "rating": 4.8,
-        "reviews": 4279,
-        "image": "lib/images/doc1(chat).jpg"
-      },
-      {
-        "name": "Dr. Jack Sulivan",
-        "speciality": "Neurologic",
-        "hospital": "RSUD Gatot Subroto",
-        "rating": 4.5,
-        "reviews": 4279,
-        "image": "lib/images/doc2(chat).jpg"
-      },
-      {
-        "name": "Dr. Hanna Stanton",
-        "speciality": "Pediatric",
-        "hospital": "RSUD Gatot Subroto",
-        "rating": 4.3,
-        "reviews": 4279,
-        "image": "lib/images/doc3(chat).jpg"
-      },
-    ];
-    return baseDoctors[index % baseDoctors.length];
-  });
-
-  List<Map<String, dynamic>> filteredDoctors = [];
-
-  @override
-  void initState() {
-    super.initState();
-    filteredDoctors = allDoctors;
-  }
-
-  void _filterDoctors() {
-    setState(() {
-      filteredDoctors = allDoctors.where((doctor) {
-        final matchesSearch = doctor["name"]
-                .toString()
-                .toLowerCase()
-                .contains(searchText.toLowerCase()) ||
-            doctor["speciality"]
-                .toString()
-                .toLowerCase()
-                .contains(searchText.toLowerCase());
-
-        final matchesSpeciality =
-            selectedSpeciality == "All" || doctor["speciality"] == selectedSpeciality;
-
-        final matchesRating =
-            selectedRating == null || doctor["rating"] >= selectedRating!;
-
-        return matchesSearch && matchesSpeciality && matchesRating;
-      }).toList();
-    });
-  }
-
-  void _openSortBottomSheet() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: AppColors.whiteColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
-      ),
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setModalState) {
-            return Padding(
-              padding: const EdgeInsets.all(30),
+ void _openFilterBottomSheet() {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    backgroundColor: AppColors.whiteColor,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+    ),
+    builder: (context) {
+      return StatefulBuilder(
+        builder: (context, setModalState) {
+          return Padding(
+            padding: EdgeInsets.only(
+              left: 30,
+              right: 30,
+              top: 20,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+            ),
+            child: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,88 +63,105 @@ class _SearchScreenState extends State<SearchScreen> {
                       style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
                     ),
                   ),
-                  const SizedBox(height: 30),
-                  Divider(
-                      indent: 10,
-                      endIndent: 10,
-                      height: .4,
-                      color: AppColors.greyColor.withOpacity(.2)),
-                  const SizedBox(height: 30),
+                  const Divider(),
+                  const SizedBox(height: 20),
                   const Text(
                     "Speciality",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   ),
-                  const SizedBox(height: 20),
-                  Wrap(
-                    spacing: 10,
-                    children: ["All", "General", "Neurologic", "Pediatric"]
-                        .map((filter) => ChoiceChip(
-                              label: Text(filter),
-                              selected: selectedSpeciality == filter,
-                              selectedColor: AppColors.blueColor,
-                              labelStyle: TextStyle(
-                                color: selectedSpeciality == filter
-                                    ?AppColors.whiteColor
-                                    :AppColors.blackColor,
+                  const SizedBox(height: 10),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: specialities.map((filter) {
+                        final isSelected = selectedSpeciality == filter;
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: ChoiceChip(
+                            label: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                              child: Text(
+                                filter,
+                                style: TextStyle(
+                                  color: isSelected ? AppColors.whiteColor : AppColors.blackColor,
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
-                              onSelected: (val) {
-                                setModalState(() {
-                                  selectedSpeciality = filter;
-                                });
-                              },
-                            ))
-                        .toList(),
+                            ),
+                            selected: isSelected,
+                            showCheckmark: false,
+                            selectedColor: AppColors.blueColor,
+                            backgroundColor: Colors.grey.shade200,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25),
+                              side: BorderSide(
+                                color: isSelected ? AppColors.blueColor : Colors.grey.shade300,
+                              ),
+                            ),
+                            onSelected: (val) {
+                              setModalState(() {
+                                selectedSpeciality = val ? filter : null;
+                              });
+                              setState(() {});},
+                          ),
+                        );
+                      }).toList(),
+                    ),
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 25),
                   const Text(
                     "Rating",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   ),
-                  const SizedBox(height: 20),
-                  Wrap(
-                    spacing: 10,
-                    children: [
-
-
-                      ChoiceChip(
-                        showCheckmark: false,
-
-
-                        avatar: Icon(Icons.star, size: 16, color: AppColors.whiteColor),
-                        label: const Text("All"),
-                        selected: selectedRating == null,
-                        selectedColor: AppColors.blueColor,
-                        labelStyle: TextStyle(
-                          color: selectedRating == null ?AppColors.whiteColor :AppColors.greyColor,
-                        ),
-                        onSelected: (val) {
-                          setModalState(() {
-                            selectedRating = null;
-                          });
-                        },
-                      ),
-                      ...[5.0, 4.0, 3.0].map(
-                        (rate) => ChoiceChip(
-                          
+                  const SizedBox(height: 10),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: [
+                        ChoiceChip(
+                          label: const Text("All"),
+                          selected: selectedRating == null,
                           showCheckmark: false,
-
-                          avatar:  Icon(Icons.star, size: 16, color:AppColors.whiteColor),
-                          label: Text(rate.toInt().toString()),
-                          selected: selectedRating == rate,
                           selectedColor: AppColors.blueColor,
+                          backgroundColor: Colors.grey.shade200,
                           labelStyle: TextStyle(
-                            color: selectedRating == rate ?AppColors.whiteColor : AppColors.blackColor,
+                            color: selectedRating == null ? AppColors.whiteColor : Colors.black,
                           ),
                           onSelected: (val) {
                             setModalState(() {
-                              selectedRating = rate;
+                              selectedRating = null;
                             });
                           },
                         ),
-                      ),
-                    ],
+                        ...[5.0, 4.0, 3.0].map((rate) => Padding(
+                              padding: const EdgeInsets.only(left: 10),
+                              child: ChoiceChip(
+                                label: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(Icons.star, size: 16, color: AppColors.whiteColor),
+                                    const SizedBox(width: 3),
+                                    Text(rate.toInt().toString()),
+                                  ],
+                                ),
+                                selected: selectedRating == rate,
+                                showCheckmark: false,
+                                selectedColor: AppColors.blueColor,
+                                backgroundColor: Colors.grey.shade200,
+                                labelStyle: TextStyle(
+                                  color: selectedRating == rate ? AppColors.whiteColor : Colors.black,
+                                ),
+                                onSelected: (val) {
+                                  setModalState(() {
+                                    selectedRating = rate;
+                                  });
+                                },
+                              ),
+                            )),
+                      ],
+                    ),
                   ),
-                  const SizedBox(height: 35),
+                  const SizedBox(height: 30),
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
@@ -213,21 +174,343 @@ class _SearchScreenState extends State<SearchScreen> {
                       ),
                       onPressed: () {
                         Navigator.pop(context);
-                        _filterDoctors();
                       },
-                      child:  Text(
+                      child: Text(
                         "Done",
-                        style: TextStyle(fontSize: 16, color:AppColors.whiteColor),
+                        style: TextStyle(fontSize: 16, color: AppColors.whiteColor),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
                 ],
               ),
-            );
-          },
+            ),
+          );
+        },
+      );
+    },
+  );
+} @override
+  void initState() {
+    super.initState();
+    _loadSearchHistory();
+    _loadSpecialities();
+  }
+
+  Future _loadSearchHistory() async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('search_history')
+          .doc(currentUserId)
+          .get();
+      if (doc.exists && doc.data() != null) {
+        final data = doc.data()!;
+        setState(() {
+          searchHistory = List.from(data['history'] ?? []);
+        });
+      }
+    } catch (e) {
+      debugPrint('Failed to load search history: $e');
+    }
+  }
+
+  Future _saveSearchHistoryToRemote() async {
+    await FirebaseFirestore.instance
+        .collection('search_history')
+        .doc(currentUserId)
+        .set({'history': searchHistory});
+  }
+
+  Future _addToSearchHistory(String term) async {
+    term = term.trim();
+    if (term.isEmpty) return;
+    searchHistory.removeWhere((t) => t.toLowerCase() == term.toLowerCase());
+    searchHistory.insert(0, term);
+    if (searchHistory.length > 10) searchHistory = searchHistory.sublist(0, 10);
+    setState(() {});
+    await _saveSearchHistoryToRemote();
+  }
+
+  Future _loadSpecialities() async {
+    try {
+      final snapshot = await FirebaseFirestore.instance.collection('doctors').get();
+      final specs = snapshot.docs
+          .map((doc) => (doc.data()['speciality'] ?? '').toString())
+          .where((s) => s.isNotEmpty)
+          .toSet()
+          .toList();
+      setState(() {
+        specialities = ["All", ...specs];
+      });
+    } catch (e) {
+      debugPrint("Error loading specialities: $e");
+    }
+  }
+
+  Stream getDoctorsStream() {
+    return FirebaseFirestore.instance.collection('doctors').snapshots();
+  }
+
+  Future createOrGetChat(String doctorId, String doctorName, String doctorImage) async {
+    final patient = FirebaseAuth.instance.currentUser!;
+    final patientId = patient.uid;
+    final patientDoc = await FirebaseFirestore.instance.collection('users').doc(patientId).get();
+    final patientData = patientDoc.data() ?? {};
+    final patientName = patientData['name'] ?? 'Patient';
+    final patientImage = patientData['image'] ?? '';
+
+    final chatId = "${doctorId}_$patientId";
+    final chatRef = FirebaseFirestore.instance.collection('chats').doc(chatId);
+    final chatDoc = await chatRef.get();
+
+    if (!chatDoc.exists) {
+      await chatRef.set({
+        'doctorId': doctorId,
+        'doctorName': doctorName,
+        'doctorImage': doctorImage,
+        'patientId': patientId,
+        'patientName': patientName,
+        'patientImage': patientImage,
+        'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+        'lastMessage': "",
+      });
+    }
+
+    return chatId;
+  }
+
+  void _onDoctorTapAndOpenChat({
+    required String doctorId,
+    required String name,
+    required String image,
+  }) async {
+    await _addToSearchHistory(name);
+    final chatId = await createOrGetChat(doctorId, name, image);
+    if (!mounted) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ChatsPagePatient(
+          chatId: chatId,
+          chatName: name,
+          doctorName: name,
+        ),
+      ),
+    );
+  }
+
+  List<Map<String, dynamic>> _filterDoctors(List docs) {
+    final filtered = docs.where((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+      final name = (data['name'] ?? '').toString().toLowerCase();
+      final speciality = (data['speciality'] ?? 'General').toString();
+
+      final matchesSearch = name.contains(searchText.toLowerCase());
+      final matchesSpeciality =
+          selectedSpeciality == null || selectedSpeciality == "All" || speciality == selectedSpeciality;
+
+      return matchesSearch && matchesSpeciality;
+    }).toList();
+
+    return filtered.map((doc) {
+      final data = doc.data() as Map<String, dynamic>;
+      return {
+        'id': doc.id,
+        'name': data['name'] ?? 'Unknown',
+        'image': data['image'] ?? 'lib/images/patientt.png',
+        'speciality': data['speciality'] ?? 'General',
+        'hospital': data['hospital'] ?? 'Default Hospital',
+        'rating': (data['rating'] != null) ? data['rating'].toDouble() : 4.0,
+        'reviews': data['reviews'] ?? 0,
+      };
+    }).toList();
+  }
+
+  Widget _buildDoctorsList(List<Map<String, dynamic>> doctors) {
+    if (doctors.isEmpty) return const Center(child: Text("No doctors found"));
+
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+      itemCount: doctors.length,
+      itemBuilder: (context, index) {
+        final doctor = doctors[index];
+        return Container(
+          margin: const EdgeInsets.only(bottom: 15),
+          decoration: BoxDecoration(
+            color: AppColors.whiteColor,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.greyColor.withOpacity(.2),
+                blurRadius: 10,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(15),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(15),
+                  child: Image.network(
+                    doctor['image'],
+                    width: 100,
+                    height: 100,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Image.asset(
+                      'lib/images/patientt.png',
+                      width: 100,
+                      height: 100,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 15),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Dr. ${doctor['name']}',
+                          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+                      const SizedBox(height: 5),
+                      Text(doctor['speciality'], style: TextStyle(color: AppColors.greyColor, fontSize: 13)),
+                      const SizedBox(height: 5),
+                      Text("${doctor['hospital']}", style: TextStyle(color: AppColors.greyColor, fontSize: 13)),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Icon(Icons.star, color: AppColors.starColor, size: 16),
+                          const SizedBox(width: 5),
+                          Text("${doctor['rating']} (${doctor['reviews']} reviews)",
+                              style: TextStyle(color: AppColors.greyColor, fontSize: 13)),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.chat_bubble_outline, color: Colors.blue),
+                  onPressed: () =>
+                      _onDoctorTapAndOpenChat(doctorId: doctor['id'], name: doctor['name'], image: doctor['image']),
+                )
+              ],
+            ),
+          ),
         );
       },
+    );
+  }
+
+  Widget _buildFilters() {
+    if (searchText.isEmpty) return const SizedBox.shrink();
+
+    return 
+SingleChildScrollView(
+  scrollDirection: Axis.horizontal,
+  child: Row(
+    children: specialities.map((filter) {
+      final isSelected = selectedSpeciality == filter;
+      return Padding(
+        padding: const EdgeInsets.only(right: 10),
+        child: ChoiceChip(
+          label: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            child: Text(
+              filter,
+              style: TextStyle(
+                color: isSelected ? AppColors.whiteColor : AppColors.blackColor,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+          selected: isSelected,
+          showCheckmark: false,
+          selectedColor: AppColors.blueColor,
+          backgroundColor: Colors.grey.shade200,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(25),
+            side: BorderSide(
+              color: isSelected ? AppColors.blueColor : Colors.grey.shade300,
+            ),
+          ),
+          onSelected: (val) {
+            setState(() {
+              selectedSpeciality = val ? filter : null;
+            });
+          },
+        ),
+      );
+    }).toList(),
+  ),
+);
+  }
+
+  Widget _buildSearchHistoryView() {
+    if (searchHistory.isEmpty) {
+      return const Center(
+        child: Text(
+          "Start typing to search",
+          style: TextStyle(color: Colors.grey),
+        ),
+      );
+    }
+
+    final reversed = searchHistory.reversed.toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Recent searches",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+              TextButton(
+                onPressed: () async {
+                  setState(() {
+                    searchHistory.clear();
+                  });
+                  await FirebaseFirestore.instance.collection('search_history').doc(currentUserId).delete();
+                },
+                child: Text(
+                  "Clear All History",
+                  style: TextStyle(color: AppColors.blueColor, fontWeight: FontWeight.w600),
+                ),
+              ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: ListView.builder(
+            itemCount: reversed.length,
+            itemBuilder: (context, index) {
+              final term = reversed[index];
+              return ListTile(
+                leading: const Icon(CupertinoIcons.clock),
+                title: Text(term),
+                trailing: IconButton(
+                  icon: const Icon(Icons.clear),
+                  onPressed: () {
+                    searchHistory.remove(term);
+                    _saveSearchHistoryToRemote();
+                    setState(() {});
+                  },
+                ),
+                onTap: () {
+                  _searchController.text = term;
+                  setState(() => searchText = term);
+                },
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 
@@ -236,52 +519,32 @@ class _SearchScreenState extends State<SearchScreen> {
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
       appBar: AppBar(
-        // leading: IconButton(
-        //   onPressed: () => Navigator.pop(context),
-        //   icon: const Icon(Icons.arrow_back_ios_new),
-        // ),
+        centerTitle: true,
         backgroundColor: AppColors.whiteColor,
         title: const Text(
-          "Search",
+          "Search Doctors",
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
         ),
         elevation: 0,
       ),
-      body: 
-      Padding(
-        padding: const EdgeInsets.all(8.0),
-        child:
-         Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      body: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-              child: 
-              Row(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: Row(
                 children: [
                   Expanded(
-                    child:
-                     TextField(
-                      onChanged: (value) {
-                        searchText = value;
-                        _filterDoctors();
-                      },
-                      onSubmitted: (value) {
-                        setState(() {
-                          searchText = value;
-                          if (value.trim().isNotEmpty &&
-                              !recentSearches.contains(value)) {
-                            recentSearches.insert(0, value);
-                          }
-                        });
-                        _filterDoctors();
-                      },
+                    child: TextField(
+                      controller: _searchController,
+                      onChanged: (v) => setState(() => searchText = v.trim()),
+                      onSubmitted: (v) async => await _addToSearchHistory(v.trim()),
                       decoration: InputDecoration(
-                        hintText: "Search doctor...",
+                        hintText: "Search ...",
                         prefixIcon: const Icon(CupertinoIcons.search),
                         filled: true,
-                        fillColor: AppColors.greyColor.withOpacity(0.1),
-                        contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                        fillColor: AppColors.greyColor.withOpacity(0.08),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(25),
                           borderSide: BorderSide.none,
@@ -291,205 +554,53 @@ class _SearchScreenState extends State<SearchScreen> {
                   ),
                   const SizedBox(width: 10),
                   InkWell(
-                    onTap: _openSortBottomSheet,
+                    onTap: _openFilterBottomSheet,
                     borderRadius: BorderRadius.circular(100),
-                    child:  Icon(Icons.filter_list, color:AppColors.blackColor),
+                    child: const Padding(
+                      padding: EdgeInsets.all(8.0),
+                      child: Icon(Icons.filter_list, color: Colors.black),
+                    ),
                   ),
                 ],
               ),
             ),
+            const SizedBox(height: 10),
+            _buildFilters(),
+            const SizedBox(height: 20),
+            Expanded(
+              child: searchText.isEmpty
+                  ? _buildSearchHistoryView()
+                  : StreamBuilder(
+                      stream: getDoctorsStream(),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(child: CircularProgressIndicator());
+                        }
+                        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                          return const Center(child: Text("No doctors found"));
+                        }
 
-            if (searchText.isEmpty) ...[
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 30),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                     Text(
-                      "Recent Search",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.blackColor,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          recentSearches.clear();
-                        });
-                      },
-                      child:  Text(
-                        "Clear All History",
-                        style: TextStyle(
-                          fontSize: 14,
-                          color:AppColors.blueColor,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 10),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: recentSearches.length,
-                itemBuilder: (context, index) {
-                  final item = recentSearches[index];
-                  return 
-                  ListTile(
-                    leading:  Icon(Icons.history, color:AppColors.greyColor),
-                    title: Text(item),
-                    trailing: IconButton(
-                      icon:  Icon(Icons.close, color: AppColors.greyColor),
-                      onPressed: () {
-                        setState(() {
-                          recentSearches.removeAt(index);
-                        });
-                      },
-                    ),
-                    onTap: () {
-                      setState(() {
-                        searchText = item;
-                      });
-                      _filterDoctors();
-                    },
-                  );
-                },
-              ),
-            ],
+                        final filteredDoctors = _filterDoctors(snapshot.data!.docs);
 
-            if (searchText.isNotEmpty) ...[
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25),
-                child: Text(
-                  "${filteredDoctors.length} founds",
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-              ),
-              const SizedBox(height: 10),
-
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: ["All", "General", "Neurologic", "Pediatric"]
-                        .map(
-                          (filter) => Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                            child: 
-                            ChoiceChip(
-                              showCheckmark: false,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-                              label: Text(filter),
-                              selected: selectedSpeciality == filter,
-                              selectedColor: AppColors.blueColor,
-                              labelStyle: TextStyle(
-                                color: selectedSpeciality == filter
-                                    ? AppColors.whiteColor
-                                    :AppColors.blackColor,
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                              child: Text(
+                                "${filteredDoctors.length} founds",
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
+                                ),
                               ),
-                              onSelected: (val) {
-                                setState(() {
-                                  selectedSpeciality = filter;
-                                  _filterDoctors();
-                                });
-                              },
                             ),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                ),
-              ),
-
-              Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
-                  itemCount: filteredDoctors.length,
-                  itemBuilder: (context, index) {
-                    final doctor = filteredDoctors[index];
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 15),
-                      decoration: BoxDecoration(
-                        color: AppColors.whiteColor,
-                        borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
-                          BoxShadow(
-                            color:AppColors.greyColor.withOpacity(.2),
-                            blurRadius: 10,
-                            offset: const Offset(0, 5),
-                          ),
-                        ],
-                      ),
-                      child: 
-                     Container(
-  margin: const EdgeInsets.only(bottom: 15),
-  padding: const EdgeInsets.all(15),
-  decoration: BoxDecoration(
-    color:AppColors.whiteColor,
-    borderRadius: BorderRadius.circular(20),
-
-  ),
-  child: Row(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      ClipRRect(
-        borderRadius: BorderRadius.circular(15),
-        child: Image.asset(
-          doctor["image"],
-          width: 100,
-          height: 100,
-          fit: BoxFit.contain,
-        ),
-      ),
-      const SizedBox(width: 15),
-      Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              doctor["name"],
-              style: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 16,
-              ),
+Expanded(child: _buildDoctorsList(filteredDoctors)),
+                          ],
+                        );
+                      },
+                    ),
             ),
-            const SizedBox(height: 5),
-            Text(
-              "${doctor["speciality"]} | ${doctor["hospital"]}",
-              style: TextStyle(
-                color: AppColors.greyColor,
-                fontSize: 13,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                 Icon(Icons.star, color:AppColors.starColor, size: 16),
-                const SizedBox(width: 5),
-                Text(
-                  "${doctor["rating"]} (${doctor["reviews"]} reviews)",
-                  style: TextStyle(
-                    color: AppColors.greyColor,
-                    fontSize: 13,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    ],
-  ),
-), );
-                  },
-                ),
-              ),
-            ],
           ],
         ),
       ),

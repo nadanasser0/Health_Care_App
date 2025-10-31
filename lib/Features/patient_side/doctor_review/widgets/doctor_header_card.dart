@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:health_care_app/Features/doctor_side/chats_doctor/view/chat_details_screen.dart';
+import 'package:health_care_app/Features/patient_side/chats/view/chat_details_screen.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 
 class DoctorHeaderCard extends StatelessWidget {
@@ -82,7 +82,7 @@ class DoctorHeaderCard extends StatelessWidget {
           GestureDetector(
             onTap: (){
               Navigator.push(
-               context , MaterialPageRoute(builder: (context)=>ChatPage(chatName:' ',)));
+               context , MaterialPageRoute(builder: (context)=>ChatsPagePatient(doctorName: '', chatId: '', chatName: null,)));
             },
             child: Image.asset(
               'lib/images/message-text.png',
