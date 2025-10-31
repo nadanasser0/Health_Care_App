@@ -1,60 +1,52 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:health_care_app/Features/doctor_side/chats_doctor/view/chat_details_screen.dart';
 import 'package:health_care_app/core/constants/colors.dart';
-import '../models/chat_model.dart';
-import 'chat_details_screen.dart';
 
 class ChatsListScreenDoctor extends StatefulWidget {
   const ChatsListScreenDoctor({super.key});
 
   @override
-  State<ChatsListScreenDoctor> createState() => _ChatsListScreenState();
+  State<ChatsListScreenDoctor> createState() => _ChatsListScreenDoctorState();
 }
 
-class _ChatsListScreenState extends State<ChatsListScreenDoctor> {
+class _ChatsListScreenDoctorState extends State<ChatsListScreenDoctor> {
+  User? currentUser;
   final TextEditingController _searchController = TextEditingController();
-  late List<Chat> filteredChats;
+  String searchQuery = "";
 
   @override
   void initState() {
     super.initState();
-    filteredChats = List.from(allChats);
+    currentUser = FirebaseAuth.instance.currentUser;
   }
 
   void _filterChats(String query) {
     setState(() {
-      if (query.isEmpty) {
-        filteredChats = List.from(allChats);
-      } else {
-        filteredChats = allChats.where((chat) {
-          return chat.name.toLowerCase().contains(query.toLowerCase());
-        }).toList();
-      }
+      searchQuery = query.toLowerCase();
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (currentUser == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    final currentUserId = currentUser!.uid;
+
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
       appBar: AppBar(
-        // leading: IconButton(
-        //   icon: const Icon(CupertinoIcons.back),
-        //   onPressed: () {
-        //     Navigator.pop(context);
-        //   },
-        // ),
-        title:  Text(
-          "Chats",
-          style: TextStyle(
-            color: AppColors.blackColor,
-            fontWeight: FontWeight.w600,
-            fontSize: 20,
-          ),
-        ),
-        centerTitle: true,
         backgroundColor: AppColors.whiteColor,
+        title: const Text(
+          "Chats",
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+        ),
         elevation: 0,
+        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -77,204 +69,317 @@ class _ChatsListScreenState extends State<ChatsListScreenDoctor> {
                 ),
               ),
             ),
-
             const SizedBox(height: 20),
 
             const Text(
               "Active Now",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-              ),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
             ),
             const SizedBox(height: 12),
-
             SizedBox(
               height: 85,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                itemCount: allChats.length,
-                itemBuilder: (context, index) {
-                  final chat = allChats[index];
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ChatPage(chatName: chat.name),
+              child: StreamBuilder<QuerySnapshot>(
+                stream: FirebaseFirestore.instance
+                    .collection('chats')
+                    .where('doctorId', isEqualTo: currentUserId)
+                    .snapshots(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                    return const Center(child: Text("No active patients."));
+                  }
+
+                  final activeChats = snapshot.data!.docs.where((doc) {
+                    final data = doc.data() as Map<String, dynamic>;
+                    final name =
+                        (data['patientName'] ?? '').toString().toLowerCase();
+                    return name.contains(searchQuery);
+                  }).toList();
+
+                  activeChats.sort((a, b) {
+                    final aTime =
+                        (a.data() as Map<String, dynamic>)['updatedAt'] ??
+                            (a.data() as Map<String, dynamic>)['createdAt'];
+                    final bTime =
+                        (b.data() as Map<String, dynamic>)['updatedAt'] ??
+                            (b.data() as Map<String, dynamic>)['createdAt'];
+                    if (aTime is Timestamp && bTime is Timestamp) {
+                      return bTime.compareTo(aTime);
+                    }
+                    return 0;
+                  });
+
+                  return ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: activeChats.length,
+                    itemBuilder: (context, index) {
+                      final data =
+                          activeChats[index].data() as Map<String, dynamic>;
+                      final patientName = data['patientName'] ?? 'Unknown';
+                      final patientImage ='lib/images/patientt.png';
+                      final chatId = activeChats[index].id;
+
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ChatsPageDoctor(
+                                chatId: chatId,
+                                chatName: patientName, doctorName: '',
+                              ),
+                            ),
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: Stack(
+                            clipBehavior: Clip.none,
+                            children: [
+                              CircleAvatar(
+                                radius: 33,
+                                backgroundImage: AssetImage(patientImage),
+                              ),
+                              Positioned(
+                                top: .1,
+                                right: .1,
+                                child: Container(
+                                  width: 20,
+                                  height: 20,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.greenColor,
+                                    shape: BoxShape.circle,
+                                    border: Border.all(
+                                        color: AppColors.whiteColor, width: 2),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      child: Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color:AppColors.whiteColor, width: 3),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.blackColor.withOpacity(.4),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: CircleAvatar(
-                              radius: 33,
-                              backgroundImage: AssetImage(chat.image),
-                            ),
-                          ),
-                          Positioned(
-                            top: .1,
-                            right: .1,
-                            child: Container(
-                              width: 20,
-                              height: 20,
-                              decoration: BoxDecoration(
-                                color:AppColors.greenColor,
-                                shape: BoxShape.circle,
-                                border: Border.all(color:AppColors.whiteColor, width: 2),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                   );
                 },
               ),
             ),
-
             const SizedBox(height: 25),
 
             const Text(
-              "Message",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-              ),
+              "Messages",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
             ),
             const SizedBox(height: 10),
 
-            Expanded(
-              child: ListView.builder(
-                itemCount: filteredChats.length,
-                itemBuilder: (context, index) {
-                  final chat = filteredChats[index];
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ChatPage(chatName: chat.name),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.symmetric(vertical: 6),
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                      decoration: BoxDecoration(
-                        color: AppColors.greyColor.withOpacity(.1),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color:AppColors.whiteColor, width: 3),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.blackColor.withOpacity(.3),
-                                  blurRadius: 3,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            child: CircleAvatar(
-                              radius: 26,
-                              backgroundImage: AssetImage(chat.image),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
+  
+Expanded(
+  child: StreamBuilder<QuerySnapshot>(
+    stream: FirebaseFirestore.instance
+        .collection('chats')
+        .where('doctorId', isEqualTo: currentUserId)
+        .snapshots(),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        return const Center(child: CircularProgressIndicator());
+      }
 
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        chat.name,
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 15,
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                    Text(
-                                      chat.time,
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: AppColors.greyColor,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 3),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        chat.lastMessage,
-                                        maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          color: AppColors.greyColor,
-                                          fontSize: 13,
-                                        ),
-                                      ),
-                                    ),
-                                    if (chat.unreadCount > 0)
-                                      Container(
-                                        margin: const EdgeInsets.only(left: 6),
-                                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                                        decoration: BoxDecoration(
-                                          color: AppColors.greenColor,
-                                          borderRadius: BorderRadius.circular(12),
-                                        ),
-                                        child: Text(
-                                          chat.unreadCount.toString(),
-                                          style:  TextStyle(
-                                            color:AppColors.whiteColor,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ],
+      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+        return const Center(child: Text("No chats yet."));
+      }
+
+      final chats = snapshot.data!.docs.where((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        final name = (data['patientName'] ?? '').toString().toLowerCase();
+        return name.contains(searchQuery);
+      }).toList();
+
+      chats.sort((a, b) {
+        final aTime = (a.data() as Map<String, dynamic>)['updatedAt'] ??
+            (a.data() as Map<String, dynamic>)['createdAt'];
+        final bTime = (b.data() as Map<String, dynamic>)['updatedAt'] ??
+            (b.data() as Map<String, dynamic>)['createdAt'];
+        if (aTime is Timestamp && bTime is Timestamp) {
+          return bTime.compareTo(aTime);
+        }
+        return 0;
+      });
+
+      return ListView.builder(
+        itemCount: chats.length,
+        itemBuilder: (context, index) {
+          final data = chats[index].data() as Map<String, dynamic>;
+          final chatId = chats[index].id;
+          final patientName = data['patientName'] ?? 'Unknown';
+          final lastMessage = data['lastMessage'] ?? "Say hi 👋";
+          final patientImage = data['patientImage'] ?? '';
+          final unreadCount = data['unreadCount'] ?? 0;
+          final timestamp = data['updatedAt'] ?? data['createdAt'];
+          String time = "";
+
+          if (timestamp is Timestamp) {
+            final date = timestamp.toDate();
+            time =
+                "${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}";
+          }
+
+          return ChatTile(
+            name: patientName,
+            lastMessage: lastMessage,
+            time: time,
+            image: patientImage.isNotEmpty
+                ? patientImage
+                : 'lib/images/patientt.png',
+            unreadCount: unreadCount,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ChatsPageDoctor(
+                    chatId: chatId,
+                    chatName: '', doctorName: patientName,
+                  ),
+                ),
+              );
+            },
+          );
+        },
+      );
+    },
+  ),
+), ],
         ),
       ),
     );
   }
 }
+
+class ChatTile extends StatelessWidget {
+  final String name;
+  final String lastMessage;
+  final String time;
+  final String image;
+  final int unreadCount;
+  final VoidCallback onTap;
+
+  const ChatTile({
+    super.key,
+    required this.name,
+    required this.lastMessage,
+    required this.time,
+    required this.image,
+    required this.unreadCount,
+    required this.onTap,
+  });
+
+  bool get isPhotoMessage {
+    final msg = lastMessage.toLowerCase();
+    return msg == 'photo' ||
+        msg.contains('image') ||
+        msg.contains('.jpg') ||
+        msg.contains('.png');
+  }
+
+ @override
+Widget build(BuildContext context) {
+  return InkWell(
+    onTap: onTap,
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.grey[200],
+          borderRadius: BorderRadius.circular(15),
+        ),
+        padding: const EdgeInsets.all(12), 
+        child: Column(
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CircleAvatar(
+                  radius: 30,
+                  backgroundImage: image.isNotEmpty
+                      ? AssetImage(image)
+                      : const AssetImage('lib/images/patientt.png')
+                          as ImageProvider,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        name.isNotEmpty ? name : 'Unknown',
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                      const SizedBox(height: 8),
+                      if (isPhotoMessage)
+                        Row(
+                          children: [
+                            Icon(Icons.photo,
+                                size: 16, color: AppColors.greyColor),
+                            const SizedBox(width: 5),
+                            Text(
+                              "Photo",
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: AppColors.greyColor,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            ),
+                          ],
+                        )
+                      else
+                        SizedBox(
+                          width: 210,
+                          child: Text(
+                            lastMessage.isNotEmpty
+                                ? lastMessage
+                                : 'Say hi 👋',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: AppColors.greyColor,
+                              height: 1.7,
+                            ),
+                            maxLines: 3,
+                            overflow: TextOverflow.visible,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      time.isNotEmpty ? time : '',
+                      style: TextStyle(
+                          fontSize: 12, color: AppColors.greyColor),
+                    ),
+                    const SizedBox(height: 38),
+                    if (unreadCount > 0)
+                      Container(
+                        width: 20,
+                        height: 20,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: AppColors.blueColor,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          unreadCount.toString(),
+                          style: TextStyle(
+                              color: AppColors.whiteColor, fontSize: 12),
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+    
+          ],
+        ),
+      ),
+    ),
+  );
+}}
