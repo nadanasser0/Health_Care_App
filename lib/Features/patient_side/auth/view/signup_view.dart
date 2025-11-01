@@ -38,6 +38,7 @@ class _SignupViewState extends State<SignupView> {
 
   bool loading = false;
   final GlobalKey<FormState> formkey = GlobalKey<FormState>();
+  String hospitalName = '';
 
   String _selectedType = 'User';
   String? _selectedSpecialization;
@@ -78,7 +79,19 @@ class _SignupViewState extends State<SignupView> {
 
                     UserDoctorSelector(onSelectionChanged: handleSelection),
 
-                    const SizedBox(height: 40),
+                    // edit mazen shabar
+                    if (_selectedType == "Doctor") ...[
+                      const SizedBox(height: 20),
+                      TextFormField(
+                        decoration: const InputDecoration(
+                          labelText: "Hospital Name",
+                          prefixIcon: Icon(Icons.local_hospital_outlined),
+                          border: OutlineInputBorder(),
+                        ),
+                        onChanged: (value) => hospitalName = value.trim(),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
 
                     CustomButton(
                       text: "Sign up",
@@ -126,17 +139,41 @@ class _SignupViewState extends State<SignupView> {
                                 .doc(userCredential.user!.uid)
                                 .set(newUser.toMap());
 
-                            if (_selectedType == "Doctor") {
-                              DoctorModel newDoctor = DoctorModel(
-                                
-                                doctorId: userCredential.user!.uid,
-                                 speciality: _selectedSpecialization!,
-                              );
+                            // if (_selectedType == "Doctor") {
+                            //   DoctorModel newDoctor = DoctorModel(
 
-                              await doctors
-                                  .doc(userCredential.user!.uid)
-                                  .set(newDoctor.toMap());
-                                  
+                            //     doctorId: userCredential.user!.uid,
+                            //      speciality: _selectedSpecialization!,
+                            //   );
+
+                            //   await doctors
+                            //       .doc(userCredential.user!.uid)
+                            //       .set(newDoctor.toMap());
+
+                            // }
+
+                            // mazen shabara edit
+                            if (_selectedType == "Doctor") {
+                              final uid = userCredential.user!.uid;
+                              final spec = _selectedSpecialization!.trim();
+                              // صورة افتراضية مؤقتة
+                              const defaultImageUrl =
+                                  "https://firebasestorage.googleapis.com/v0/b/YOUR_PROJECT.appspot.com/o/default_doctor.png?alt=media";
+
+                              await doctors.doc(uid).set({
+                                'doctorId': uid,
+                                'name': userNameController.text.trim(),
+                                'specialization': _selectedSpecialization!,
+                                'hospital': hospitalName.isNotEmpty
+                                    ? hospitalName
+                                    : 'Unknown Hospital',
+                                'imageUrl': defaultImageUrl,
+                                'rating': 0.0, // يبدأ من 0
+                                'reviews': 0, // يبدأ من 0
+                                'specializationKey': spec.toLowerCase(),
+                                'isRecommended': true,
+                                'createdAt': FieldValue.serverTimestamp(),
+                              });
                             } else {
                               PatientModel newPatient = PatientModel(
                                 patientId: userCredential.user!.uid,

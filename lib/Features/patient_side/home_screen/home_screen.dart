@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:health_care_app/Features/patient_side/home_screen/model/doctor_specialist.dart';
-import 'package:health_care_app/Features/patient_side/home_screen/model/recomendation_doctor.dart';
+// مش ضروري تستورد موديل الريكومينديشن هنا لو مش هتستخدم Lists محلية
+// import 'package:health_care_app/Features/patient_side/home_screen/model/recomendation_doctor.dart';
 import 'package:health_care_app/Features/patient_side/home_screen/widget/CarsouseSlide.dart';
 import 'package:health_care_app/Features/patient_side/home_screen/widget/DoctorSpecialist.dart';
 import 'package:health_care_app/Features/patient_side/home_screen/widget/RecomendationDoc.dart';
@@ -19,7 +20,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   //    scroll automatic
-  List<String> imageView = [
+  final List<String> imageView = [
     "lib/images/ListView3.png",
     "lib/images/ListView1.jpeg",
     "lib/images/listView2.jpeg",
@@ -27,19 +28,8 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   // search
-  TextEditingController searchController = TextEditingController();
+  final TextEditingController searchController = TextEditingController();
   String searchQuery = '';
-
-  // function search
-  List<RecomendationDoctorModel> get filteredDoctors {
-    if (searchQuery.isEmpty) return itemsReco; // لو مفيش بحث، رجّع كل الدكاترة
-    return itemsReco.where((doctor) {
-      final nameLower = doctor.name.toLowerCase();
-      final specLower = doctor.specialist.toLowerCase();
-      final query = searchQuery.toLowerCase();
-      return nameLower.contains(query) || specLower.contains(query);
-    }).toList();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,64 +41,73 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                //               header
-                HeaderWidget(),
+                // header
+                const HeaderWidget(),
                 SizedBox(height: AppFonts.spaceMedium),
                 CarsouseSlide(imageView: imageView),
-                //                search
+
+                // search
                 SizedBox(height: AppFonts.spaceMedium),
                 Divider(color: AppColors.backgroundGrey, thickness: 1.25),
-
                 SizedBox(height: AppFonts.spaceSmall),
+
                 TextField(
                   controller: searchController,
                   decoration: InputDecoration(
-                    hint: Text('Search by name or specialist', style: TextStyle(color: AppColors.greyColor.withOpacity(0.8),fontSize: 16),),
-                    prefixIcon: Icon(Icons.search),
+                    hint: Text(
+                      'Search by name or specialist',
+                      style: TextStyle(
+                        color: AppColors.greyColor.withOpacity(0.8),
+                        fontSize: 16,
+                      ),
+                    ),
+                    prefixIcon: const Icon(Icons.search),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(
                         color: AppColors.greyColor,
                         width: 1,
                       ),
-                      
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(
-                        color: AppColors.greyColor
-                        ,width: 1
-                        
-                      )
+                        color: AppColors.greyColor,
+                        width: 1,
+                      ),
                     ),
-                    enabledBorder:  OutlineInputBorder(
+                    enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: BorderSide(
-                        color: AppColors.greyColor,width: 1
-                        
-                      )
+                        color: AppColors.greyColor,
+                        width: 1,
+                      ),
                     ),
                   ),
-                  onChanged: (value) {
-                    setState(() {
-                      searchQuery = value; // تحديث الكلمة اللي المستخدم بيكتبها
-                    });
-                  },
+                  onChanged: (value) => setState(() => searchQuery = value),
                   onSubmitted: (value) {
-                    setState(() {
-                      searchQuery = value;
-                    });
-                    searchController.clear(); // Enter  يمسح النص بعد ما يضغط
+                    setState(() => searchQuery = value);
+                    searchController.clear();
                   },
                 ),
+
                 SizedBox(height: AppFonts.spaceSmall),
                 Divider(color: AppColors.backgroundGrey, thickness: 1.25),
                 SizedBox(height: AppFonts.spaceSmall),
 
-                //  My Medications
-                /**             MedicineReminder(),           */
-                DoctorSpecialistWidget(items: items),
-                //      recommendation doctor
+                // Doctor Speciality
+                DoctorSpecialistWidget(
+                  items: items,
+                  onSelect: (spec) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => Recommendation(initialSpec: spec),
+                      ),
+                    );
+                  },
+                ),
+                // Recommendation doctor
                 Column(
                   children: [
                     Row(
@@ -119,14 +118,18 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: AppColors.textColorBlack,
                           ),
                         ),
-                        Spacer(),
+                        const Spacer(),
                         SEAALL(
                           onTap: () {
+                            // افتح صفحة الـ See All واعمل فيها نفس فكرة الـ Stream + فلترة بالسيرش
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    Recommendation(itemsReco: filteredDoctors),
+                                builder: (context) => Recommendation(
+                                  initialQuery: searchQuery,
+                                  initialSpec:
+                                      '', // عدّل صفحة Recommendation تقبل ده
+                                ),
                               ),
                             );
                           },
@@ -134,7 +137,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       ],
                     ),
                     SizedBox(height: AppFonts.spaceSmall),
-                    RecomendationDoc(itemsReco: filteredDoctors),
+
+                    // بنمرر الـ searchQuery اختيارياً للفلترة داخل الويجد
+                    RecomendationDoc(searchQuery: searchQuery),
                   ],
                 ),
               ],

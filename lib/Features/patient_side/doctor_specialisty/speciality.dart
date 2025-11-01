@@ -3,13 +3,17 @@ import 'package:flutter/services.dart';
 import 'package:health_care_app/Features/patient_side/home_screen/model/doctor_specialist.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 import 'package:health_care_app/core/constants/sizes.dart';
+import 'package:health_care_app/Features/patient_side/recommendation_doctor/recommendation.dart';
 
 class Speciality extends StatelessWidget {
-  const Speciality({super.key, required this.items});
-  // items
+  const Speciality({super.key, required this.items, this.onSelect});
+
+  // قائمة التخصصات
   final List<DoctorSpecialist> items;
 
-  //
+  // كولباك اختياري (لو حابب تستخدمه بدل النافيجيشن)
+  final void Function(String spec)? onSelect;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,18 +29,34 @@ class Speciality extends StatelessWidget {
         padding: const EdgeInsets.all(15.0),
         child: GridView.builder(
           itemCount: items.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3,
+            mainAxisSpacing: 16,
+            crossAxisSpacing: 16,
+            childAspectRatio: 0.9,
           ),
           itemBuilder: (context, index) {
+            final spec = items[index];
             return InkWell(
               onTap: () {
                 SystemSound.play(SystemSoundType.click);
-                /** 
-                 *  هنا بقا المفروض لما يضغط علي التخصص يجيبلنا بيانات الدكاتره اللي ف المجال ده
-                 */
+
+                //  لو في كولباك مبعوت من برّه، نفّذه
+                if (onSelect != null) {
+                  onSelect!(spec.title);
+                  return;
+                }
+
+                //  وإلا نعمل Navigation لشاشة التوصيات مع فلترة التخصص
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => Recommendation(initialSpec: spec.title),
+                  ),
+                );
               },
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
                     width: 65,
@@ -48,15 +68,17 @@ class Speciality extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(15.0),
                       child: ClipOval(
-                        child: Image.asset(
-                          items[index].imgUrl,
-                          fit: BoxFit.fill,
-                        ),
+                        child: Image.asset(spec.imgUrl, fit: BoxFit.contain),
                       ),
                     ),
                   ),
                   SizedBox(height: AppFonts.spaceMedium),
-                  Text(items[index].title, style: AppFonts.bodyMedium),
+                  Text(
+                    spec.title,
+                    style: AppFonts.bodyMedium,
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ],
               ),
             );
