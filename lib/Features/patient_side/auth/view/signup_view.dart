@@ -125,19 +125,24 @@ class _SignupViewState extends State<SignupView> {
                             await users
                                 .doc(userCredential.user!.uid)
                                 .set(newUser.toMap());
+ const String placeholderImage =
+            'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
 
-                            if (_selectedType == "Doctor") {
-                              DoctorModel newDoctor = DoctorModel(
-                                
-                                doctorId: userCredential.user!.uid,
-                                 speciality: _selectedSpecialization!,
-                              );
-
-                              await doctors
-                                  .doc(userCredential.user!.uid)
-                                  .set(newDoctor.toMap());
-                                  
-                            } else {
+       if (_selectedType == "Doctor") {
+          // save doctor document with full info (including placeholder image)
+          await doctors.doc(userCredential.user!.uid).set({
+            'doctorId': userCredential.user!.uid,
+            'name': userNameController.text.trim(),
+            'email': emailController.text.trim(),
+            'phoneNumber': phoneNumberController.text.trim(),
+            'speciality': _selectedSpecialization!,
+            'hospital': 'Not specified',
+            'image': placeholderImage,
+            'rating': 0.0,
+            'reviews': 0,
+            'createdAt': FieldValue.serverTimestamp(),
+          });
+        }else {
                               PatientModel newPatient = PatientModel(
                                 patientId: userCredential.user!.uid,
                               );
