@@ -73,10 +73,12 @@ class CustomContainer extends StatelessWidget {
                 icon: Icons.logout,
                 text: 'Log Out',
                 onTap: () {
-                  LogoutDialog.show(context, onLogout: () {
-                   
-                    print('User logged out');
-                  });
+                  LogoutDialog.show(
+                    context,
+                    onLogout: () {
+                      print('User logged out');
+                    },
+                  );
                   // Navigator.push(context, MaterialPageRoute(builder: (context) => ()));
                 },
               ),
