@@ -1,62 +1,37 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class RecomendationDoctorModel {
-  final String imgUrl;
+  final String id;
   final String name;
-  final String specialist;
+  final String specialization;
+  final String hospital;
+  final String imageUrl;
   final double rating;
-  final int review;
+  final int reviews;
+  final bool isRecommended;
 
   RecomendationDoctorModel({
-    required this.imgUrl,
+    required this.id,
     required this.name,
-    required this.specialist,
+    required this.specialization,
+    required this.hospital,
+    required this.imageUrl,
     required this.rating,
-    required this.review,
+    required this.reviews,
+    required this.isRecommended,
   });
+
+  factory RecomendationDoctorModel.fromDoc(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return RecomendationDoctorModel(
+      id: doc.id,
+      name: (data['name'] ?? '').toString(),
+      specialization: (data['specialization'] ?? '').toString(),
+      hospital: (data['hospital'] ?? '').toString(),
+      imageUrl: (data['imageUrl'] ?? '').toString(),
+      rating: (data['rating'] ?? 0).toDouble(),
+      reviews: (data['reviews'] ?? 0) as int,
+      isRecommended: (data['isRecommended'] ?? false) as bool,
+    );
+  }
 }
-
-//    RecommendationDoctor List of data
-List<RecomendationDoctorModel> itemsReco = [
-  RecomendationDoctorModel(
-    imgUrl: "lib/images/doctor2.png",
-    name: "DR.Mohamed Eleraky",
-    specialist: "General | RSUD Gatot Subroto",
-    rating: 4.8,
-    review: 2500,
-  ),
-  RecomendationDoctorModel(
-    imgUrl: "lib/images/doctor2.png",
-    name: "DR.mazen Eleraky",
-    specialist: "General | RSUD Gatot Subroto",
-    rating: 4.8,
-    review: 2500,
-  ),
-  RecomendationDoctorModel(
-    imgUrl: "lib/images/doctor2.png",
-    name: "DR.abdo Eleraky",
-    specialist: "Dentistryy | RSUD Gatot Subroto",
-    rating: 4.8,
-    review: 2500,
-  ),
-
-  RecomendationDoctorModel(
-    imgUrl: "lib/images/doctor2.png",
-    name: "DR.Mohamed Eleraky",
-    specialist: "General | RSUD Gatot Subroto",
-    rating: 4.8,
-    review: 2500,
-  ),
-  RecomendationDoctorModel(
-    imgUrl: "lib/images/doctor2.png",
-    name: "DR.mazen Eleraky",
-    specialist: "General | RSUD Gatot Subroto",
-    rating: 4.8,
-    review: 2500,
-  ),
-  RecomendationDoctorModel(
-    imgUrl: "lib/images/doctor2.png",
-    name: "DR.abdo Eleraky",
-    specialist: "Dentistry | RSUD Gatot Subroto",
-    rating: 4.8,
-    review: 2500,
-  ),
-];

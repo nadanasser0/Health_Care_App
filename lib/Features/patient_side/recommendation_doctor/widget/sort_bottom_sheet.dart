@@ -72,11 +72,15 @@ class _SortBottomSheetState extends State<SortBottomSheet> {
             child: Wrap(
               spacing: 10,
               children: [
+                // الاستيراد صحيح
+
+                // ... داخل الـ Wrap:
                 FilterChipCustom(
                   label: 'All',
                   selected: speciality == 'All',
                   onTap: () => setState(() => speciality = 'All'),
                 ),
+                // ✳️ هنا التعديل: شيل النقطة قبل items
                 ...items.map(
                   (s) => FilterChipCustom(
                     label: s.title,

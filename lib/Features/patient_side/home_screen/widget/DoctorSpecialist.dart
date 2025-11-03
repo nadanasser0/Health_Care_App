@@ -1,17 +1,17 @@
-//             DoctorSpecialist
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:health_care_app/Features/patient_side/doctor_specialisty/speciality.dart';
 import 'package:health_care_app/Features/patient_side/home_screen/model/doctor_specialist.dart';
+import 'package:health_care_app/Features/patient_side/recommendation_doctor/recommendation.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 import 'package:health_care_app/core/constants/sizes.dart';
 import 'package:health_care_app/shared/widgets/sea_all.dart';
 
 class DoctorSpecialistWidget extends StatelessWidget {
-  const DoctorSpecialistWidget({super.key, required this.items});
+  const DoctorSpecialistWidget({super.key, required this.items, this.onSelect});
 
   final List<DoctorSpecialist> items;
-
+  final void Function(String spec)? onSelect;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -24,9 +24,10 @@ class DoctorSpecialistWidget extends StatelessWidget {
                 color: AppColors.textColorBlack,
               ),
             ),
-            Spacer(),
+            const Spacer(),
             SEAALL(
               onTap: () {
+                // يفتح شاشة كل التخصصات
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -38,26 +39,35 @@ class DoctorSpecialistWidget extends StatelessWidget {
           ],
         ),
         SizedBox(height: AppFonts.spaceMedium),
-        // Doctor Speciality
+
         SizedBox(
           height: 125,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: items.length,
-            // shrinkWrap: true,
-            // physics: NeverScrollableScrollPhysics(),
             itemBuilder: (context, index) {
+              final spec = items[index];
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 12.0),
                 child: InkWell(
                   onTap: () {
                     SystemSound.play(SystemSoundType.click);
-                    /**
-              *  هنا بقا المفروض لما يضغط علي التخصص يجيبلنا بيانات الدكاتره اللي ف المجال ده 
 
-               */
+                    if (onSelect != null) {
+                      onSelect!(spec.title);
+                      return;
+                    }
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => Recommendation(
+                          initialSpec: spec.title,
+                          initialQuery: '',
+                        ),
+                      ),
+                    );
                   },
-
                   child: Column(
                     children: [
                       Container(
@@ -72,15 +82,12 @@ class DoctorSpecialistWidget extends StatelessWidget {
                         child: Padding(
                           padding: const EdgeInsets.all(15.0),
                           child: ClipOval(
-                            child: Image.asset(
-                              items[index].imgUrl,
-                              fit: BoxFit.fill,
-                            ),
+                            child: Image.asset(spec.imgUrl, fit: BoxFit.fill),
                           ),
                         ),
                       ),
                       SizedBox(height: AppFonts.spaceMedium),
-                      Text(items[index].title, style: AppFonts.bodyMedium),
+                      Text(spec.title, style: AppFonts.bodyMedium),
                     ],
                   ),
                 ),
@@ -88,6 +95,7 @@ class DoctorSpecialistWidget extends StatelessWidget {
             },
           ),
         ),
+
         Divider(color: AppColors.backgroundGrey, thickness: 1.25),
         SizedBox(height: AppFonts.spaceSmall),
       ],

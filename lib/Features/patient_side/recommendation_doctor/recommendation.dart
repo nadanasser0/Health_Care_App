@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:health_care_app/Features/patient_side/home_screen/model/recomendation_doctor.dart';
 import 'package:health_care_app/Features/patient_side/recommendation_doctor/widget/doctor_list_view.dart';
@@ -7,53 +8,93 @@ import 'package:health_care_app/core/constants/colors.dart';
 import 'package:health_care_app/core/constants/sizes.dart';
 
 class Recommendation extends StatefulWidget {
-  const Recommendation({super.key, required this.itemsReco});
+  const Recommendation({super.key, this.initialQuery = '', this.initialSpec});
 
-  final List<RecomendationDoctorModel> itemsReco;
+  final String initialQuery; // من الهوم
+  final String? initialSpec; // من Speciality
 
   @override
   State<Recommendation> createState() => _RecommendationState();
 }
 
 class _RecommendationState extends State<Recommendation> {
-  TextEditingController searchController = TextEditingController();
-  String searchQuery = '';
-  String selectedSpeciality = 'All';
-  int selectedRating = 0;
+  final TextEditingController _searchController = TextEditingController();
 
-  List<RecomendationDoctorModel> get filteredDoctors {
-    List<RecomendationDoctorModel> list = widget.itemsReco;
+  /// حالة الفلاتر
+  String _searchQuery = '';
+  String? _selectedSpec; // فلتر تخصص أساسي (من Speciality أو من BottomSheet)
+  String _sheetSpec = 'All'; // اختيار الـ BottomSheet لعرضه في UI فقط
+  double _minRating = 0; // فلتر تقييم كـ double لتفادي مشاكل int
 
-    if (searchQuery.isNotEmpty) {
-      list = list.where((doctor) {
-        final nameLower = doctor.name.toLowerCase();
-        final specLower = doctor.specialist.toLowerCase();
-        final query = searchQuery.toLowerCase();
-        return nameLower.contains(query) || specLower.contains(query);
-      }).toList();
+  @override
+  void initState() {
+    super.initState();
+    _searchQuery = (widget.initialQuery).trim();
+    _searchController.text = widget.initialQuery;
+
+    // استقبل التخصص الممرَّر من الشاشة السابقة لو موجود
+    _selectedSpec = (widget.initialSpec?.trim().isNotEmpty ?? false)
+        ? widget.initialSpec!.trim()
+        : null;
+
+    // عشان يظهر في الشيب كـ UI (لكن الفلتر الفعلي على _selectedSpec)
+    _sheetSpec = _selectedSpec ?? 'All';
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  /// Stream واحد من Firestore (الموصى بهم + orderBy rating)
+  /// وبعدين هنعمل الفلاتر كلها محليًا (عشان نتجنب مشاكل اختلاف أسماء الحقول/القيم)
+  Stream<List<RecomendationDoctorModel>> _stream() {
+    return FirebaseFirestore.instance
+        .collection('doctors')
+        .where('isRecommended', isEqualTo: true)
+        .orderBy('rating', descending: true)
+        .snapshots()
+        .map(
+          (snap) => snap.docs
+              .map((d) => RecomendationDoctorModel.fromDoc(d))
+              .toList(),
+        );
+  }
+
+  /// تطبيق الفلاتر محليًا بشكل واضح
+  List<RecomendationDoctorModel> _applyFilters(
+    List<RecomendationDoctorModel> list,
+  ) {
+    var res = List<RecomendationDoctorModel>.from(list);
+
+    // فلتر التخصص الأساسي (من Speciality أو من BottomSheet لو اختار spec != All)
+    if (_selectedSpec != null && _selectedSpec!.trim().isNotEmpty) {
+      final want = _selectedSpec!.trim().toLowerCase();
+      res = res
+          .where((d) => d.specialization.trim().toLowerCase() == want)
+          .toList();
     }
 
-    if (selectedSpeciality != 'All') {
-      list = list
+    // فلتر البحث (بالاسم/التخصص/المستشفى)
+    final q = _searchQuery.trim().toLowerCase();
+    if (q.isNotEmpty) {
+      res = res
           .where(
-            (doctor) => doctor.specialist.toLowerCase().contains(
-              selectedSpeciality.toLowerCase(),
-            ),
+            (d) =>
+                d.name.toLowerCase().contains(q) ||
+                d.specialization.toLowerCase().contains(q) ||
+                d.hospital.toLowerCase().contains(q),
           )
           .toList();
     }
 
-    if (selectedRating > 0) {
-      list = list
-          .where(
-            (doctor) =>
-                doctor.rating >= selectedRating &&
-                doctor.rating < selectedRating + 1,
-          )
-          .toList();
+    // فلتر التقييم (مثلاً 3.0 فما فوق)
+    if (_minRating > 0) {
+      res = res.where((d) => d.rating >= _minRating).toList();
     }
 
-    return list;
+    return res;
   }
 
   void _openSortSheet() {
@@ -65,12 +106,21 @@ class _RecommendationState extends State<Recommendation> {
       ),
       builder: (_) {
         return SortBottomSheet(
-          selectedSpeciality: selectedSpeciality,
-          selectedRating: selectedRating,
+          selectedSpeciality: _sheetSpec,
+          selectedRating: _minRating.toInt(), // لو شيت بتتعامل بالأعداد الصحيحة
           onApply: (spec, rate) {
             setState(() {
-              selectedSpeciality = spec;
-              selectedRating = rate;
+              _sheetSpec = spec;
+
+              // طبّق spec فعليًا: لو All يبقى نشيل الفلتر
+              if (spec != 'All' && spec.trim().isNotEmpty) {
+                _selectedSpec = spec.trim();
+              } else {
+                _selectedSpec = null;
+              }
+
+              // خليه double
+              _minRating = rate.toDouble();
             });
           },
         );
@@ -78,25 +128,81 @@ class _RecommendationState extends State<Recommendation> {
     );
   }
 
+  void _clearSpec() {
+    setState(() {
+      _selectedSpec = null;
+      _sheetSpec = 'All';
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final hasSpec = _selectedSpec != null && _selectedSpec!.isNotEmpty;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          "Recommendation Doctor",
-          style: AppFonts.titleSmall.copyWith(color: AppColors.textColorBlack),
-        ),
+        title: Text(hasSpec ? _selectedSpec! : "Recommendation Doctor"),
         centerTitle: true,
+        actions: [
+          if (hasSpec)
+            TextButton.icon(
+              onPressed: _clearSpec,
+              icon: const Icon(Icons.close, size: 18),
+              label: const Text('Clear'),
+            ),
+        ],
       ),
       body: Column(
         children: [
+          // شريط البحث + زر الفرز
           SearchAndSortBar(
-            controller: searchController,
-            onSearchChanged: (v) => setState(() => searchQuery = v),
+            controller: _searchController,
+            onSearchChanged: (v) => setState(() => _searchQuery = v.trim()),
             onSortPressed: _openSortSheet,
           ),
           SizedBox(height: AppFonts.spaceSmall),
-          Expanded(child: DoctorListView(items: filteredDoctors)),
+
+          if (hasSpec)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: FilterChip(
+                  selected: true,
+                  label: Text(_selectedSpec!),
+                  onSelected: (val) {
+                    if (!val) _clearSpec();
+                  },
+                  avatar: const Icon(Icons.local_hospital_outlined, size: 16),
+                ),
+              ),
+            ),
+
+          Expanded(
+            child: StreamBuilder<List<RecomendationDoctorModel>>(
+              stream: _stream(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                final data = snapshot.data ?? [];
+                final items = _applyFilters(data);
+
+                if (items.isEmpty) {
+                  return Center(
+                    child: Text(
+                      hasSpec
+                          ? "No doctors found in $_selectedSpec."
+                          : "No doctors found.",
+                    ),
+                  );
+                }
+
+                return DoctorListView(items: items);
+              },
+            ),
+          ),
         ],
       ),
     );
