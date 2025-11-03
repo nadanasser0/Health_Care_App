@@ -8,14 +8,15 @@ class SignupForm extends StatelessWidget {
   final TextEditingController passwordController;
   final TextEditingController confirmPasswordController;
   final GlobalKey<FormState> formkey;
- 
-  const SignupForm({super.key, 
+
+  const SignupForm({
+    super.key,
     // super.key,
     required this.userNameController,
     required this.emailController,
     required this.phoneNumberController,
     required this.passwordController,
-    required this.confirmPasswordController, 
+    required this.confirmPasswordController,
     required this.formkey,
   });
 
@@ -27,27 +28,25 @@ class SignupForm extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-      
-          
           CustomTextField(
             label: "Enter your name",
             icon: Icons.person,
             controller: userNameController,
-              validator: (value) {
+            validator: (value) {
               if (value == null || value.isEmpty) {
                 return "Please enter your name";
               }
               return null;
             },
           ),
-      
+
           SizedBox(height: 20),
-      
+
           CustomTextField(
             label: "Enter your email",
             icon: Icons.email_outlined,
             controller: emailController,
-      
+
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return "Please enter your email";
@@ -55,14 +54,14 @@ class SignupForm extends StatelessWidget {
               return null;
             },
           ),
-      
+
           SizedBox(height: 20),
-      
+
           CustomTextField(
             label: "Enter your phone",
             icon: Icons.phone_callback,
             controller: phoneNumberController,
-      
+
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return "Please enter your email";
@@ -70,9 +69,9 @@ class SignupForm extends StatelessWidget {
               return null;
             },
           ),
-      
+
           const SizedBox(height: 16),
-      
+
           CustomTextField(
             label: "Enter your password",
             icon: Icons.lock_outline_rounded,
