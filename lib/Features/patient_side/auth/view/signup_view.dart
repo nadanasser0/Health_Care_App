@@ -1,3 +1,4 @@
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +44,6 @@ class _SignupViewState extends State<SignupView> {
   String _selectedType = 'User';
   String? _selectedSpecialization;
 
-  // دالة لحفظ القيم المختارة من الويجد
   void handleSelection(String type, String? specialization) {
     setState(() {
       _selectedType = type;
@@ -88,6 +88,13 @@ class _SignupViewState extends State<SignupView> {
                           prefixIcon: Icon(Icons.local_hospital_outlined),
                           border: OutlineInputBorder(),
                         ),
+                        validator: (value) {
+                       if (value == null || value.trim().isEmpty || value.trim().length < 3) {
+                          return 'Please enter your hospital name';
+                        };
+                        
+                        
+                        },
                         onChanged: (value) => hospitalName = value.trim(),
                       ),
                       const SizedBox(height: 20),
@@ -138,7 +145,7 @@ class _SignupViewState extends State<SignupView> {
                             await users
                                 .doc(userCredential.user!.uid)
                                 .set(newUser.toMap());
-// <<<<<<< home-logic-signup-edit
+                            // <<<<<<< home-logic-signup-edit
 
                             // if (_selectedType == "Doctor") {
                             //   DoctorModel newDoctor = DoctorModel(
@@ -153,49 +160,67 @@ class _SignupViewState extends State<SignupView> {
 
                             // }
 
-                            // mazen shabara edit
-                            if (_selectedType == "Doctor") {
-                              final uid = userCredential.user!.uid;
-                              final spec = _selectedSpecialization!.trim();
-                              // صورة افتراضية مؤقتة
-                              const defaultImageUrl =
-                                  "https://firebasestorage.googleapis.com/v0/b/YOUR_PROJECT.appspot.com/o/default_doctor.png?alt=media";
+                            // if (_selectedType == "Doctor") {
+                            //   final uid = userCredential.user!.uid;
+                            //   final spec = _selectedSpecialization!.trim();
+                            //   const defaultImageUrl =
+                            //       "https://firebasestorage.googleapis.com/v0/b/YOUR_PROJECT.appspot.com/o/default_doctor.png?alt=media";
 
-                              await doctors.doc(uid).set({
-                                'doctorId': uid,
-                                'name': userNameController.text.trim(),
-                                'specialization': _selectedSpecialization!,
-                                'hospital': hospitalName.isNotEmpty
+                            //   await doctors.doc(uid).set({
+                            //     'doctorId': uid,
+                            //     'name': userNameController.text.trim(),
+                            //     'specialization': _selectedSpecialization!,
+                            //     'hospital': hospitalName.isNotEmpty
+                            //         ? hospitalName
+                            //         : 'Unknown Hospital',
+                            //     'imageUrl': defaultImageUrl,
+                            //     'specializationKey': spec.toLowerCase(),
+                            //     // 'rating': 0.0,
+                            //     // 'reviews': 0,
+                            //     // 'isRecommended': true,
+                            //     'createdAt': FieldValue.serverTimestamp(),
+                            //   });
+                            // } else {
+                            // =======
+                            //  const String placeholderImage =
+                            //             'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
+
+                            //        if (_selectedType == "Doctor") {
+                            //           // save doctor document with full info (including placeholder image)
+                            //           await doctors.doc(userCredential.user!.uid).set({
+                            //             'doctorId': userCredential.user!.uid,
+                            //             'name': userNameController.text.trim(),
+                            //             'email': emailController.text.trim(),
+                            //             'phoneNumber': phoneNumberController.text.trim(),
+                            //             'speciality': _selectedSpecialization!,
+                            //             'hospital': 'Not specified',
+                            //             'image': placeholderImage,
+                            //             'rating': 0.0,
+                            //             'reviews': 0,
+                            //             'createdAt': FieldValue.serverTimestamp(),
+                            //           });
+                            //         }else {
+                            // >>>>>>> main
+
+
+
+                            if (_selectedType == "Doctor") {
+
+
+                              DoctorModel newDoctor = DoctorModel(
+                                doctorId: userCredential.user!.uid,
+                                name: userNameController.text.trim(),
+                                specialization: _selectedSpecialization!,
+                                hospital: hospitalName.isNotEmpty
                                     ? hospitalName
                                     : 'Unknown Hospital',
-                                'imageUrl': defaultImageUrl,
-                                'rating': 0.0, // يبدأ من 0
-                                'reviews': 0, // يبدأ من 0
-                                'specializationKey': spec.toLowerCase(),
-                                'isRecommended': true,
-                                'createdAt': FieldValue.serverTimestamp(),
-                              });
-                            } else {
-// =======
- const String placeholderImage =
-            'https://cdn-icons-png.flaticon.com/512/3135/3135715.png';
+                              );
 
-       if (_selectedType == "Doctor") {
-          // save doctor document with full info (including placeholder image)
-          await doctors.doc(userCredential.user!.uid).set({
-            'doctorId': userCredential.user!.uid,
-            'name': userNameController.text.trim(),
-            'email': emailController.text.trim(),
-            'phoneNumber': phoneNumberController.text.trim(),
-            'speciality': _selectedSpecialization!,
-            'hospital': 'Not specified',
-            'image': placeholderImage,
-            'rating': 0.0,
-            'reviews': 0,
-            'createdAt': FieldValue.serverTimestamp(),
-          });
-        }else {
-// >>>>>>> main
+
+                              await doctors
+                                  .doc(userCredential.user!.uid)
+                                  .set(newDoctor.toMap());
+                            } else {
                               PatientModel newPatient = PatientModel(
                                 patientId: userCredential.user!.uid,
                               );
