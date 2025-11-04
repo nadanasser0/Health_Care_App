@@ -3,7 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:health_care_app/Features/patient_side/chats/view/chat_details_screen.dart';
+import 'package:health_care_app/Features/patient_side/doctor_review/screens/doctor_details_about_screen.dart';
 import 'package:health_care_app/core/constants/colors.dart';
+import 'package:health_care_app/models/doctor_model.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -234,7 +236,7 @@ class _SearchDoctorsFullUIState extends State<SearchScreen> {
     try {
       final snapshot = await FirebaseFirestore.instance.collection('doctors').get();
       final specs = snapshot.docs
-          .map((doc) => (doc.data()['speciality'] ?? '').toString())
+          .map((doc) => (doc.data()['specialization'] ?? '').toString())
           .where((s) => s.isNotEmpty)
           .toSet()
           .toList();
@@ -256,7 +258,7 @@ class _SearchDoctorsFullUIState extends State<SearchScreen> {
     final patientDoc = await FirebaseFirestore.instance.collection('users').doc(patientId).get();
     final patientData = patientDoc.data() ?? {};
     final patientName = patientData['name'] ?? 'Patient';
-    final patientImage = patientData['image'] ?? '';
+    final patientImage = patientData['image'] ?? 'lib/images/patientt.png';
 
     final chatId = "${doctorId}_$patientId";
     final chatRef = FirebaseFirestore.instance.collection('chats').doc(chatId);
@@ -299,32 +301,38 @@ class _SearchDoctorsFullUIState extends State<SearchScreen> {
     );
   }
 
-  List<Map<String, dynamic>> _filterDoctors(List docs) {
-    final filtered = docs.where((doc) {
-      final data = doc.data() as Map<String, dynamic>;
-      final name = (data['name'] ?? '').toString().toLowerCase();
-      final speciality = (data['speciality'] ?? 'General').toString();
+List<Map<String, dynamic>> _filterDoctors(List docs) {
+  final filtered = docs.where((doc) {
+    final data = doc.data() as Map<String, dynamic>;
 
-      final matchesSearch = name.contains(searchText.toLowerCase());
-      final matchesSpeciality =
-          selectedSpeciality == null || selectedSpeciality == "All" || speciality == selectedSpeciality;
+    final name = (data['name'] ?? '').toString().toLowerCase();
+    final speciality = (data['specialization'] ?? 'General').toString().toLowerCase();
+    final hospital = (data['hospital'] ?? '').toString().toLowerCase();
 
-      return matchesSearch && matchesSpeciality;
-    }).toList();
+    final matchesSearch = name.contains(searchText.toLowerCase()) ||
+        hospital.contains(searchText.toLowerCase()) ||
+        speciality.contains(searchText.toLowerCase());
 
-    return filtered.map((doc) {
-      final data = doc.data() as Map<String, dynamic>;
-      return {
-        'id': doc.id,
-        'name': data['name'] ?? 'Unknown',
-        'image': data['image'] ?? 'lib/images/patientt.png',
-        'speciality': data['speciality'] ?? 'General',
-        'hospital': data['hospital'] ?? 'Default Hospital',
-        'rating': (data['rating'] != null) ? data['rating'].toDouble() : 4.0,
-        'reviews': data['reviews'] ?? 0,
-      };
-    }).toList();
-  }
+    final matchesSpeciality =
+        selectedSpeciality == null || selectedSpeciality == "All" || speciality == selectedSpeciality!.toLowerCase();
+
+    return matchesSearch && matchesSpeciality;
+  }).toList();
+
+  return filtered.map((doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return {
+      'id': doc.id,
+      'name': data['name'] ?? 'Unknown',
+      'image': data['image'] ?? 'lib/images/patientt.png',
+      'specialization': data['specialization'] ?? 'General',
+      'hospital': data['hospital'] ?? 'Default Hospital',
+      'rating': (data['rating'] != null) ? data['rating'].toDouble() : 4.0,
+      'reviews': data['reviews'] ?? 0,
+    };
+  }).toList();
+}
+
 
   Widget _buildDoctorsList(List<Map<String, dynamic>> doctors) {
     if (doctors.isEmpty) return const Center(child: Text("No doctors found"));
@@ -347,55 +355,79 @@ class _SearchDoctorsFullUIState extends State<SearchScreen> {
               ),
             ],
           ),
-          child: Container(
-            padding: const EdgeInsets.all(15),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(15),
-                  child: Image.network(
-                    doctor['image'],
-                    width: 100,
-                    height: 100,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Image.asset(
-                      'lib/images/patientt.png',
+          child: InkWell(
+        onTap: () {
+  final doctorModel = DoctorModel.fromMap(doctor, doctor['id']);
+
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => DoctorDetailsAboutScreen(doctor: doctorModel),
+    ),
+  );
+},
+
+
+            child:
+             Container(
+              padding: const EdgeInsets.all(15),
+              child: 
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(15),
+                    child: Image.network(
+                      doctor['image'],
                       width: 100,
                       height: 100,
                       fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Image.asset(
+                        'lib/images/patientt.png',
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 15),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Dr. ${doctor['name']}',
-                          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
-                      const SizedBox(height: 5),
-                      Text(doctor['speciality'], style: TextStyle(color: AppColors.greyColor, fontSize: 13)),
-                      const SizedBox(height: 5),
-                      Text("${doctor['hospital']}", style: TextStyle(color: AppColors.greyColor, fontSize: 13)),
-                      const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Icon(Icons.star, color: AppColors.starColor, size: 16),
-                          const SizedBox(width: 5),
-                          Text("${doctor['rating']} (${doctor['reviews']} reviews)",
-                              style: TextStyle(color: AppColors.greyColor, fontSize: 13)),
-                        ],
-                      ),
-                    ],
+                  const SizedBox(width: 15),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Dr. ${doctor['name']}',
+                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+                        const SizedBox(height: 5),
+                        Row(children: [
+
+                           Text(doctor['specialization'], style: TextStyle(color: AppColors.greyColor, fontSize: 13)),
+                           const SizedBox(width: 5),
+ Text('|'),
+                           const SizedBox(width: 5),
+
+                        Text("${doctor['hospital']}", style: TextStyle(color: AppColors.greyColor, fontSize: 13)),
+                       
+
+                        ],),
+                        const SizedBox(height: 8),
+                        Row(
+                          children: [
+                            Icon(Icons.star, color: AppColors.starColor, size: 16),
+                            const SizedBox(width: 5),
+                            Text("${doctor['rating']} (${doctor['reviews']} reviews)",
+                                style: TextStyle(color: AppColors.greyColor, fontSize: 13)),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.chat_bubble_outline, color: Colors.blue),
-                  onPressed: () =>
-                      _onDoctorTapAndOpenChat(doctorId: doctor['id'], name: doctor['name'], image: doctor['image']),
-                )
-              ],
+                  IconButton(
+                    icon: const Icon(Icons.chat_bubble_outline, color: Colors.blue),
+                    onPressed: () =>
+                        _onDoctorTapAndOpenChat(doctorId: doctor['id'], name: doctor['name'], image: doctor['image']),
+                  )
+                ],
+              ),
             ),
           ),
         );
@@ -522,7 +554,7 @@ SingleChildScrollView(
         centerTitle: true,
         backgroundColor: AppColors.whiteColor,
         title: const Text(
-          "Search Doctors",
+          "Search ",
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
         ),
         elevation: 0,

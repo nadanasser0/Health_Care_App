@@ -35,7 +35,7 @@ class _DoctorDetailsReviewScreenState extends State<DoctorDetailsReviewScreen>
       // If switching to About tab, navigate to DoctorDetailsAboutScreen
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => DoctorDetailsAboutScreen()),
+        MaterialPageRoute(builder: (context) => DoctorDetailsAboutScreen(doctor: null,)),
       );
     }
   }
@@ -203,7 +203,7 @@ class _DoctorDetailsReviewScreenState extends State<DoctorDetailsReviewScreen>
                 Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => DoctorDetailsAboutScreen(),
+                    builder: (context) => DoctorDetailsAboutScreen(doctor:null ),
                   ),
                 );
               }
