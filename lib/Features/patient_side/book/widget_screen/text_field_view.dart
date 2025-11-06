@@ -1,42 +1,46 @@
 import 'package:flutter/material.dart';
-import 'package:health_care_app/core/constants/colors.dart';
-
-// import '../../../core/constants/colors.dart';
 
 class TextFieldView extends StatelessWidget {
-  const TextFieldView({super.key});
+  const TextFieldView({
+    super.key,
+    required this.onNameChanged,
+    required this.onAgeChanged,
+  });
+
+  final Function(String) onNameChanged;
+  final Function(String) onAgeChanged;
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        TextFormField(
+        TextField(
           decoration: InputDecoration(
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide(color: AppColors.greyColor),
+            hintText: "Enter Name",
+            fillColor: Colors.grey[200],
+            filled: true,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide(color: Colors.grey[50]!,)
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide(color: AppColors.greyColor),
-            ),
-            labelText: "Enter name",
-            prefixIcon: Icon(Icons.person),
           ),
+          onChanged: onNameChanged,
         ),
-        SizedBox(height: 7),
-        TextFormField(
+
+        const SizedBox(height: 5),
+        TextField(
+          keyboardType: TextInputType.number,
           decoration: InputDecoration(
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide(color: AppColors.greyColor),
+            hintText: "Enter Age",
+            fillColor: Colors.grey[200],
+            filled: true,
+            border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(20),
+                borderSide: BorderSide(color: Colors.grey[50]!,)
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide(color: AppColors.greyColor),
-            ),
-            labelText: "Enter age",
           ),
+          onChanged: onAgeChanged,
         ),
       ],
     );

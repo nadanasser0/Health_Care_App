@@ -1,7 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:health_care_app/Features/doctor_side/navigation_screen.dart';
-import 'package:health_care_app/Features/doctor_side/doctor_profile/view/doctor_profile.dart';
 import 'package:health_care_app/core/routes/app_routes.dart';
 import 'package:health_care_app/core/routes/route_generator.dart';
 import 'package:health_care_app/firebase_options.dart';

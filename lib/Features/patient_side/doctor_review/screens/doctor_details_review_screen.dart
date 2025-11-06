@@ -1,252 +1,181 @@
 import 'package:flutter/material.dart';
-import 'package:health_care_app/Features/patient_side/doctor_review/screens/doctor_details_about_screen.dart';
-import 'package:health_care_app/Features/patient_side/doctor_review/widgets/custom_tab_bar.dart';
-import 'package:health_care_app/Features/patient_side/doctor_review/widgets/doctor_header_card.dart';
-import 'package:health_care_app/Features/patient_side/doctor_review/widgets/make_appointment_button.dart';
-import 'package:health_care_app/Features/patient_side/doctor_review/widgets/review_card.dart';
-import 'package:health_care_app/core/constants/colors.dart';
-
+import '../../../../core/constants/colors.dart';
+import '../../../../models/review_model.dart';
+import '../../../../services/firestore_services.dart';
+import '../widgets/review_card.dart';
 
 class DoctorDetailsReviewScreen extends StatefulWidget {
-  const DoctorDetailsReviewScreen({super.key});
+  final String doctorId;
+
+  const DoctorDetailsReviewScreen({super.key, required this.doctorId});
 
   @override
   State<DoctorDetailsReviewScreen> createState() =>
       _DoctorDetailsReviewScreenState();
 }
 
-class _DoctorDetailsReviewScreenState extends State<DoctorDetailsReviewScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _DoctorDetailsReviewScreenState
+    extends State<DoctorDetailsReviewScreen> {
+  final FirestoreService _firestoreService = FirestoreService();
 
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(
-      length: 2,
-      vsync: this,
-      initialIndex: 1,
-    ); // Start on Reviews tab
-    _tabController.addListener(_handleTabSelection);
-  }
+  void _showReviewBottomSheet() {
+    double selectedRating = 0;
+    TextEditingController reviewController = TextEditingController();
 
-  void _handleTabSelection() {
-    if (_tabController.indexIsChanging && _tabController.index == 0) {
-      // If switching to About tab, navigate to DoctorDetailsAboutScreen
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => DoctorDetailsAboutScreen()),
-      );
-    }
-  }
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+                left: 20,
+                right: 20,
+                top: 20,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    "Give Rate",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(5, (index) {
+                      return IconButton(
+                        icon: Icon(
+                          Icons.star,
+                          color: index < selectedRating
+                              ? Colors.amber
+                              : Colors.grey.shade300,
+                          size: 32,
+                        ),
+                        onPressed: () {
+                          setModalState(() {
+                            selectedRating = index + 1;
+                          });
+                        },
+                      );
+                    }),
+                  ),
+                  TextField(
+                    controller: reviewController,
+                    maxLines: 3,
+                    decoration: InputDecoration(
+                      hintText: "Write your review here...",
+                      filled: true,
+                      fillColor: Colors.grey.shade100,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (selectedRating == 0 || reviewController.text.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Please add a rating and a comment"),
+                          ),
+                        );
+                        return;
+                      }
 
-  @override
-  void dispose() {
-    _tabController.removeListener(_handleTabSelection);
-    _tabController.dispose();
-    super.dispose();
+                      final newReview = ReviewModel(
+                        reviewId: '',
+                        patientId:
+                        'dummyPatientId', // ممكن تغيريها للمستخدم الحالي
+                        doctorId: widget.doctorId,
+                        rating: selectedRating,
+                        comment: reviewController.text,
+                      );
+
+                      await _firestoreService.addReview(newReview);
+                      Navigator.pop(context);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.blueColor,
+                      minimumSize: const Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    child: const Text(
+                      "Submit",
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
-      appBar: AppBar(
-        backgroundColor: AppColors.whiteColor,
-      //   leading: Padding(
-      //     padding: const EdgeInsets.all(8.0),
-      //     child: Container(
-      //       decoration: BoxDecoration(
-      //         color: AppColors.whiteColor,
-      //         borderRadius: BorderRadius.circular(12),
-      //         border: Border.all(
-      //           color: AppColors.greyColor.withOpacity(0.5),
-      //           width: 1.5,
-      //         ),
-      //         boxShadow: [
-      //           BoxShadow(
-      //             color: AppColors.blackColor.withOpacity(0.1),
-      //             blurRadius: 4,
-      //             offset: Offset(0, 2),
-      //           ),
-      //         ],
-      //       ),
-      //       child: IconButton(
-      //         icon: Icon(Icons.arrow_back_ios, size: 18),
-      //         color: AppColors.blackColor,
-      //         onPressed: () {
-      //           // Handle more options
-      //         },
-      //       ),
-      //     ),
-      //   ),
-      //   title: Text(
-      //     'Dr Randy Wigham',
-      //     style: TextStyle(color: AppColors.blackColor),
-      //   ),
-      //   centerTitle: true,
-      //   actions: [
-      //     Padding(
-      //       padding: const EdgeInsets.all(8.0),
-      //       child: Container(
-      //         decoration: BoxDecoration(
-      //           color: AppColors.whiteColor,
-      //           borderRadius: BorderRadius.circular(12),
-      //           border: Border.all(
-      //             color: AppColors.greyColor.withOpacity(0.5),
-      //             width: 1.5,
-      //           ),
-      //           boxShadow: [
-      //             BoxShadow(
-      //               color: AppColors.blackColor.withOpacity(0.1),
-      //               blurRadius: 4,
-      //               offset: Offset(0, 2),
-      //             ),
-      //           ],
-      //         ),
-      //         child: IconButton(
-      //           icon: Icon(Icons.more_horiz, size: 22),
-      //           color: AppColors.blackColor,
-      //           onPressed: () {
-      //             // Handle more options
-      //           },
-      //         ),
-      //       ),
-      //     ),
-      //   ],
-      // ),
-       leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            decoration: BoxDecoration(
-              color: AppColors.whiteColor,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: AppColors.greyColor.withOpacity(0.5),
-                width: 1 ,
+      body: StreamBuilder<List<ReviewModel>>(
+        stream: _firestoreService.getDoctorReviews(widget.doctorId),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final reviews = snapshot.data ?? [];
+          if (reviews.isEmpty) {
+            return const Center(
+              child: Text(
+                "No reviews yet.",
+                style: TextStyle(color: Colors.grey, fontSize: 16),
               ),
-              // boxShadow: [
-                // BoxShadow(
-                //   color: AppColors.blackColor.withOpacity(0.1),
-                //   blurRadius: 4,
-                //   offset: const Offset(0, 2),
-                // ),
-              // ],
-            ),
-            child: Padding(
-              padding: const EdgeInsets.only(left :5),
-              child: IconButton(
-                icon: const Icon(Icons.arrow_back_ios, size: 22),
-                color: AppColors.blackColor,
-                onPressed: () {
-                    Navigator.pop(context);
-                  // Navigator.push(context, MaterialPageRoute(builder: (context)=>DoctorDetailsAboutScreen()));
-                },
-              ),
-            ),
-          ),
-        ),
-        title: Text(
-          'Dr Randy Wigham',
-          style: TextStyle(color: AppColors.blackColor),
-        ),
-        centerTitle: true,
-        // // actions: [
-        // //   Padding(
-        // //     padding: const EdgeInsets.all(8.0),
-        // //     child: Container(
-        // //       decoration: BoxDecoration(
-        // //         color: AppColors.whiteColor,
-        // //         borderRadius: BorderRadius.circular(12),
-        // //         border: Border.all(
-        // //           color: AppColors.greyColor.withOpacity(0.5),
-        // //           width: 1.5,
-        // //         ),
-        // //         boxShadow: [
-        // //           BoxShadow(
-        // //             color: AppColors.blackColor.withOpacity(0.1),
-        // //             blurRadius: 4,
-        // //             offset: Offset(0, 2),
-        // //           ),
-        // //         ],
-        //       ),
-        //       child: IconButton(
-        //         icon: Icon(Icons.more_horiz, size: 22),
-        //         color: AppColors.blackColor,
-        //         onPressed: () {
-        //           // Handle more options
-        //         },
-        //       ),
-        //     ),
-        //   ),
-        // ],
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 20),
-            child: DoctorHeaderCard(
-              doctorName: 'Dr. Randy Wigham',
-              specialty: 'General',
-              hospital: 'RSUD Gatot Subroto',
-              rating: 4.8,
-              numberOfReviews: 4279,
-              doctorImageUrl: 'lib/images/doctor_avatar.png',
-            ),
-          ),
-          const SizedBox(height: 8),
-          CustomTabBar(
-            tabController: _tabController,
-            onTabTap: (index) {
-              if (index == 0) {
-                // If About tab is tapped, navigate
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DoctorDetailsAboutScreen(),
-                  ),
-                );
-              }
+            );
+          }
+          return ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            itemCount: reviews.length,
+            itemBuilder: (context, index) {
+              final review = reviews[index];
+              return ReviewCard(
+                reviewerName: review.patientId,
+                reviewerImageUrl: 'lib/images/doctor_avatar.png',
+                rating: review.rating ?? 0,
+                reviewText: review.comment ?? '',
+                timeAgo: review.createdAt.toLocal().toString().split(' ')[0],
+              );
             },
-          ),
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16.0,
-                vertical: 8.0,
-              ),
-              child: Column(
-                children: [
-                  ReviewCard(
-                    reviewerName: 'Jane Cooper',
-                    reviewerImageUrl: 'lib/images/jane_cooper.png',
-                    rating: 5,
-                    reviewText:
-                        'As someone who lives in a remote area with limited access to healthcare, this telemedicine app has been a game changer for me. I can easily schedule virtual appointments with doctors and get the care I need without having to travel long distances.',
-                    timeAgo: 'Today',
-                  ),
-                  ReviewCard(
-                    reviewerName: 'Robert Fox',
-                    reviewerImageUrl: 'lib/images/robert_fox.png',
-                    rating: 5,
-                    reviewText:
-                        'I was initially skeptical about using a telemedicine app but this app has exceeded my expectations. The doctors are highly qualified and provide excellent care.',
-                    timeAgo: 'Today',
-                  ),
-                  ReviewCard(
-                    reviewerName: 'Jacob Jones',
-                    reviewerImageUrl: 'lib/images/jacob_jones.png',
-                    rating: 5,
-                    reviewText:
-                        'I was initially skeptical about using a telemedicine app but this app has exceeded my expectations. The doctors are highly qualified and provide excellent care.',
-                    timeAgo: 'Today',
-                  ),
-                ],
-              ),
+          );
+        },
+      ),
+
+      // 👇 زرار ثابت في الأسفل
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.all(16),
+        child: ElevatedButton(
+          onPressed: _showReviewBottomSheet,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.blueColor,
+            minimumSize: const Size(double.infinity, 50),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
             ),
           ),
-          const MakeAppointmentButton(),
-        ],
+          child: const Text(
+            "Make a Review",
+            style: TextStyle(fontSize: 16, color: Colors.white),
+          ),
+        ),
       ),
     );
   }

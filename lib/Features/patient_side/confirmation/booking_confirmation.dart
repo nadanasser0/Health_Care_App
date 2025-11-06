@@ -5,10 +5,30 @@ import 'package:health_care_app/Features/patient_side/confirmation/widgets/instr
 import 'package:health_care_app/Features/patient_side/confirmation/widgets/payment_details_widget.dart';
 import 'package:health_care_app/shared/widgets/custom_button.dart';
 
+import '../../../core/constants/colors.dart';
 import '../../../shared/methods/navigator.dart';
 
 class BookingConfirmation extends StatelessWidget {
-  const BookingConfirmation({super.key});
+  const BookingConfirmation({
+    super.key,
+    required this.bookingFor,
+    required this.fullName,
+    required this.age,
+    required this.gender,
+    required this.appointmentDate,
+    required this.appointmentTime,
+    required this.paymentMethod,
+    required this.prise,
+  });
+
+  final String bookingFor;
+  final String fullName;
+  final String age;
+  final String gender;
+  final DateTime appointmentDate;
+  final String appointmentTime;
+  final String paymentMethod;
+  final int prise;
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +58,76 @@ class BookingConfirmation extends StatelessWidget {
             spacing: 10,
             children: [
               HeaderBookingConfirmation(),
-              BookingDetails(),
-              PaymentDetailsConfirmation(),
+              Column(
+                spacing: 12,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Booking Details:",textAlign: TextAlign.center,style: TextStyle(fontSize: 20,fontWeight: FontWeight.w700),),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Column(
+                        spacing: 7,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Full Name:",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,color:AppColors.purpleColor),),
+                          Text("Age:",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,color: AppColors.purpleColor),),
+                          Text("Gender:",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,color: AppColors.purpleColor),),
+                          Text("Date: ",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,color: AppColors.purpleColor),),
+                          Text("Time: ",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,color: AppColors.purpleColor),),
+                          Text("Session Status:",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,color: AppColors.purpleColor),),
+                        ],
+                      ),
+                      Column(
+                        spacing: 5,
+                        children: [
+                          Text(fullName,style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,color: AppColors.greyColor),),
+                          Text(age,style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,color: AppColors.greyColor),),
+                          Text(gender,style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,color: AppColors.greyColor),),
+                          // 🟢 هنا التاريخ فقط
+                          Text(
+                            "${appointmentDate.day.toString().padLeft(2,'0')}/${appointmentDate.month.toString().padLeft(2,'0')}/${appointmentDate.year}",
+                            style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,color: AppColors.greyColor),
+                          ),
+                          Text(appointmentTime,style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,color: AppColors.greyColor),),
+                        ],
+                      )
+                    ],
+                  ),
+
+
+                  Divider(color: Color(0xff6D7CCD),),
+                ],
+              ),
+              Column(
+                spacing: 12,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("Payment Details:",textAlign: TextAlign.center,style: TextStyle(fontSize: 20,fontWeight: FontWeight.w700),),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Column(
+                        spacing: 7,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("Payment Method:",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600,color: AppColors.purpleColor),),
+                          Text("Amount Paid:",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600,color: AppColors.purpleColor),),
+                        ],
+                      ),
+                      Column(
+                        spacing: 7,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(paymentMethod,style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600,color: AppColors.greyColor),),
+                          Text("$prise \$",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600,color: AppColors.greyColor),),
+                        ],
+                      )
+                    ],
+                  ),
+                  Divider(color: AppColors.purpleColor,),
+                ],
+              ),
               Instructions(),
               SizedBox(height: 20),
               CustomButton(name: 'Back to Home', page: NavigationnScreen()),

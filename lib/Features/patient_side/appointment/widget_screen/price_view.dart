@@ -14,7 +14,7 @@ class PriceView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text("Price:",style: TextStyle(fontSize: 18,fontWeight: FontWeight.w600,color: AppColors.purpleColor),),
-            Text("110 \$",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,color: AppColors.darkGreyColor),),
+            Text("250 \$",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w400,color: AppColors.darkGreyColor),),
           ],
         ),
       ],

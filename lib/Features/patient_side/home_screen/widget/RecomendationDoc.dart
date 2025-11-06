@@ -1,14 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:health_care_app/Features/patient_side/doctor_review/screens/doctor_details_tabBar.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 import 'package:health_care_app/core/constants/sizes.dart';
 import 'package:health_care_app/Features/patient_side/home_screen/model/recomendation_doctor.dart';
+
+import '../../doctor_review/screens/doctor_details_about_screen.dart';
 
 class RecomendationDoc extends StatelessWidget {
   const RecomendationDoc({super.key, this.searchQuery = ''});
 
   final String searchQuery;
+
   Stream<List<RecomendationDoctorModel>> _stream() {
     return FirebaseFirestore.instance
         .collection('doctors')
@@ -55,7 +59,26 @@ class RecomendationDoc extends StatelessWidget {
 
             return InkWell(
               onTap: () {
-                // هنا بقا تحطي ال navigator بتاعت التاريخ
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DoctorDetailsTabbarScreen(
+                      aboutMe: "aboutMe",
+                      doctorName: d.name,
+                      specialty: d.specialization,
+                      hospitalName: d.hospital,
+                      rating: 3.5,
+                      doctorImageUrl: "lib/images/doctor_avatar.png",
+                      numberOfReviews: 3,
+                      workingDays: "5",
+                      workingHours: "2",
+                      str: 5,
+                      price: 150,
+                      experienceHospital: "experienceHospital",
+                      experienceYears: "experienceYears", doctorId: d.id,
+                    ),
+                  ),
+                );
                 // wafaa & mariam
               },
               child: Card(

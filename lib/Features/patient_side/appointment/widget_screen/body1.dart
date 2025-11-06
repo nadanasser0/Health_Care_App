@@ -1,74 +1,54 @@
 import 'package:flutter/material.dart';
-import 'package:health_care_app/core/constants/colors.dart';
+import '../../../../core/constants/colors.dart';
 
-class Body1 extends StatefulWidget {
-  const Body1({super.key});
+class Body1 extends StatelessWidget {
+  final DateTime appointmentDate;
+  final String appointmentTime;
 
-  @override
-  State<Body1> createState() => _Body1State();
-}
+  const Body1({super.key, required this.appointmentDate, required this.appointmentTime});
 
-class _Body1State extends State<Body1> {
-  bool isSelectedTime = false;
   @override
   Widget build(BuildContext context) {
+    // تحويل التاريخ لعرض اليوم والشهر والسنة فقط
+    final dateOnly = "${appointmentDate.day.toString().padLeft(2,'0')}/${appointmentDate.month.toString().padLeft(2,'0')}/${appointmentDate.year}";
+
     return Column(
       children: [
-        InkWell(
-          onTap: () {
-            setState(() {
-              isSelectedTime = true;
-            });
-          },
-          child: Container(
-            height: 37,
-            width: 210,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(color: AppColors.redColor),
-              color: isSelectedTime
-                  ?  AppColors.redColor
-                  : AppColors.whiteColor,
-            ),
-            child: Center(
-              child: Text(
-                "08/09/2025",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: isSelectedTime ? AppColors.whiteColor: AppColors.blackColor,
-                ),
+        Container(
+          height: 37,
+          width: 210,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(color: AppColors.redColor),
+            color: AppColors.redColor,
+          ),
+          child: Center(
+            child: Text(
+              dateOnly, // 🟢 عرض التاريخ فقط
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: AppColors.whiteColor,
               ),
             ),
           ),
         ),
-        SizedBox(height: 10),
-        InkWell(
-          onTap: () {
-            setState(() {
-              isSelectedTime = false;
-            });
-          },
-          child: Container(
-            height: 37,
-            width: 210,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              border: Border.all(color: AppColors.redColor),
-              color: isSelectedTime == false
-                  ? AppColors.redColor
-                  : AppColors.whiteColor
-            ),
-            child: Center(
-              child: Text(
-                "Wed 08:30 AM",
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: isSelectedTime == false
-                      ? AppColors.whiteColor
-                      : AppColors.blackColor,
-                ),
+        const SizedBox(height: 10),
+        Container(
+          height: 37,
+          width: 210,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            border: Border.all(color: AppColors.redColor),
+            color: AppColors.whiteColor,
+          ),
+          child: Center(
+            child: Text(
+              appointmentTime,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w700,
+                color: AppColors.blackColor,
               ),
             ),
           ),

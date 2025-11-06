@@ -1,25 +1,63 @@
 import 'package:flutter/material.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../../../models/appiontment_model.dart';
 import 'custom_card_appoinment.dart';
 
 class Completed extends StatelessWidget {
   const Completed({super.key});
 
+  final String doctorId = '67890';
+
+  Stream<List<AppointmentModel>> getCompletedAppointments() {
+    return FirebaseFirestore.instance
+        .collection('appointments')
+        .snapshots()
+        .map((snapshot) {
+      return snapshot.docs.map((doc) {
+        return AppointmentModel.fromMap(doc.data() as Map<String, dynamic>);
+      }).where((app) => app.doctorId == doctorId && app.status == 'done').toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: const EdgeInsets.all(10),
-      itemCount: 3,
-      separatorBuilder: (context, index) => const SizedBox(height: 30),
-      itemBuilder: (context, index) => CustomCardAppointment(
-        appointmentStatue: "Appointment Done",
-        day: "Monday, 25 June",
-        time: "11:00 AM",
-        color: Color(0xff62B66F),
-        name: "Mazen Elsayed",
-        status: "General checkup",
-        imgPath: "lib/images/img.png",
-      ),
+    return StreamBuilder<List<AppointmentModel>>(
+      stream: getCompletedAppointments(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(
+            child: Text(
+              "No completed appointments yet.",
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+          );
+        }
+
+        final completedList = snapshot.data!;
+
+        return ListView.separated(
+          padding: const EdgeInsets.all(10),
+          itemCount: completedList.length,
+          separatorBuilder: (context, index) => const SizedBox(height: 7),
+          itemBuilder: (context, index) {
+            final appointment = completedList[index];
+            return CustomCardAppointment(
+              appointmentStatue: "Appointment Done",
+              day:
+              "${appointment.appointmentDate.day}/${appointment.appointmentDate.month}/${appointment.appointmentDate.year}",
+              time: appointment.appointmentTime,
+              color: const Color(0xff62B66F),
+              name: appointment.name,
+              status: appointment.appointmentType,
+              imgPath: "lib/images/img.png",
+            );
+          },
+        );
+      },
     );
   }
 }

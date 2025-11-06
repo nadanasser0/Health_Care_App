@@ -3,9 +3,29 @@ import 'package:health_care_app/Features/patient_side/appointment/your_appointme
 import 'package:health_care_app/Features/patient_side/book/book_appointment.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 
-
 class MakeAppointmentButton extends StatelessWidget {
-  const MakeAppointmentButton({super.key});
+  const MakeAppointmentButton({
+    super.key,
+    required this.doctorName,
+    required this.specialty,
+    required this.hospitalName,
+    required this.rating,
+    required this.doctorImageUrl,
+    required this.numberOfReviews,
+    required this.workingDays,
+    required this.workingHours,
+    required this.price,
+  });
+
+  final String doctorName;
+  final String specialty;
+  final String hospitalName;
+  final double rating;
+  final String doctorImageUrl;
+  final int numberOfReviews;
+  final String workingDays;
+  final String workingHours;
+  final double price;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +45,22 @@ class MakeAppointmentButton extends StatelessWidget {
       ),
       child: ElevatedButton(
         onPressed: () {
-         Navigator.push(context, MaterialPageRoute(builder: (context)=> BookAppointment()));
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => BookAppointment(
+                doctorName: doctorName,
+                specialty: specialty,
+                hospitalName: hospitalName,
+                rating: rating,
+                doctorImageUrl: doctorImageUrl,
+                numberOfReviews: numberOfReviews,
+                workingDays: workingDays,
+                workingHours: workingHours,
+                price: price,
+              ),
+            ),
+          );
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.blueColor,
