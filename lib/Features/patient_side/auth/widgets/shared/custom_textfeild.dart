@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 import 'package:health_care_app/core/constants/sizes.dart';
 
-class CustomTextField extends StatelessWidget {
+class CustomTextField extends StatefulWidget {
   final String label;
   final IconData icon;
   final TextEditingController controller;
   final bool isPassword;
-  // final TextInputType keyboardType;
   final String? Function(String?)? validator;
 
   const CustomTextField({
@@ -16,25 +15,44 @@ class CustomTextField extends StatelessWidget {
     required this.icon,
     required this.controller,
     this.isPassword = false,
-    // this.keyboardType = TextInputType.text,
     this.validator,
   });
 
   @override
+  State<CustomTextField> createState() => _CustomTextFieldState();
+}
+
+class _CustomTextFieldState extends State<CustomTextField> {
+  bool _obscureText = true; 
+
+  @override
   Widget build(BuildContext context) {
     return TextFormField(
-      controller: controller,
-
+      controller: widget.controller,
+      obscureText: widget.isPassword ? _obscureText : false,
+      validator: widget.validator,
       decoration: InputDecoration(
         filled: true,
         fillColor: AppColors.greyColor.withOpacity(0.02),
 
-        labelText: label,
+        labelText: widget.label,
         labelStyle: TextStyle(color: AppColors.greyColor, fontSize: 14),
 
-        suffixIcon: isPassword ? Icon(Icons.remove_red_eye) : null,
-        prefixIcon: Icon(icon),
-        focusColor: AppColors.blueColor,
+        prefixIcon: Icon(widget.icon),
+
+        suffixIcon: widget.isPassword
+            ? IconButton(
+                icon: Icon( 
+                  _obscureText ? Icons.visibility_off : Icons.visibility,
+                  color: AppColors.textColorGrey,
+                ),
+                onPressed: () {
+                  setState(() {
+                    _obscureText = !_obscureText;
+                  });
+                },
+              )
+            : null,
 
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSizes.textFieldSize),
@@ -44,28 +62,24 @@ class CustomTextField extends StatelessWidget {
           borderSide: BorderSide(
             color: AppColors.greyColor.withOpacity(0.1),
             width: 1.5,
-          ), 
+          ),
           borderRadius: BorderRadius.circular(AppSizes.textFieldSize),
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(
             color: AppColors.blueColor,
             width: 2,
-          ), 
+          ),
           borderRadius: BorderRadius.circular(AppSizes.textFieldSize),
         ),
         errorBorder: OutlineInputBorder(
           borderSide: BorderSide(
             color: AppColors.redColor,
             width: 1.5,
-          ), 
+          ),
           borderRadius: BorderRadius.circular(AppSizes.textFieldSize),
         ),
       ),
-
-      obscureText: isPassword,
-      // keyboardType: keyboardType,
-      validator: validator,
     );
   }
 }

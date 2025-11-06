@@ -20,7 +20,7 @@ import 'package:health_care_app/Features/patient_side/notification/notification_
 import 'package:health_care_app/Features/patient_side/splash&onboarding/onboarding.dart';
 // import 'package:health_care_app/Features/patient_side/recommendation%20doctor/recommendation_doctor_sort.dart';
 import 'package:health_care_app/Features/patient_side/splash&onboarding/splash.dart';
-import 'package:health_care_app/Features/patient_side/auth/view/forgotpassword_view.dart';
+import 'package:health_care_app/Features/patient_side/auth/view/forgot_password_view.dart';
 
 import 'app_routes.dart';
 import '../../Features/patient_side/auth/view/login_view.dart';

@@ -22,6 +22,7 @@ class _DoctorDetailsReviewScreenState
     double selectedRating = 0;
     TextEditingController reviewController = TextEditingController();
 
+// <<<<<<< oppint_firebase
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -88,6 +89,17 @@ class _DoctorDetailsReviewScreenState
                         );
                         return;
                       }
+// =======
+//   void _handleTabSelection() {
+//     if (_tabController.indexIsChanging && _tabController.index == 0) {
+//       // If switching to About tab, navigate to DoctorDetailsAboutScreen
+//       Navigator.pushReplacement(
+//         context,
+//         MaterialPageRoute(builder: (context) => DoctorDetailsAboutScreen(doctor: null,)),
+//       );
+//     }
+//   }
+// >>>>>>> main
 
                       final newReview = ReviewModel(
                         reviewId: '',
@@ -171,9 +183,62 @@ class _DoctorDetailsReviewScreenState
               borderRadius: BorderRadius.circular(12),
             ),
           ),
+// <<<<<<< oppint_firebase
           child: const Text(
             "Make a Review",
             style: TextStyle(fontSize: 16, color: Colors.white),
+// =======
+//           const SizedBox(height: 8),
+//           CustomTabBar(
+//             tabController: _tabController,
+//             onTabTap: (index) {
+//               if (index == 0) {
+//                 // If About tab is tapped, navigate
+//                 Navigator.pushReplacement(
+//                   context,
+//                   MaterialPageRoute(
+//                     builder: (context) => DoctorDetailsAboutScreen(doctor:null ),
+//                   ),
+//                 );
+//               }
+//             },
+//           ),
+//           Expanded(
+//             child: SingleChildScrollView(
+//               padding: const EdgeInsets.symmetric(
+//                 horizontal: 16.0,
+//                 vertical: 8.0,
+//               ),
+//               child: Column(
+//                 children: [
+//                   ReviewCard(
+//                     reviewerName: 'Jane Cooper',
+//                     reviewerImageUrl: 'lib/images/jane_cooper.png',
+//                     rating: 5,
+//                     reviewText:
+//                         'As someone who lives in a remote area with limited access to healthcare, this telemedicine app has been a game changer for me. I can easily schedule virtual appointments with doctors and get the care I need without having to travel long distances.',
+//                     timeAgo: 'Today',
+//                   ),
+//                   ReviewCard(
+//                     reviewerName: 'Robert Fox',
+//                     reviewerImageUrl: 'lib/images/robert_fox.png',
+//                     rating: 5,
+//                     reviewText:
+//                         'I was initially skeptical about using a telemedicine app but this app has exceeded my expectations. The doctors are highly qualified and provide excellent care.',
+//                     timeAgo: 'Today',
+//                   ),
+//                   ReviewCard(
+//                     reviewerName: 'Jacob Jones',
+//                     reviewerImageUrl: 'lib/images/jacob_jones.png',
+//                     rating: 5,
+//                     reviewText:
+//                         'I was initially skeptical about using a telemedicine app but this app has exceeded my expectations. The doctors are highly qualified and provide excellent care.',
+//                     timeAgo: 'Today',
+//                   ),
+//                 ],
+//               ),
+//             ),
+// >>>>>>> main
           ),
         ),
       ),

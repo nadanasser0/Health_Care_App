@@ -1,17 +1,50 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:health_care_app/Features/patient_side/auth/view/login_view.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 
-class ForgotpasswordButton extends StatelessWidget {
+class ForgotpasswordButton extends StatefulWidget {
   final String text;
-  final VoidCallback onPressedButton;
+  final String email;
+  // final VoidCallback onPressedButton;
   final VoidCallback onPressedtext;
 
   const ForgotpasswordButton({
     super.key,
-    required this.text, required this.onPressedButton, required this.onPressedtext,
+    required this.text, required this.onPressedtext, required this.email,
    
   });
 
+  @override
+  State<ForgotpasswordButton> createState() => _ForgotpasswordButtonState();
+}
+
+class _ForgotpasswordButtonState extends State<ForgotpasswordButton> {
+  
+  
+  
+  Future<void> resetPassword() async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: widget.email);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Password reset link sent! Check your email.'),
+          backgroundColor: Colors.green,
+        ),
+      );
+      Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen())); 
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: ${e.toString()}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+  
+  
+  
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -31,11 +64,11 @@ class ForgotpasswordButton extends StatelessWidget {
                   borderRadius: BorderRadius.circular(15.0),
                 ),
               ),
-              onPressed: onPressedButton,
+              onPressed: resetPassword,
 
               // },
               child: Text(
-                text,
+                widget.text,
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             ),
@@ -47,7 +80,7 @@ class ForgotpasswordButton extends StatelessWidget {
             children: [
               Text("Need help? Visit our"),
               GestureDetector(
-                onTap: onPressedtext,
+                onTap: widget.onPressedtext,
                 child: Text(
                   " help center",
                   style: TextStyle(

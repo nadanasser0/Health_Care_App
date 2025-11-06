@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class CustomDoctorNavbar extends StatelessWidget implements PreferredSizeWidget{
-  const CustomDoctorNavbar({super.key});
-
+  const CustomDoctorNavbar({super.key, required this.onPress});
+ final  VoidCallback onPress;
   @override
   Widget build(BuildContext context) {
     return PreferredSize(
@@ -21,9 +21,7 @@ class CustomDoctorNavbar extends StatelessWidget implements PreferredSizeWidget{
       backgroundColor: Colors.white,
       centerTitle: true,
       leading: IconButton(
-        onPressed: () {
-          Navigator.pop(context);
-        },
+        onPressed: onPress,
         icon: Icon(Icons.arrow_back_ios, size: 20, color: Colors.black),
       ),
       title: Text(

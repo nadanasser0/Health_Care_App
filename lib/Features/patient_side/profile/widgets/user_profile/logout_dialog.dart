@@ -71,6 +71,7 @@ class LogoutDialog {
                         ),
                         onPressed: () {
                           Navigator.pop(context);
+                          onLogout();
                         },
 
                         child: const Text(
