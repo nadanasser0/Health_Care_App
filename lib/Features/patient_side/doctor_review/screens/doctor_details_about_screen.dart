@@ -4,11 +4,12 @@ import 'package:health_care_app/Features/patient_side/doctor_review/widgets/cust
 import 'package:health_care_app/Features/patient_side/doctor_review/widgets/doctor_header_card.dart';
 import 'package:health_care_app/Features/patient_side/doctor_review/widgets/make_appointment_button.dart';
 import 'package:health_care_app/core/constants/colors.dart';
-
+import 'package:health_care_app/models/doctor_model.dart';
 import '../../../../shared/methods/navigator.dart';
 
 class DoctorDetailsAboutScreen extends StatefulWidget {
-  const DoctorDetailsAboutScreen({super.key});
+const DoctorDetailsAboutScreen({super.key, this.doctor});
+final DoctorModel? doctor;
 
   @override
   State<DoctorDetailsAboutScreen> createState() =>
