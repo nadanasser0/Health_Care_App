@@ -215,7 +215,7 @@ class _UserDoctorSelectorState extends State<UserDoctorSelector> {
         // Dropdown يظهر فقط لو النوع Doctor
         if (_selectedRole == 'Doctor')
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 15),
+            padding: const EdgeInsets.symmetric(horizontal: 15 , vertical: 4),
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey.shade300, width: 1),
               borderRadius: BorderRadius.circular(15),

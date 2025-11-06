@@ -7,6 +7,7 @@ class UserModel {
   final String? image;
   final String? gender;
   final String role;
+  final int age;
   final DateTime createdAt;
 
   UserModel({
@@ -15,9 +16,10 @@ class UserModel {
     required this.email,
     required this.password,
     required this.phoneNum,
+    required this.role,
     this.image,
     this.gender,
-    required this.role,
+    this.age = 0,
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
@@ -31,6 +33,7 @@ class UserModel {
       gender: map["gender"] ?? "male",
       image: map["image"] ?? "",
       role: map["role"] ?? "User",
+      age: map["age"] ?? 0,
       createdAt: map["createdAt"] != null
           ? DateTime.parse(map["createdAt"])
           : DateTime.now(),
@@ -46,6 +49,7 @@ class UserModel {
       "gender": gender,
       "image": image,
       "role": role,
+      "age": age,
       "createdAt": createdAt.toIso8601String(),
     };
   }
@@ -60,6 +64,7 @@ class UserModel {
     String? image,
     String? gender,
     String? role,
+    int? age,
     DateTime? createdAt,
   }) {
     return UserModel(
@@ -71,6 +76,7 @@ class UserModel {
       image: image ?? this.image,
       gender: gender ?? this.gender,
       role: role ?? this.role,
+      age: age ?? this.age,
       createdAt: createdAt ?? this.createdAt,
     );
   }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:health_care_app/Features/patient_side/auth/widgets/shared/custom_textfeild.dart';
+import 'package:health_care_app/Features/patient_side/auth/widgets/signup_widgets/custom_dropDown_gende.dart';
+// import 'package:health_care_app/shared/user_session.dart';
 
 class SignupForm extends StatelessWidget {
   final TextEditingController userNameController;
@@ -7,6 +9,7 @@ class SignupForm extends StatelessWidget {
   final TextEditingController phoneNumberController;
   final TextEditingController passwordController;
   final TextEditingController confirmPasswordController;
+  final TextEditingController genderController;
   final GlobalKey<FormState> formkey;
 
   const SignupForm({
@@ -17,6 +20,7 @@ class SignupForm extends StatelessWidget {
     required this.phoneNumberController,
     required this.passwordController,
     required this.confirmPasswordController,
+    required this.genderController,
     required this.formkey,
   });
 
@@ -39,6 +43,30 @@ class SignupForm extends StatelessWidget {
               return null;
             },
           ),
+          // CustomTextField(
+          //   label: "Enter your name",
+          //   icon: Icons.person,
+          //   controller: userNameController,
+          //   validator: (value) {
+          //     if (value == null || value.isEmpty) {
+          //       return "Please enter your name";
+          //     }
+
+          //     final parts = value.trim().split(' ');
+
+          //     if (parts.length < 2) {
+          //       return "Please enter your full name (first and last)";
+          //     }
+
+          //     for (var part in parts) {
+          //       if (part.length < 3) {
+          //         return "Each part of your name must be at least 3 letters";
+          //       }
+          //     }
+
+          //     return null;
+          //   },
+          // ),
 
           SizedBox(height: 20),
 
@@ -64,11 +92,35 @@ class SignupForm extends StatelessWidget {
 
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return "Please enter your email";
+                return "Please enter your phone number";
               }
               return null;
             },
           ),
+          // CustomTextField(
+          //   label: "Enter your phone",
+          //   icon: Icons.phone_callback,
+          //   controller: phoneNumberController,
+          //   validator: (value) {
+          //     if (value == null || value.isEmpty) {
+          //       return "Please enter your phone number";
+          //     }
+
+          //     if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
+          //       return "Phone number must contain only numbers";
+          //     }
+
+          //     if (value.length != 11) {
+          //       return "Phone number must be 11 digits";
+          //     }
+
+          //     if (!value.startsWith("011")) {
+          //       return "Phone number must start with 011";
+          //     }
+
+          //     return null;
+          //   },
+          // ),
 
           const SizedBox(height: 16),
 
@@ -84,6 +136,9 @@ class SignupForm extends StatelessWidget {
               return null;
             },
           ),
+
+          const SizedBox(height: 16),
+          CustomGenderDropdown(controller: genderController),
         ],
       ),
     );
