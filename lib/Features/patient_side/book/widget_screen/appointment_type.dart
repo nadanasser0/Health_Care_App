@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 
-// import '../../../core/constants/colors.dart';
-
 class AppointmentType extends StatefulWidget {
-  const AppointmentType({super.key});
+  final Function(String)? onTypeSelected;
+  const AppointmentType({super.key, this.onTypeSelected});
 
   @override
   State<AppointmentType> createState() => _AppointmentTypeState();
@@ -12,9 +11,9 @@ class AppointmentType extends StatefulWidget {
 
 class _AppointmentTypeState extends State<AppointmentType> {
   String? appointmentType;
+
   @override
   Widget build(BuildContext context) {
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -26,16 +25,17 @@ class _AppointmentTypeState extends State<AppointmentType> {
           children: [
             Icon(Icons.person, color: AppColors.blueColor),
             const SizedBox(width: 5),
-            const Text("In Person",style: TextStyle(fontSize: 17,fontWeight: FontWeight.w600),),
+            const Text("In Person", style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
             const Spacer(),
             Radio<String>(
-              value: "in_person",
-              activeColor:  AppColors.blueColor,
+              value: "In Person",
+              activeColor: AppColors.blueColor,
               groupValue: appointmentType,
               onChanged: (value) {
                 setState(() {
                   appointmentType = value;
                 });
+                widget.onTypeSelected?.call(value!);
               },
             ),
           ],
@@ -44,16 +44,17 @@ class _AppointmentTypeState extends State<AppointmentType> {
           children: [
             const Icon(Icons.phone, color: Colors.red),
             const SizedBox(width: 5),
-            const Text("Chat",style: TextStyle(fontSize: 17,fontWeight: FontWeight.w600),),
+            const Text("Chat", style: TextStyle(fontSize: 17, fontWeight: FontWeight.w600)),
             const Spacer(),
             Radio<String>(
-              value: "chat",
-              activeColor:  AppColors.blueColor,
+              value: "Chat",
+              activeColor: AppColors.blueColor,
               groupValue: appointmentType,
               onChanged: (value) {
                 setState(() {
                   appointmentType = value;
                 });
+                widget.onTypeSelected?.call(value!);
               },
             ),
           ],

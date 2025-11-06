@@ -12,7 +12,7 @@ class DoctorAppointment extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 2,
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: AppColors.whiteColor,
@@ -27,17 +27,15 @@ class DoctorAppointment extends StatelessWidget {
             indicatorColor: AppColors.blueColor,
             labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             tabs: const [
-              Tab(text: "Upcoming"),
               Tab(text: "Completed"),
               Tab(text: "Canceled"),
             ],
           ),
         ),
-        body: const TabBarView(
+        body: TabBarView(
           children: [
-            Upcoming(),
             Completed(),
-            Canceled(),
+             Canceled(),
           ],
         ),
         backgroundColor: AppColors.whiteColor,

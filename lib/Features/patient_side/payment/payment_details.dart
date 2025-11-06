@@ -63,7 +63,7 @@ class PaymentDetails extends StatelessWidget {
                 SizedBox(
                   height: MediaQuery.of(context).size.height*.04,
                 ),
-                CustomButton(name: 'Pay', page: BookingConfirmation(),color: AppColors.greenColor,)
+                // CustomButton(name: 'Pay', page: BookingConfirmation(),color: AppColors.greenColor,)
               ],
             ),
           ),
