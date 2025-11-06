@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:health_care_app/Features/patient_side/calender/calender_screen.dart';
 import 'package:health_care_app/Features/patient_side/chats/view/chats_list_screen.dart';
 import 'package:health_care_app/Features/patient_side/home_screen/home_screen.dart';
-import 'package:health_care_app/Features/patient_side/profile/profile_screen.dart';
+// import 'package:health_care_app/Features/patient_side/profile/profile_screen.dart';
 import 'package:health_care_app/Features/patient_side/profile/view/profile_view.dart';
 import 'package:health_care_app/Features/patient_side/search/search_screen.dart';
 import 'package:health_care_app/core/constants/colors.dart';

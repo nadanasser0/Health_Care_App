@@ -18,8 +18,9 @@ class ForgotpasswordView extends StatelessWidget {
         children: [
           ForgotPasswordHeader(),
           // SizedBox(height: 20,),
-          ForgotpasswordTextField(label:'Email or Phone Number', controller:emailorphone,),
-          ForgotpasswordButton(text:'Reset Password', onPressedButton: () { },onPressedtext: (){},),
+          
+          ForgotpasswordTextField(label:'Write your email', controller: emailorphone,),
+          ForgotpasswordButton(text:'Reset Password',onPressedtext: (){}, email:emailorphone.text.trim(),),
         ],
       )
     );

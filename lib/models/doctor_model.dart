@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class DoctorModel{
-
+class DoctorModel {
   final String doctorId;
   final int STR;
   final String name;
@@ -23,21 +22,20 @@ class DoctorModel{
     required this.specialization,
     required this.hospital,
     this.imageUrl =
-        "https://firebasestorage.googleapis.com/v0/b/YOUR_PROJECT.appspot.com/o/default_doctor.png?alt=media",
+        "",
     this.rating = 0.0,
     this.reviews = 0,
     this.isRecommended = true,
-    this.aboutMe = 
-    "Dr. Jenny Watson is the top most Immunologists specialist in Christ Hospital at London. She achived several awards for her wonderful contribution in medical field. She is available for private consultation.",
-    this.workingTime = " Monday - Friday, 9:00 AM - 5:00 PM",
+    this.aboutMe =
+        "",
+    this.workingTime = "Monday - Friday, 9:00 AM - 5:00 PM",
     this.price = 0.0,
-    this.STR = 0123456, 
+    this.STR = 123456,
     this.createdAt,
-
     String? specializationKey,
   }) : specializationKey = specializationKey ?? specialization.toLowerCase();
 
-  // 🔁 لتحويل Firestore Map إلى DoctorModel
+  // 🔁 fromMap
   factory DoctorModel.fromMap(Map<String, dynamic> map, String id) {
     return DoctorModel(
       doctorId: id,
@@ -45,20 +43,22 @@ class DoctorModel{
       specialization: map['specialization'] ?? '',
       hospital: map['hospital'] ?? 'Unknown Hospital',
       imageUrl: map['imageUrl'] ??
-          "https://firebasestorage.googleapis.com/v0/b/YOUR_PROJECT.appspot.com/o/default_doctor.png?alt=media",
+          "",
       rating: (map['rating'] ?? 0.0).toDouble(),
       reviews: map['reviews'] ?? 0,
       specializationKey: map['specializationKey'],
       isRecommended: map['isRecommended'] ?? true,
       aboutMe: map['aboutMe'] ?? '',
       workingTime: map['workingTime'] ?? '',
-      price: (map['price'] ?? 0.0).toDouble(),
-      STR: int.parse(map['STR']),
+     price: (map['price'] is String)
+    ? double.tryParse(map['price']) ?? 0.0
+    : (map['price'] ?? 0.0).toDouble(),
+      STR: map['STR'] is int ? map['STR'] : int.tryParse(map['STR'].toString()) ?? 0,
       createdAt: map['createdAt'],
     );
   }
 
-  // 🗃️ لتحويل الموديل إلى Map لحفظه في Firestore
+  // 🗃️ toMap
   Map<String, dynamic> toMap() {
     return {
       'doctorId': doctorId,
@@ -78,4 +78,38 @@ class DoctorModel{
     };
   }
 
+  // 🧩 copyWith method
+  DoctorModel copyWith({
+    String? doctorId,
+    int? STR,
+    String? name,
+    String? specialization,
+    String? hospital,
+    String? imageUrl,
+    double? rating,
+    int? reviews,
+    String? specializationKey,
+    bool? isRecommended,
+    String? aboutMe,
+    String? workingTime,
+    double? price,
+    Timestamp? createdAt,
+  }) {
+    return DoctorModel(
+      doctorId: doctorId ?? this.doctorId,
+      STR: STR ?? this.STR,
+      name: name ?? this.name,
+      specialization: specialization ?? this.specialization,
+      hospital: hospital ?? this.hospital,
+      imageUrl: imageUrl ?? this.imageUrl,
+      rating: rating ?? this.rating,
+      reviews: reviews ?? this.reviews,
+      specializationKey: specializationKey ?? this.specializationKey,
+      isRecommended: isRecommended ?? this.isRecommended,
+      aboutMe: aboutMe ?? this.aboutMe,
+      workingTime: workingTime ?? this.workingTime,
+      price: price ?? this.price,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
 }

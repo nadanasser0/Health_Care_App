@@ -14,7 +14,6 @@ class OnboardingView extends StatefulWidget {
 class _OnboardingViewState extends State<OnboardingView> {
   final PageController _controller = PageController();
   bool isLastPage = false;
-  // String buttonText = 'Next';
 
   @override
   Widget build(BuildContext context) {

@@ -1,7 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:health_care_app/Features/doctor_side/doctor_profile/widgets/custom_doctor_avatar.dart';
-import 'package:health_care_app/Features/doctor_side/doctor_profile/widgets/custom_doctor_info_row.dart';
-import 'package:health_care_app/Features/doctor_side/doctor_profile/widgets/custom_doctor_navbar.dart';
+import 'package:health_care_app/Features/doctor_side/doctor_profile/view/doctor_profile.dart';
+import 'package:health_care_app/Features/doctor_side/doctor_profile/widgets/personal_info_widgets/custom_aboutMe_container.dart';
+import 'package:health_care_app/Features/doctor_side/doctor_profile/widgets/personal_info_widgets/custom_gender_radiobutton.dart';
+import 'package:health_care_app/Features/doctor_side/doctor_profile/widgets/personal_info_widgets/custom_userInfo_row.dart';
+import 'package:health_care_app/Features/doctor_side/doctor_profile/widgets/personal_info_widgets/photos_show_sheet.dart';
+import 'package:health_care_app/Features/doctor_side/doctor_profile/widgets/profile_widgets/custom_doctor_avatar.dart';
+import 'package:health_care_app/Features/doctor_side/doctor_profile/widgets/profile_widgets/custom_doctor_navbar.dart';
+import 'package:health_care_app/core/constants/colors.dart';
+import 'package:health_care_app/services/firestore_services.dart';
+import 'package:health_care_app/shared/user_session.dart';
 
 class DoctorPersonalInfo extends StatefulWidget {
   const DoctorPersonalInfo({super.key});
@@ -11,70 +19,296 @@ class DoctorPersonalInfo extends StatefulWidget {
 }
 
 class _DoctorPersonalInfoState extends State<DoctorPersonalInfo> {
-  final TextEditingController _nameController =
-      TextEditingController(text: "Dr. Nada Nasser");
-  final TextEditingController _emailController =
-      TextEditingController(text: "nada1234@gmail.com");
-  final TextEditingController _phoneController =
-      TextEditingController(text: "01113583479");
+  @override
+  void initState() {
+    super.initState();
+  }
 
-  /// بدل boolean عام، نستخدم متغير بيخزن اسم الحقل المفتوح حاليًا
-  String? _editingField; // ممكن تكون "name" أو "email" أو "phone"
+  final TextEditingController _nameController = TextEditingController(
+    text: UserSession.currentUser!.name,
+  );
+  // final TextEditingController _emailController = TextEditingController(
+  //   text: UserSession.currentUser!.email ,
+  // );
+  final TextEditingController _phoneController = TextEditingController(
+    text: UserSession.currentUser!.phoneNum.toString(),
+  );
+  final TextEditingController genderController = TextEditingController(
+    text: UserSession.currentUser!.gender,
+  );
+  final TextEditingController aboutMeControler = TextEditingController(
+    text: UserSession.currentDoctor!.aboutMe,
+  );
+  final TextEditingController hospitalController = TextEditingController(
+    text: UserSession.currentDoctor!.hospital,
+  );
+  final TextEditingController specialityController = TextEditingController(
+    text: UserSession.currentDoctor!.specialization,
+  );
+  final TextEditingController priceController = TextEditingController(
+    text: UserSession.currentDoctor!.price.toString(),
+  );
+  final TextEditingController STRController = TextEditingController(
+    text: UserSession.currentDoctor!.STR.toString(),
+  );
+  final TextEditingController workingConroller = TextEditingController(
+    text: UserSession.currentDoctor!.workingTime.toString(),
+  );
+  void dispose() {
+    _nameController.dispose();
+    // _emailController.dispose();
+    _phoneController.dispose();
+    genderController.dispose();
+    aboutMeControler.dispose();
+    hospitalController.dispose();
+    specialityController.dispose();
+    priceController.dispose();
+    STRController.dispose();
+    super.dispose();
+  }
 
+  FirestoreService firestoreService = FirestoreService();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: CustomDoctorNavbar(),
+      appBar: CustomDoctorNavbar(
+        onPress: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const DoctorProfile()),
+          );
+        },
+      ),
       body: Padding(
-        padding: const EdgeInsets.only(top: 100.0, right: 20, left: 20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Center(
-              child: Column(
-                children: [CustomDoctorAvatar(docName: 'Nada Nasser')],
+        padding: const EdgeInsets.all(20.0),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              Stack(
+                children: [
+                  Column(
+                    children: [
+                      Stack(
+                        children: [
+                          CustomDoctorAvatar(
+                            docName: UserSession.currentDoctor!.name,
+                            imageUrl: UserSession.currentDoctor!.imageUrl,
+                          ),
+                          Positioned(
+                            right: 11,
+                            top: 88,
+
+                            child: CircleAvatar(
+                              radius: 13,
+                              backgroundColor: AppColors.blueColor.withOpacity(
+                                0.8,
+                              ),
+
+                              child: IconButton(
+                                icon: Icon(
+                                  Icons.mode_edit_outline_outlined,
+                                  color: AppColors.whiteColor,
+                                  size: 13,
+                                ),
+                                onPressed: () async {
+                                  final userId =
+                                      FirebaseAuth.instance.currentUser!.uid;
+
+                                  // ✳️ استني sheet ترجع الرابط الجديد
+                                  final newImageUrl =
+                                      await showImagePickerSheet(
+                                        context,
+                                        userId,
+                                      );
+
+                                  if (newImageUrl != null) {
+                                    setState(() {
+                                      UserSession.currentDoctor = UserSession
+                                          .currentDoctor!
+                                          .copyWith(imageUrl: newImageUrl);
+                                      UserSession.currentUser = UserSession
+                                          .currentUser!
+                                          .copyWith(image: newImageUrl);
+                                    });
+                                  }
+                                },
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Text(
+                        '${UserSession.currentUser!.email}',
+                        style: TextStyle(
+                          color: AppColors.greyColor,
+                          fontSize: 14,
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                    ],
+                  ),
+                ],
               ),
-            ),
 
-            const SizedBox(height: 20),
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: AppColors.greyLightColor),
+                ),
+                child: Column(
+                  children: [
+                    CustomUserinfoRow(
+                      controller: TextEditingController(
+                        text: UserSession.currentUser!.name,
+                      ),
+                      label: 'Name',
+                      onSave: (newValue) async {
+                        firestoreService.updateDoctorField('name', newValue);
+                        firestoreService.updateUserField('name', newValue);
+                        setState(() {
+                          UserSession.currentDoctor = UserSession.currentDoctor!
+                              .copyWith(name: newValue);
+                          UserSession.currentUser = UserSession.currentUser!
+                              .copyWith(name: newValue);
+                        });
+                      },
+                    ),
 
-            /// Name Row
-            CustomDoctorInfoRow(
-              controller: _nameController,
-              isEditable: _editingField == "name", // مفتوح فقط لو الحقل الحالي هو "name"
-              onEditTap: () {
-                setState(() {
-                  _editingField =
-                      _editingField == "name" ? null : "name"; // toggle
-                });
-              },
-            ),
+                    CustomUserinfoRow(
+                      controller: _phoneController,
+                      label: 'Phone number',
+                      onSave: (newValue) async {
+                        firestoreService.updateUserField(
+                          'phoneNum',
+                          int.parse(newValue),
+                        );
+                        setState(() {
+                          UserSession.currentUser = UserSession.currentUser!
+                              .copyWith(phoneNum: int.parse(newValue));
+                        });
+                      },
+                    ),
 
-            /// Email Row
-            CustomDoctorInfoRow(
-              controller: _emailController,
-              isEditable: _editingField == "email",
-              onEditTap: () {
-                setState(() {
-                  _editingField =
-                      _editingField == "email" ? null : "email";
-                });
-              },
-            ),
+                    const CustomGenderSelector(),
+                  ],
+                ),
+              ),
+              CustomUserinfoRow(
+                controller: TextEditingController(
+                  text: UserSession.currentUser!.age.toString(),
+                ),
+                label: 'Age',
+                onSave: (newValue) async {
+                  firestoreService.updateUserField('age', int.parse(newValue));
+                  setState(() {
+                    UserSession.currentUser = UserSession.currentUser!.copyWith(
+                      age: int.parse(newValue),
+                    );
+                  });
+                },
+              ),
+              SizedBox(height: 20),
+              CustomAboutmeContainer(
+                controller: aboutMeControler,
+                label: 'About Me',
+                onSave: (newValue) async {
+                  firestoreService.updateDoctorField('aboutMe', newValue);
+                  setState(() {
+                    UserSession.currentDoctor = UserSession.currentDoctor!
+                        .copyWith(aboutMe: newValue);
+                  });
+                },
+              ),
 
-            /// Phone Row
-            CustomDoctorInfoRow(
-              controller: _phoneController,
-              isEditable: _editingField == "phone",
-              onEditTap: () {
-                setState(() {
-                  _editingField =
-                      _editingField == "phone" ? null : "phone";
-                });
-              },
-            ),
-          ],
+              SizedBox(height: 20),
+              Container(
+                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: AppColors.greyLightColor),
+                ),
+                child: Column(
+                  children: [
+                    CustomUserinfoRow(
+                      controller: hospitalController,
+                      label: 'Hospital Name',
+                      onSave: (newValue) async {
+                        firestoreService.updateDoctorField(
+                          'hospital',
+                          newValue,
+                        );
+                        setState(() {
+                          UserSession.currentDoctor = UserSession.currentDoctor!
+                              .copyWith(hospital: newValue);
+                        });
+                      },
+                    ),
+
+                    CustomUserinfoRow(
+                      controller: specialityController,
+                      label: 'Your Speciality',
+                      onSave: (newValue) async {
+                        firestoreService.updateDoctorField(
+                          'specialization',
+                          newValue,
+                        );
+                        setState(() {
+                          UserSession.currentDoctor = UserSession.currentDoctor!
+                              .copyWith(specialization: newValue);
+                        });
+                      },
+                    ),
+
+                    CustomUserinfoRow(
+                      controller: priceController,
+                      label: 'Session price',
+                      onSave: (newValue) async {
+                        firestoreService.updateDoctorField(
+                          'price',
+                          double.parse(newValue),
+                        );
+                        setState(() {
+                          UserSession.currentDoctor = UserSession.currentDoctor!
+                              .copyWith(price: double.parse(newValue));
+                        });
+                      },
+                    ),
+                    CustomUserinfoRow(
+                      controller: workingConroller,
+                      label: 'Working Time',
+                      onSave: (newValue) async {
+                        firestoreService.updateDoctorField(
+                          'workingTime',
+                          newValue,
+                        );
+                        setState(() {
+                          UserSession.currentDoctor = UserSession.currentDoctor!
+                              .copyWith(workingTime: newValue);
+                        });
+                      },
+                    ),
+
+                    CustomUserinfoRow(
+                      controller: STRController,
+                      label: 'STR',
+                      onSave: (newValue) async {
+                        firestoreService.updateDoctorField(
+                          'STR',
+                          int.parse(newValue),
+                        );
+                        setState(() {
+                          UserSession.currentDoctor = UserSession.currentDoctor!
+                              .copyWith(STR: int.parse(newValue));
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -13,6 +13,7 @@ import 'package:health_care_app/core/constants/colors.dart';
 import 'package:health_care_app/models/user_model.dart';
 import 'package:health_care_app/services/firestore_services.dart';
 import 'package:health_care_app/shared/methods/navigator.dart';
+import 'package:health_care_app/shared/user_session.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -89,26 +90,41 @@ class _LoginScreenState extends State<LoginScreen> {
                                   email: emailController.text.trim(),
                                   password: passwordController.text.trim(),
                                 );
+
                             FirestoreService firestoreService =
                                 FirestoreService();
-                            UserModel user =
-                                await firestoreService.getUser(
-                                      userCredential.user!.uid,
-                                    )
-                                    ;
+
+                            UserModel user = await firestoreService.getUser(
+                              userCredential.user!.uid,
+                            );
+                            UserSession.currentUser = user;                       
+                             
                             snackBarMessage(
                               context,
                               "Sign in successfully",
                               color: Colors.green,
                             );
+                            
                             if (user.role == 'Doctor') {
+
+                             UserSession.currentDoctor = await firestoreService.getDoctor( 
+                                userCredential.user!.uid,
+                              );
+
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => NavigationScreen(),
                                 ),
                               );
-                            } else {
+                            } 
+                            
+                            
+                            else {
+
+                              UserSession.currentPatient = await firestoreService.getPatient( 
+                                userCredential.user!.uid,
+                              );
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -116,6 +132,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               );
                             }
+
+                            
                           } on FirebaseAuthException catch (e) {
                             if (e.code == 'user-not-found') {
                               snackBarMessage(

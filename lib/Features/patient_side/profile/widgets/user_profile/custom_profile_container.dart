@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:health_care_app/Features/patient_side/auth/view/login_view.dart';
 import 'package:health_care_app/Features/patient_side/profile/view/personal_info.dart';
 import 'package:health_care_app/Features/patient_side/profile/view/settings_page.dart';
 import 'package:health_care_app/Features/patient_side/profile/widgets/user_profile/customRow.dart';
 import 'package:health_care_app/Features/patient_side/profile/widgets/user_profile/logout_dialog.dart';
+import 'package:health_care_app/services/auth_services.dart';
+import 'package:health_care_app/shared/user_session.dart';
 // import 'package:health_care_app/Features/patient_side/profile/widgets/custom_personal_info_container.dart';
 
 class CustomContainer extends StatelessWidget {
@@ -26,13 +29,14 @@ class CustomContainer extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SizedBox(height: 65),
+
               Text(
-                "Nada Nasser",
+                UserSession.currentUser?.name ?? 'User Name',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
               // SizedBox(height: 20),
               Text(
-                "NadaNasser123@gmail.com",
+                UserSession.currentUser?.email ?? ' ',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -40,6 +44,7 @@ class CustomContainer extends StatelessWidget {
                   wordSpacing: 3,
                 ),
               ),
+
               SizedBox(height: 25),
               CustomRow(
                 icon: Icons.person,
@@ -77,6 +82,13 @@ class CustomContainer extends StatelessWidget {
                     context,
                     onLogout: () {
                       print('User logged out');
+                      AuthService authService = AuthService();
+                      authService.logout();
+                      UserSession.clear();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                      );
                     },
                   );
                   // Navigator.push(context, MaterialPageRoute(builder: (context) => ()));
