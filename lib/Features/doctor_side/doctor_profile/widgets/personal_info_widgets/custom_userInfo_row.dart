@@ -29,7 +29,7 @@ class _CustomUserinfoRowState extends State<CustomUserinfoRow> {
       children: [
         Text(
           '   ${widget.label}',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -39,9 +39,16 @@ class _CustomUserinfoRowState extends State<CustomUserinfoRow> {
                 controller: widget.controller,
                 focusNode: _focusNode,
                 readOnly: !isEditing,
+                 style: TextStyle(
+                  fontSize: isEditing ? 14.5 : 15,
+                  color: Colors.black, 
+                ),
                 decoration: InputDecoration(
-                  hintText: "write your name",
-
+                  contentPadding: EdgeInsets.symmetric(
+                    vertical:  16,
+                    horizontal: 8,
+                  ),
+                  hintText: "write your ${widget.label.toLowerCase()}",
                   filled: true,
                   fillColor: AppColors.whiteColor,
                   border: OutlineInputBorder(borderSide: BorderSide.none),
@@ -59,6 +66,7 @@ class _CustomUserinfoRowState extends State<CustomUserinfoRow> {
                 if (isEditing) {
                   await widget.onSave(widget.controller.text.trim());
                   setState(() => isEditing = false);
+
                 } else {
                   setState(() => isEditing = true);
                   Future.delayed(const Duration(milliseconds: 100), () {

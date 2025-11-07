@@ -81,7 +81,7 @@ class _DoctorPersonalInfoState extends State<DoctorPersonalInfo> {
         },
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 10 , vertical: 25),
         child: SingleChildScrollView(
           child: Column(
             children: [
@@ -96,7 +96,7 @@ class _DoctorPersonalInfoState extends State<DoctorPersonalInfo> {
                             imageUrl: UserSession.currentDoctor!.imageUrl,
                           ),
                           Positioned(
-                            right: 11,
+                            right: 25,
                             top: 88,
 
                             child: CircleAvatar(
@@ -152,7 +152,7 @@ class _DoctorPersonalInfoState extends State<DoctorPersonalInfo> {
               ),
 
               Container(
-                padding: EdgeInsets.symmetric(vertical: 18, horizontal: 8),
+                padding: EdgeInsets.only(top: 13, right: 8, left: 0 , bottom: 5),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: AppColors.greyLightColor),
@@ -190,12 +190,9 @@ class _DoctorPersonalInfoState extends State<DoctorPersonalInfo> {
                         });
                       },
                     ),
-
                     const CustomGenderSelector(),
-                  ],
-                ),
-              ),
-              CustomUserinfoRow(
+SizedBox(height: 5),
+                    CustomUserinfoRow(
                 controller: TextEditingController(
                   text: UserSession.currentUser!.age.toString(),
                 ),
@@ -209,6 +206,10 @@ class _DoctorPersonalInfoState extends State<DoctorPersonalInfo> {
                   });
                 },
               ),
+                  ],
+                ),
+              ),
+              
               SizedBox(height: 20),
               CustomAboutmeContainer(
                 controller: aboutMeControler,

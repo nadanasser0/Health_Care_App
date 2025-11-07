@@ -32,8 +32,8 @@ class _CustomAboutmeContainerState extends State<CustomAboutmeContainer> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "   About Me",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                "  About Me",
+                style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
               ),
               CustomProfileButton(
               label: isEditing ? "Save" : "Edit",
@@ -58,10 +58,19 @@ class _CustomAboutmeContainerState extends State<CustomAboutmeContainer> {
              focusNode: _focusNode,
                 readOnly: !isEditing,
             maxLines: 4,
+            style: TextStyle(
+              fontSize: isEditing ? 14.5 : 15,
+              color: Colors.black, 
+            ),
             decoration: InputDecoration(
               hintText: "Write about yourself",
               filled: true,
               fillColor: AppColors.whiteColor,
+              //  contentPadding: EdgeInsets.symmetric(
+              //       vertical:  16,
+              //       horizontal: 8,
+              //     ),
+              
               border: OutlineInputBorder(
                 borderSide: BorderSide(color: AppColors.lightGrey, width: 1),
               ),
