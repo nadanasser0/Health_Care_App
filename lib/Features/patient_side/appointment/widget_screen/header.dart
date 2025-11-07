@@ -7,56 +7,74 @@ class Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              height: 74,
-              width: 74,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-
+        // 🧑‍⚕️ صورة أو أيقونة الطبيب
+        Container(
+          height: 74,
+          width: 74,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: AppColors.whiteColor,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black12,
+                blurRadius: 6,
+                offset: const Offset(0, 3),
               ),
-              child: Icon(Icons.person,size: 75,color: AppColors.blueColor,),
-            )
-          ],
+            ],
+          ),
+          child: Icon(
+            Icons.person,
+            size: 60,
+            color: AppColors.blueColor,
+          ),
         ),
-        SizedBox(height: 10,),
-        Column(crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Dr. Randy Wigham",style: TextStyle(fontSize: 16,fontWeight: FontWeight.w600),),
-            Text("General | RSUD Gatot Subroto",style: TextStyle(fontSize: 13,fontWeight: FontWeight.w500,color: Color(0xff616161),),),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                MaterialButton(
-                  height: 30,
-                  minWidth: 65,
-                  color: AppColors.blueColor,
-                  shape: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(16),
-                    borderSide: BorderSide.none,
-                  ),
-                  onPressed: () {
-                    // Navigator.push(context, MaterialPageRoute(builder: (context) => BookAppointment(),));
-                  },
-                  child: Text(
-                    "Details",
+
+        const SizedBox(width: 15), // بدل الـ height:10 (الغلط هنا كانت المسافة أفقية مش رأسية)
+
+        // 🧾 بيانات الطبيب
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Dr. Randy Wigham",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                "General | RSUD Gatot Subroto",
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: Color(0xff616161),
+                ),
+              ),
+              const SizedBox(height: 8),
+
+              // 🔘 الزر والتقييم
+              Row(
+                children: [
+                  const Icon(Icons.star, color: Colors.yellow, size: 18),
+                  const SizedBox(width: 4),
+                  Text(
+                    "4.8 (4,279 reviews)",
                     style: TextStyle(
-                      color:AppColors.whiteColor,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.greyColor,
                     ),
                   ),
-                ),
-                SizedBox(width: 40,),
-                Icon(Icons.star,color: Colors.yellow,),
-                Text("4.8 (4,279 reviews)",style: TextStyle(fontSize: 13,fontWeight: FontWeight.w500,color: AppColors.greyColor,),),
-              ],
-            )
-          ],
-        )
+
+                ],
+              ),
+            ],
+          ),
+        ),
       ],
     );
   }

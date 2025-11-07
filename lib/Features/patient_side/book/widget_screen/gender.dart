@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class Gender extends StatefulWidget {
-  const Gender({super.key});
+  final Function(String)? onGenderChanged; // 🟢 إضافة callback
+  const Gender({super.key, this.onGenderChanged});
 
   @override
   State<Gender> createState() => _GenderState();
@@ -9,6 +10,7 @@ class Gender extends StatefulWidget {
 
 class _GenderState extends State<Gender> {
   String? selectedGender;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -27,13 +29,15 @@ class _GenderState extends State<Gender> {
                 setState(() {
                   selectedGender = value;
                 });
+                // 🟢 تمرير القيمة لصفحة BookAppointment
+                widget.onGenderChanged?.call(value!);
               },
             ),
             const Text(
               "Male",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
-            SizedBox(width: 100),
+            const SizedBox(width: 100),
             Radio<String>(
               value: "Female",
               groupValue: selectedGender,
@@ -41,6 +45,8 @@ class _GenderState extends State<Gender> {
                 setState(() {
                   selectedGender = value;
                 });
+                // 🟢 تمرير القيمة لصفحة BookAppointment
+                widget.onGenderChanged?.call(value!);
               },
             ),
             const Text(

@@ -1,3 +1,5 @@
+
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -131,14 +133,16 @@ final displayMessage = (lastMessage == null || lastMessage.isEmpty)
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                            CircleAvatar(
+                           CircleAvatar(
   radius: 30,
-  backgroundImage: NetworkImage(
-    data['doctorImage'] ?? 'https://cdn-icons-png.flaticon.com/512/3135/3135715.png',
-  ),
-  onBackgroundImageError: (_, __) {
-  },
+  backgroundImage: (data['doctorImage'] != null &&
+          data['doctorImage'].toString().trim().isNotEmpty &&
+          data['doctorImage'].toString().startsWith('http'))
+      ? NetworkImage(data['doctorImage'])
+      : const AssetImage('lib/images/patientt.png') as ImageProvider,
 ),
+
+
                                 const SizedBox(width: 12),
                              Expanded(
   child: FutureBuilder<DocumentSnapshot>(

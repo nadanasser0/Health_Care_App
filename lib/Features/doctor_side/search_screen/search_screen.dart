@@ -65,51 +65,42 @@ class _SearchScreenState extends State<SearchScreenD> {
     return FirebaseFirestore.instance.collection('users').snapshots();
   }
 
-  Future<String> createOrGetChat(
-      String patientId, String patientName, String patientImage) async {
-    final doctor = FirebaseAuth.instance.currentUser!;
-    final doctorId = doctor.uid;
+ Future<String> createOrGetChat(
+    String patientId, String patientName, String patientImage) async {
+  final doctor = FirebaseAuth.instance.currentUser!;
+  final doctorId = doctor.uid;
 
-    final doctorDoc =
-        await FirebaseFirestore.instance.collection('users').doc(doctorId).get();
-    final doctorData = doctorDoc.data() ?? {};
+  final doctorDoc =
+      await FirebaseFirestore.instance.collection('users').doc(doctorId).get();
+  final doctorData = doctorDoc.data() ?? {};
 
-    final doctorName = doctorData['name'] ?? 'Unknown';
-    final doctorImage = doctorData['image'] ?? '';
+  final doctorName = doctorData['name'] ?? 'Doctor';
+  final doctorImage = doctorData['image'] ?? 'lib/images/doctor.png';
 
-    final chatId = "${doctorId}_$patientId";
-    final chatRef = FirebaseFirestore.instance.collection('chats').doc(chatId);
-    final chatDoc = await chatRef.get();
+  final sortedIds = [doctorId, patientId]..sort();
+  final chatId = "${sortedIds[0]}_${sortedIds[1]}";
 
-    if (!chatDoc.exists) {
-      await chatRef.set({
-        'doctorId': doctorId,
-        'doctorName': doctorName,
-        'doctorImage': doctorImage,
-        'patientId': patientId,
-        'patientName': patientName,
-        'patientImage': patientImage,
-        'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(),
-        'lastMessage': "",
-      });
-    } else {
-      final data = chatDoc.data() as Map<String, dynamic>? ?? {};
-      final Map<String, dynamic> update = {};
-      if ((data['doctorName'] ?? '').toString().isEmpty) update['doctorName'] = doctorName;
-      if ((data['doctorImage'] ?? '').toString().isEmpty) update['doctorImage'] = doctorImage;
-      if ((data['patientName'] ?? '').toString().isEmpty) update['patientName'] = patientName;
-      if ((data['patientImage'] ?? '').toString().isEmpty) update['patientImage'] = patientImage;
-      if (update.isNotEmpty) {
-        update['updatedAt'] = FieldValue.serverTimestamp();
-        await chatRef.set(update, SetOptions(merge: true));
-      }
-    }
+  final chatRef = FirebaseFirestore.instance.collection('chats').doc(chatId);
+  final chatDoc = await chatRef.get();
 
-    return chatId;
+  if (!chatDoc.exists) {
+    await chatRef.set({
+      'doctorId': doctorId,
+      'doctorName': doctorName,
+      'doctorImage': doctorImage,
+      'patientId': patientId,
+      'patientName': patientName,
+      'patientImage': patientImage,
+      'createdAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
+      'lastMessage': "",
+      'unreadCountForPatient': 0,
+      'unreadCountForDoctor': 0,
+    });
   }
 
-  void _onPatientTapAndOpenChat({
+  return chatId;
+} void _onPatientTapAndOpenChat({
     required String patientId,
     required String name,
     required String image,
@@ -121,7 +112,7 @@ class _SearchScreenState extends State<SearchScreenD> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => ChatsPageDoctor(chatName: name, chatId: chatId, doctorName: '')
+        builder: (_) => ChatsPageDoctor(chatName: name, chatId: chatId, doctorName: name)
       ),
     );
   }
@@ -240,8 +231,10 @@ class _SearchScreenState extends State<SearchScreenD> {
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
       appBar: AppBar(
+        centerTitle: true,
         backgroundColor: AppColors.whiteColor,
-        title: const Text("Search Patients",
+        title: const Text("Search",
+        textAlign: TextAlign.center,
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
         elevation: 0,
       ),

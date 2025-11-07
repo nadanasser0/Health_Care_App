@@ -1,0 +1,8 @@
+{
+  "collectionGroup": "reviews",
+  "queryScope": "COLLECTION",
+  "fields": [
+    { "fieldPath": "doctorId", "order": "ASCENDING" },
+    { "fieldPath": "createdAt", "order": "DESCENDING" }
+  ]
+}

@@ -125,7 +125,7 @@ class _ChatsListScreenDoctorState extends State<ChatsListScreenDoctor> {
                             MaterialPageRoute(
                               builder: (_) => ChatsPageDoctor(
                                 chatId: chatId,
-                                chatName: patientName, doctorName: '',
+                                chatName: patientName, doctorName: patientName,
                               ),
                             ),
                           );
@@ -235,7 +235,7 @@ Expanded(
                 MaterialPageRoute(
                   builder: (_) => ChatsPageDoctor(
                     chatId: chatId,
-                    chatName: '', doctorName: patientName,
+                    chatName: patientName, doctorName: patientName,
                   ),
                 ),
               );

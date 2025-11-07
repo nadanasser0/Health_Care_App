@@ -1,24 +1,125 @@
 import 'package:flutter/material.dart';
-import 'custom_card_appoinment.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../../../models/appiontment_model.dart';
+import '../../../../core/constants/colors.dart';
 
 class Canceled extends StatelessWidget {
-  const Canceled({super.key});
+  final String patientId = '12345'; // استخدمي الـ ID الخاص بالمريض
+  Canceled({super.key});
+
+  final CollectionReference appointmentsRef =
+  FirebaseFirestore.instance.collection('appointments');
+
+  Stream<List<AppointmentModel>> getCanceledAppointments() {
+    return appointmentsRef.snapshots().map((snapshot) {
+      return snapshot.docs.map((doc) {
+        return AppointmentModel.fromMap(doc.data() as Map<String, dynamic>);
+      }).toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: const EdgeInsets.all(10),
-      itemCount: 3,
-      separatorBuilder: (context, index) => const SizedBox(height: 30),
-      itemBuilder: (context, index) => CustomCardAppointment(
-        appointmentStatue: "Appointment Canceled",
-        day: "Monday, 25 June",
-        time: "11:00 AM",
-        color: Color(0xff9B0A0A),
-        name: "Mazen Elsayed",
-        status: "General checkup",
-        imgPath: "assets/img.png",
-      ),
+    return StreamBuilder<List<AppointmentModel>>(
+      stream: getCanceledAppointments(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Center(
+              child: Text(
+                "No canceled appointments yet.",
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+              ));
+        }
+
+        final canceledAppointments = snapshot.data!
+            .where((app) => app.patientId == patientId && app.status == 'canceled')
+            .toList();
+
+        if (canceledAppointments.isEmpty) {
+          return const Center(
+              child: Text(
+                "No canceled appointments yet.",
+                style: TextStyle(fontSize: 16, color: Colors.grey),
+              ));
+        }
+
+        return ListView.separated(
+          padding: const EdgeInsets.all(10),
+          itemCount: canceledAppointments.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 7),
+          itemBuilder: (context, index) {
+            final appointment = canceledAppointments[index];
+            return Card(
+              elevation: 2,
+              color: AppColors.whiteColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: BorderSide(
+                  color: AppColors.greyColor,
+                  width: 1,
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Appointment Canceled",
+                      style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: const Color(0xff9B0A0A)),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      "${appointment.appointmentDate.day}/${appointment.appointmentDate.month}/${appointment.appointmentDate.year} | ${appointment.appointmentTime}",
+                      style: TextStyle(
+                        fontSize: 15,
+                        color: AppColors.greyColor,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 30,
+                          backgroundImage: AssetImage('lib/images/img.png'),
+                        ),
+                        const SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              appointment.name,
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.blackColor),
+                            ),
+                            Text(
+                              appointment.appointmentType,
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.greyColor),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
