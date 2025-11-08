@@ -14,6 +14,7 @@ class DoctorModel {
   final String? aboutMe;
   final String? workingTime;
   final double price;
+  final List<String>? appointmentIds;
   final Timestamp? createdAt;
 
   DoctorModel({
@@ -21,8 +22,9 @@ class DoctorModel {
     required this.name,
     required this.specialization,
     required this.hospital,
+    this.appointmentIds,
     this.imageUrl =
-        "",
+        "lib/images/profile.png",
     this.rating = 0.0,
     this.reviews = 0,
     this.isRecommended = true,
@@ -43,7 +45,7 @@ class DoctorModel {
       specialization: map['specialization'] ?? '',
       hospital: map['hospital'] ?? 'Unknown Hospital',
       imageUrl: map['imageUrl'] ??
-          "",
+          "lib/images/profile.png",
       rating: (map['rating'] ?? 0.0).toDouble(),
       reviews: map['reviews'] ?? 0,
       specializationKey: map['specializationKey'],
@@ -53,6 +55,7 @@ class DoctorModel {
      price: (map['price'] is String)
     ? double.tryParse(map['price']) ?? 0.0
     : (map['price'] ?? 0.0).toDouble(),
+      appointmentIds: map["appointmentIds"]??[],
       STR: map['STR'] is int ? map['STR'] : int.tryParse(map['STR'].toString()) ?? 0,
       createdAt: map['createdAt'],
     );
@@ -73,6 +76,7 @@ class DoctorModel {
       'aboutMe': aboutMe,
       'workingTime': workingTime,
       'price': price,
+      'appointmentIds':appointmentIds, 
       'STR': STR,
       'createdAt': createdAt ?? FieldValue.serverTimestamp(),
     };
@@ -93,6 +97,7 @@ class DoctorModel {
     String? aboutMe,
     String? workingTime,
     double? price,
+    List<String>?appointmentIds, 
     Timestamp? createdAt,
   }) {
     return DoctorModel(
@@ -109,6 +114,7 @@ class DoctorModel {
       aboutMe: aboutMe ?? this.aboutMe,
       workingTime: workingTime ?? this.workingTime,
       price: price ?? this.price,
+      appointmentIds:appointmentIds??this.appointmentIds,
       createdAt: createdAt ?? this.createdAt,
     );
   }

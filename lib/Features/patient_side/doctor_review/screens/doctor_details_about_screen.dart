@@ -1,87 +1,14 @@
 import 'package:flutter/material.dart';
-
-import '../../../../core/constants/colors.dart';
-import '../widgets/custom_tab_bar.dart';
-import '../widgets/doctor_header_card.dart';
+import 'package:health_care_app/core/constants/colors.dart';
+import 'package:health_care_app/models/doctor_model.dart';
 import '../widgets/make_appointment_button.dart';
 
 class DoctorDetailsAboutScreen extends StatelessWidget {
-  final String aboutMe;
-  final String doctorName;
-  final String specialty;
-  final String hospitalName;
-  final double rating;
-  final String doctorImageUrl;
-  final int numberOfReviews;
-  final String workingDays;
-  final String workingHours;
-  final double str;
-  final double price;
-  final String experienceHospital;
-  final String experienceYears;
+  final DoctorModel doctor;
 
-  const DoctorDetailsAboutScreen({
-    super.key,
-    required this.aboutMe,
-    required this.str,
-    required this.price,
-    required this.workingDays,
-    required this.workingHours,
-    required this.experienceHospital,
-    required this.experienceYears,
-    required this.doctorName,
-    required this.specialty,
-    required this.hospitalName,
-    required this.rating,
-    required this.doctorImageUrl,
-    required this.numberOfReviews,
-  });
-// =======
-// import 'package:health_care_app/Features/patient_side/doctor_review/screens/doctor_details_review_screen.dart';
-// import 'package:health_care_app/Features/patient_side/doctor_review/widgets/custom_tab_bar.dart';
-// import 'package:health_care_app/Features/patient_side/doctor_review/widgets/doctor_header_card.dart';
-// import 'package:health_care_app/Features/patient_side/doctor_review/widgets/make_appointment_button.dart';
-// import 'package:health_care_app/core/constants/colors.dart';
-// import 'package:health_care_app/models/doctor_model.dart';
-// import '../../../../shared/methods/navigator.dart';
+  const DoctorDetailsAboutScreen({super.key, required this.doctor});
 
-// class DoctorDetailsAboutScreen extends StatefulWidget {
-// const DoctorDetailsAboutScreen({super.key, this.doctor});
-// final DoctorModel? doctor;
 
-//   @override
-//   State<DoctorDetailsAboutScreen> createState() =>
-//       _DoctorDetailsAboutScreenState();
-// }
-
-// class _DoctorDetailsAboutScreenState extends State<DoctorDetailsAboutScreen>
-//     with SingleTickerProviderStateMixin {
-//   late TabController _tabController;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _tabController = TabController(length: 2, vsync: this);
-//     _tabController.addListener(_handleTabSelection);
-//   }
-
-//   void _handleTabSelection() {
-//     if (_tabController.indexIsChanging && _tabController.index == 1) {
-//       // If switching to Reviews tab, navigate to DoctorDetailsReviewScreen
-//       Navigator.pushReplacement(
-//         context,
-//         MaterialPageRoute(builder: (context) => DoctorDetailsReviewScreen()),
-//       );
-//     }
-//   }
-
-//   @override
-//   void dispose() {
-//     _tabController.removeListener(_handleTabSelection);
-//     _tabController.dispose();
-//     super.dispose();
-//   }
-// >>>>>>> main
 
   @override
   Widget build(BuildContext context) {
@@ -89,37 +16,59 @@ class DoctorDetailsAboutScreen extends StatelessWidget {
       backgroundColor: AppColors.whiteColor,
       body: Column(
         children: [
+          // ===== Main Details List =====
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(15.0),
               child: ListView(
                 children: [
-                  _buildSection("About Me", aboutMe),
-                  _buildSection("Working Time", "$workingDays, $workingHours"),
-                  _buildSection("STR", "$str"),
-                  _buildSection("Price", "\$$price"),
                   _buildSection(
-                    "Experience",
-                    "$experienceHospital\n$experienceYears",
+                    "About Me",
+                    
+                    doctor.aboutMe?.isNotEmpty == true
+                        ? doctor.aboutMe!
+                        : "No information available.",
                   ),
+                  _buildSection(
+                    "Hospital Name",
+                    "${doctor.hospital}",
+                  ),
+                  _buildSection(
+                    "Working Time",
+                    doctor.workingTime?.isNotEmpty == true
+                        ? doctor.workingTime!
+                        : "Not specified.",
+                  ),
+                  
+                  _buildSection("STR", doctor.STR.toString()),
+                  _buildSection("Price", "\$${doctor.price.toStringAsFixed(2)}"),
                 ],
               ),
             ),
           ),
+
+          // ===== Appointment Button =====
           MakeAppointmentButton(
-            doctorName: doctorName,
-            specialty: specialty,
-            hospitalName: hospitalName,
-            rating: rating,
-            doctorImageUrl: doctorImageUrl,
-            numberOfReviews: numberOfReviews,
-            workingDays: workingDays,
-            workingHours: workingHours,
-            price: price,
+            doctorName: doctor.name,
+            specialty: doctor.specialization,
+            hospitalName: doctor.hospital,
+            rating: doctor.rating,
+            doctorImageUrl: doctor.imageUrl,
+            numberOfReviews: doctor.reviews,
+            workingDays: doctor.workingTime ?? "",
+            workingHours: doctor.workingTime ?? "",
+            price: doctor.price,
           ),
         ],
       ),
     );
+  }
+
+  /// Helper to extract years from workingTime text (if any)
+  String _extractYears(String? text) {
+    if (text == null || text.isEmpty) return "Not available";
+    final match = RegExp(r'(\d+)\s*years?').firstMatch(text);
+    return match != null ? match.group(0)! : "Not available";
   }
 
   Widget _buildSection(String title, String content) {
@@ -130,6 +79,7 @@ class DoctorDetailsAboutScreen extends StatelessWidget {
         children: [
           Text(
             title,
+            maxLines: 4,
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,

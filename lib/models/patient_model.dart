@@ -1,13 +1,13 @@
 class PatientModel {
   final String patientId;
   final List<String>? appointmentIds;
-  final String? dateOfBirth;
+  // final String? dateOfBirth;
   final DateTime createdAt;
 
   PatientModel({
     required this.patientId,
     this.appointmentIds,
-    this.dateOfBirth,
+    // this.dateOfBirth,
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
@@ -17,7 +17,7 @@ class PatientModel {
       appointmentIds: map["appointmentIds"] != null
           ? List<String>.from(map["appointmentIds"])
           : [],
-      dateOfBirth: map["dateOfBirth"] ?? "",
+      // dateOfBirth: map["dateOfBirth"] ?? "",
       createdAt: map["createdAt"] != null
           ? DateTime.parse(map["createdAt"])
           : DateTime.now(),
@@ -28,7 +28,7 @@ class PatientModel {
     return {
       "patientId":patientId,
       "appointmentIds": appointmentIds ?? [],
-      "dateOfBirth": dateOfBirth ?? "",
+      // "dateOfBirth": dateOfBirth ?? "",
       "createdAt": createdAt.toIso8601String(),
     };
   }
@@ -36,13 +36,13 @@ class PatientModel {
   PatientModel copyWith({
     String? patientId,
     List<String>? appointmentIds,
-    String? dateOfBirth,
+    // String? dateOfBirth,
     DateTime? createdAt,
   }) {
     return PatientModel(
       patientId: patientId ?? this.patientId,
       appointmentIds: appointmentIds ?? this.appointmentIds,
-      dateOfBirth: dateOfBirth ?? this.dateOfBirth,
+      // dateOfBirth: dateOfBirth ?? this.dateOfBirth,
       createdAt: createdAt ?? this.createdAt,
     );
   }

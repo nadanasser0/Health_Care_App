@@ -52,3 +52,4 @@ flutter:
     - lib/images/icons/
     - lib/images/DoctorSpecialist/ 
     - lib/images/Doctors/
+    - lib/images/patients/

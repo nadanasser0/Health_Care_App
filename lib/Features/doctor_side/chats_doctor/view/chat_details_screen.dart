@@ -179,7 +179,6 @@ class _ChatsPageDoctorState extends State<ChatsPageDoctor> {
     ),
   );
   break;
-                          break;
                         case MessageType.video:
                           final filePath = data['filePath'] ?? '';
                           messageContent = filePath.isNotEmpty && File(filePath).existsSync()

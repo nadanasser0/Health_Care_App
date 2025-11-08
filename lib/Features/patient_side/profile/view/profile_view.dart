@@ -3,7 +3,7 @@ import 'package:health_care_app/Features/patient_side/home_screen/home_screen.da
 import 'package:health_care_app/Features/patient_side/profile/widgets/shared/custom_appbar.dart';
 import 'package:health_care_app/Features/patient_side/profile/widgets/user_profile/custom_profile_container.dart';
 import 'package:health_care_app/Features/patient_side/profile/widgets/shared/user_image_profile.dart';
-import 'package:health_care_app/shared/methods/navigator.dart';
+import 'package:health_care_app/shared/widgets/navigator.dart';
 
 class ProfilePatientScreen extends StatefulWidget {
   const ProfilePatientScreen({super.key});

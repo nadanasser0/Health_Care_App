@@ -5,7 +5,9 @@ import 'package:health_care_app/Features/patient_side/doctor_review/screens/doct
 import 'package:health_care_app/core/constants/colors.dart';
 import 'package:health_care_app/core/constants/sizes.dart';
 import 'package:health_care_app/Features/patient_side/home_screen/model/recomendation_doctor.dart';
+import 'package:health_care_app/services/firestore_services.dart';
 
+import '../../../../models/doctor_model.dart';
 import '../../doctor_review/screens/doctor_details_about_screen.dart';
 
 class RecomendationDoc extends StatelessWidget {
@@ -58,28 +60,40 @@ class RecomendationDoc extends StatelessWidget {
             final hasHospital = (d.hospital ?? '').trim().isNotEmpty;
 
             return InkWell(
-              onTap: () {
+              onTap: () async{
+
+
+
+
+
+
+ FirestoreService firestoreService = FirestoreService();
+        DoctorModel? doctorModel = await firestoreService.getDoctor(d.id);
+
+        if (doctorModel != null) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => DoctorDetailsTabbarScreen(
-                      aboutMe: "aboutMe",
-                      doctorName: d.name,
-                      specialty: d.specialization,
-                      hospitalName: d.hospital,
-                      rating: 3.5,
-                      doctorImageUrl: "lib/images/doctor_avatar.png",
-                      numberOfReviews: 3,
-                      workingDays: "5",
-                      workingHours: "2",
-                      str: 5,
-                      price: 150,
-                      experienceHospital: "experienceHospital",
-                      experienceYears: "experienceYears", doctorId: d.id,
+                    builder: (context) => DoctorDetailsTabbarScreen(docModel:doctorModel, doctorId: d.id
+        
+                      // aboutMe: "aboutMe",
+                      // doctorName: d.name,
+                      // specialty: d.specialization,
+                      // hospitalName: d.hospital,
+                      // rating: 3.5,
+                      // // doctorImageUrl: "lib/images/doctor_avatar.png",
+                      // doctorImageUrl: d.imageUrl,
+                      // numberOfReviews: 3,
+                      // workingDays: "5",
+                      // workingHours: "2",
+                      // str: 5,
+                      // price: 150,
+                      // experienceHospital: "experienceHospital",
+                      // experienceYears: "experienceYears", doctorId: d.id,
                     ),
                   ),
-                );
-                // wafaa & mariam
+                );}
+              
               },
               child: Card(
                 margin: const EdgeInsets.symmetric(vertical: 8),

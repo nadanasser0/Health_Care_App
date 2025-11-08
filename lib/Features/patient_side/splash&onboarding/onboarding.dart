@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:health_care_app/Features/patient_side/auth/view/loginORsignup.dart';
 import 'package:health_care_app/core/constants/strings.dart';
-import 'package:health_care_app/core/routes/app_routes.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -54,9 +54,13 @@ class _OnboardingViewState extends State<OnboardingView> {
         
               child: TextButton(
                 onPressed: () {
-                  Navigator.pushReplacementNamed(
+                  // Navigator.pushReplacementNamed(
+                  //   context,
+                  //   AppRoutes.loginOrSignup,
+                  // );
+                  Navigator.push(
                     context,
-                    AppRoutes.loginOrSignup,
+                   MaterialPageRoute(builder: (context)=>LoginOrSignup()) ,
                   );
                 },
                 child: Row(
@@ -110,10 +114,14 @@ class _OnboardingViewState extends State<OnboardingView> {
                       ),
                       onPressed: () {
                         if (isLastPage) {
-                          Navigator.pushReplacementNamed(
+                          Navigator.push(
                             context,
-                            AppRoutes.loginOrSignup,
+                            MaterialPageRoute(builder: (context)=>LoginOrSignup())
                           );
+                          // Navigator.pushReplacementNamed(
+                          //   context,
+                          //   AppRoutes.loginOrSignup,
+                          // );
                         } else {
                           _controller.nextPage(
                             duration: Duration(milliseconds: 500),

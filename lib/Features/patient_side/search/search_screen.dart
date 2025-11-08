@@ -6,6 +6,7 @@ import 'package:health_care_app/Features/patient_side/chats/view/chat_details_sc
 import 'package:health_care_app/Features/patient_side/doctor_review/screens/doctor_details_about_screen.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 import 'package:health_care_app/models/doctor_model.dart';
+import 'package:health_care_app/services/firestore_services.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -357,78 +358,84 @@ List<Map<String, dynamic>> _filterDoctors(List docs) {
           ),
           child: InkWell(
         onTap: () {
-  final doctorModel = DoctorModel.fromMap(doctor, doctor['id']);
+          FirestoreService firestoreService = FirestoreService();
+  DoctorModel doctorModel = firestoreService.getDoctor(doctor['id']) as DoctorModel;
 
   Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => DoctorDetailsAboutScreen(doctor: doctorModel),
+  context,
+  MaterialPageRoute(
+    builder: (context) => DoctorDetailsAboutScreen(
+      doctor: doctorModel,
     ),
-  );
+  ),
+);
+
 },
 
 
             child:
-             Container(
-              padding: const EdgeInsets.all(15),
-              child: 
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(15),
-                    child: Image.network(
-                      doctor['image'],
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Image.asset(
-                        'lib/images/patientt.png',
+             Expanded(
+               child: Container(
+                padding: const EdgeInsets.all(15),
+                child: 
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ClipRRect(
+                      // borderRadius: BorderRadius.circular(15),
+                      child: Image.asset(
+                        doctor['image'],
                         width: 100,
                         height: 100,
                         fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Image.asset(
+                          'lib/images/patientt.png',
+                          width: 100,
+                          height: 100,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 15),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Dr. ${doctor['name']}',
-                            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
-                        const SizedBox(height: 5),
-                        Row(children: [
-
-                           Text(doctor['specialization'], style: TextStyle(color: AppColors.greyColor, fontSize: 13)),
-                           const SizedBox(width: 5),
- Text('|'),
-                           const SizedBox(width: 5),
-
-                        Text("${doctor['hospital']}", style: TextStyle(color: AppColors.greyColor, fontSize: 13)),
-                       
-
-                        ],),
-                        const SizedBox(height: 8),
-                        Row(
-                          children: [
-                            Icon(Icons.star, color: AppColors.starColor, size: 16),
-                            const SizedBox(width: 5),
-                            Text("${doctor['rating']} (${doctor['reviews']} reviews)",
-                                style: TextStyle(color: AppColors.greyColor, fontSize: 13)),
-                          ],
-                        ),
-                      ],
+                    const SizedBox(width: 15),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Dr. ${doctor['name']}',
+                              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
+                          const SizedBox(height: 5),
+                          Row(children: [
+               
+                             Text(doctor['specialization'], style: TextStyle(color: AppColors.greyColor, fontSize: 13)),
+                             const SizedBox(width: 5),
+                Text('|'),
+                             const SizedBox(width: 5),
+               
+                          Text("${doctor['hospital']}", style: TextStyle(color: AppColors.greyColor, fontSize: 13)),
+                         
+               
+                          ],),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Icon(Icons.star, color: AppColors.starColor, size: 16),
+                              const SizedBox(width: 5),
+                              Text("${doctor['rating']} (${doctor['reviews']} reviews)",
+                                  style: TextStyle(color: AppColors.greyColor, fontSize: 13)),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.chat_bubble_outline, color: Colors.blue),
-                    onPressed: () =>
-                        _onDoctorTapAndOpenChat(doctorId: doctor['id'], name: doctor['name'], image: doctor['image']),
-                  )
-                ],
-              ),
-            ),
+                    // IconButton(
+                    //   icon: const Icon(Icons.chat_bubble_outline, color: Colors.blue),
+                    //   onPressed: () =>
+                    //       _onDoctorTapAndOpenChat(doctorId: doctor['id'], name: doctor['name'], image: doctor['image']),
+                    // )
+                  ],
+                ),
+                           ),
+             ),
           ),
         );
       },

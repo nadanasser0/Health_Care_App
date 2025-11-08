@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:health_care_app/models/user_model.dart';
+import 'package:health_care_app/shared/user_session.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../models/review_model.dart';
 import '../../../../services/firestore_services.dart';
@@ -14,15 +16,14 @@ class DoctorDetailsReviewScreen extends StatefulWidget {
       _DoctorDetailsReviewScreenState();
 }
 
-class _DoctorDetailsReviewScreenState
-    extends State<DoctorDetailsReviewScreen> {
+class _DoctorDetailsReviewScreenState extends State<DoctorDetailsReviewScreen> {
   final FirestoreService _firestoreService = FirestoreService();
 
   void _showReviewBottomSheet() {
     double selectedRating = 0;
     TextEditingController reviewController = TextEditingController();
 
-// <<<<<<< oppint_firebase
+    // <<<<<<< oppint_firebase
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -81,7 +82,8 @@ class _DoctorDetailsReviewScreenState
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () async {
-                      if (selectedRating == 0 || reviewController.text.isEmpty) {
+                      if (selectedRating == 0 ||
+                          reviewController.text.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text("Please add a rating and a comment"),
@@ -89,22 +91,21 @@ class _DoctorDetailsReviewScreenState
                         );
                         return;
                       }
-// =======
-//   void _handleTabSelection() {
-//     if (_tabController.indexIsChanging && _tabController.index == 0) {
-//       // If switching to About tab, navigate to DoctorDetailsAboutScreen
-//       Navigator.pushReplacement(
-//         context,
-//         MaterialPageRoute(builder: (context) => DoctorDetailsAboutScreen(doctor: null,)),
-//       );
-//     }
-//   }
-// >>>>>>> main
+                      // =======
+                      //   void _handleTabSelection() {
+                      //     if (_tabController.indexIsChanging && _tabController.index == 0) {
+                      //       // If switching to About tab, navigate to DoctorDetailsAboutScreen
+                      //       Navigator.pushReplacement(
+                      //         context,
+                      //         MaterialPageRoute(builder: (context) => DoctorDetailsAboutScreen(doctor: null,)),
+                      //       );
+                      //     }
+                      //   }
+                      // >>>>>>> main
 
                       final newReview = ReviewModel(
                         reviewId: '',
-                        patientId:
-                        'dummyPatientId', // ممكن تغيريها للمستخدم الحالي
+                        patientId: UserSession.currentUser!.user_id,
                         doctorId: widget.doctorId,
                         rating: selectedRating,
                         comment: reviewController.text,
@@ -159,12 +160,30 @@ class _DoctorDetailsReviewScreenState
             itemCount: reviews.length,
             itemBuilder: (context, index) {
               final review = reviews[index];
-              return ReviewCard(
-                reviewerName: review.patientId,
-                reviewerImageUrl: 'lib/images/doctor_avatar.png',
-                rating: review.rating ?? 0,
-                reviewText: review.comment ?? '',
-                timeAgo: review.createdAt.toLocal().toString().split(' ')[0],
+              return FutureBuilder<UserModel?>(
+                future: _firestoreService.getUser(review.patientId),
+                builder: (context, snapshot) {
+                  // if (snapshot.connectionState == ConnectionState.waiting) {
+                  //   return const Center(child: CircularProgressIndicator());
+                  // }
+
+                  if (!snapshot.hasData || snapshot.data == null) {
+                    return SizedBox();
+                  }
+
+                  final userModel = snapshot.data!;
+
+                  return ReviewCard(
+                    reviewerName: userModel.name,
+                    reviewerImageUrl:
+                        userModel.image ?? 'lib/images/doctor_avatar.png',
+                    rating: review.rating ?? 0,
+                    reviewText: review.comment ?? '',
+                    timeAgo: review.createdAt.toLocal().toString().split(
+                      ' ',
+                    )[0],
+                  );
+                },
               );
             },
           );
@@ -183,62 +202,62 @@ class _DoctorDetailsReviewScreenState
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-// <<<<<<< oppint_firebase
+          // <<<<<<< oppint_firebase
           child: const Text(
             "Make a Review",
             style: TextStyle(fontSize: 16, color: Colors.white),
-// =======
-//           const SizedBox(height: 8),
-//           CustomTabBar(
-//             tabController: _tabController,
-//             onTabTap: (index) {
-//               if (index == 0) {
-//                 // If About tab is tapped, navigate
-//                 Navigator.pushReplacement(
-//                   context,
-//                   MaterialPageRoute(
-//                     builder: (context) => DoctorDetailsAboutScreen(doctor:null ),
-//                   ),
-//                 );
-//               }
-//             },
-//           ),
-//           Expanded(
-//             child: SingleChildScrollView(
-//               padding: const EdgeInsets.symmetric(
-//                 horizontal: 16.0,
-//                 vertical: 8.0,
-//               ),
-//               child: Column(
-//                 children: [
-//                   ReviewCard(
-//                     reviewerName: 'Jane Cooper',
-//                     reviewerImageUrl: 'lib/images/jane_cooper.png',
-//                     rating: 5,
-//                     reviewText:
-//                         'As someone who lives in a remote area with limited access to healthcare, this telemedicine app has been a game changer for me. I can easily schedule virtual appointments with doctors and get the care I need without having to travel long distances.',
-//                     timeAgo: 'Today',
-//                   ),
-//                   ReviewCard(
-//                     reviewerName: 'Robert Fox',
-//                     reviewerImageUrl: 'lib/images/robert_fox.png',
-//                     rating: 5,
-//                     reviewText:
-//                         'I was initially skeptical about using a telemedicine app but this app has exceeded my expectations. The doctors are highly qualified and provide excellent care.',
-//                     timeAgo: 'Today',
-//                   ),
-//                   ReviewCard(
-//                     reviewerName: 'Jacob Jones',
-//                     reviewerImageUrl: 'lib/images/jacob_jones.png',
-//                     rating: 5,
-//                     reviewText:
-//                         'I was initially skeptical about using a telemedicine app but this app has exceeded my expectations. The doctors are highly qualified and provide excellent care.',
-//                     timeAgo: 'Today',
-//                   ),
-//                 ],
-//               ),
-//             ),
-// >>>>>>> main
+            // =======
+            //           const SizedBox(height: 8),
+            //           CustomTabBar(
+            //             tabController: _tabController,
+            //             onTabTap: (index) {
+            //               if (index == 0) {
+            //                 // If About tab is tapped, navigate
+            //                 Navigator.pushReplacement(
+            //                   context,
+            //                   MaterialPageRoute(
+            //                     builder: (context) => DoctorDetailsAboutScreen(doctor:null ),
+            //                   ),
+            //                 );
+            //               }
+            //             },
+            //           ),
+            //           Expanded(
+            //             child: SingleChildScrollView(
+            //               padding: const EdgeInsets.symmetric(
+            //                 horizontal: 16.0,
+            //                 vertical: 8.0,
+            //               ),
+            //               child: Column(
+            //                 children: [
+            //                   ReviewCard(
+            //                     reviewerName: 'Jane Cooper',
+            //                     reviewerImageUrl: 'lib/images/jane_cooper.png',
+            //                     rating: 5,
+            //                     reviewText:
+            //                         'As someone who lives in a remote area with limited access to healthcare, this telemedicine app has been a game changer for me. I can easily schedule virtual appointments with doctors and get the care I need without having to travel long distances.',
+            //                     timeAgo: 'Today',
+            //                   ),
+            //                   ReviewCard(
+            //                     reviewerName: 'Robert Fox',
+            //                     reviewerImageUrl: 'lib/images/robert_fox.png',
+            //                     rating: 5,
+            //                     reviewText:
+            //                         'I was initially skeptical about using a telemedicine app but this app has exceeded my expectations. The doctors are highly qualified and provide excellent care.',
+            //                     timeAgo: 'Today',
+            //                   ),
+            //                   ReviewCard(
+            //                     reviewerName: 'Jacob Jones',
+            //                     reviewerImageUrl: 'lib/images/jacob_jones.png',
+            //                     rating: 5,
+            //                     reviewText:
+            //                         'I was initially skeptical about using a telemedicine app but this app has exceeded my expectations. The doctors are highly qualified and provide excellent care.',
+            //                     timeAgo: 'Today',
+            //                   ),
+            //                 ],
+            //               ),
+            //             ),
+            // >>>>>>> main
           ),
         ),
       ),

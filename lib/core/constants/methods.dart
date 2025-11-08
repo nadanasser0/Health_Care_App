@@ -9,7 +9,7 @@ import 'package:health_care_app/core/constants/colors.dart';
         content: Text(message, style: TextStyle(color: Colors.white)),
         backgroundColor: color ?? AppColors.greyColor,
         behavior: SnackBarBehavior.floating,
-        margin: EdgeInsets.all(20),
+        // margin: EdgeInsets.all(20),
         duration: Duration(seconds: 2),
       ),
     );

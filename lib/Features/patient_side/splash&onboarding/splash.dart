@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:health_care_app/core/routes/app_routes.dart';
+import 'package:health_care_app/Features/patient_side/splash&onboarding/onboarding.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 
 class Splash extends StatefulWidget {
@@ -37,7 +37,7 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
 
     Timer(
       const Duration(seconds: 3),
-      () => Navigator.pushReplacementNamed(context, AppRoutes.onboarding),
+      () => Navigator.push(context,MaterialPageRoute(builder: (context)=> OnboardingView()) ),
     );
   }
 
@@ -83,6 +83,7 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
                 fontWeight: FontWeight.bold,
               ),
             ),
+              SizedBox(height: 20,),
           ],
         ),
       ),

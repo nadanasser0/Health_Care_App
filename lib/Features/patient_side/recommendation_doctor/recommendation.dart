@@ -199,7 +199,7 @@ class _RecommendationState extends State<Recommendation> {
                   );
                 }
 
-                return DoctorListView(items: items);
+                return DoctorListView(items: items );
               },
             ),
           ),

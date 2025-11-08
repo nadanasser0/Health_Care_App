@@ -1,10 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:health_care_app/Features/doctor_side/navigation_screen.dart';
-// import 'package:health_care_app/Features/doctor_side/navigation_screen.dart';
-
+import 'package:health_care_app/Features/patient_side/auth/view/forgot_password_view.dart';
 import 'package:health_care_app/core/constants/methods.dart';
-import 'package:health_care_app/core/routes/app_routes.dart';
 import 'package:health_care_app/Features/patient_side/auth/widgets/shared/custom_button.dart';
 import 'package:health_care_app/Features/patient_side/auth/widgets/login_widgets/login_form.dart';
 import 'package:health_care_app/Features/patient_side/auth/widgets/login_widgets/login_header.dart';
@@ -12,7 +10,7 @@ import 'package:health_care_app/Features/patient_side/auth/widgets/login_widgets
 import 'package:health_care_app/core/constants/colors.dart';
 import 'package:health_care_app/models/user_model.dart';
 import 'package:health_care_app/services/firestore_services.dart';
-import 'package:health_care_app/shared/methods/navigator.dart';
+import 'package:health_care_app/shared/widgets/navigator.dart';
 import 'package:health_care_app/shared/user_session.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -62,9 +60,9 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(height: 8),
                     TextButton(
                       onPressed: () {
-                        Navigator.pushReplacementNamed(
+                        Navigator.push(
                           context,
-                          AppRoutes.forgotPassowrd,
+                          MaterialPageRoute(builder: (context)=> ForgotpasswordView())
                         );
                       },
                       child: Text(
@@ -99,12 +97,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             );
                             UserSession.currentUser = user;                       
                              
-                            snackBarMessage(
-                              context,
-                              "Sign in successfully",
-                              color: Colors.green,
-                            );
                             
+                      
                             if (user.role == 'Doctor') {
 
                              UserSession.currentDoctor = await firestoreService.getDoctor( 
@@ -132,6 +126,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                               );
                             }
+                            snackBarMessage(
+                              context,
+                              "Sign in successfully",
+                              color: Colors.green,
+                            );
 
                             
                           } on FirebaseAuthException catch (e) {

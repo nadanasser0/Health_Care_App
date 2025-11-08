@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:health_care_app/Features/patient_side/confirmation/widgets/booking_details.dart';
 import 'package:health_care_app/Features/patient_side/confirmation/widgets/header_booking_confirmation.dart';
 import 'package:health_care_app/Features/patient_side/confirmation/widgets/instructions.dart';
-import 'package:health_care_app/Features/patient_side/confirmation/widgets/payment_details_widget.dart';
 import 'package:health_care_app/shared/widgets/custom_button.dart';
+import 'package:health_care_app/shared/widgets/navigator.dart';
 
 import '../../../core/constants/colors.dart';
-import '../../../shared/methods/navigator.dart';
 
 class BookingConfirmation extends StatelessWidget {
   const BookingConfirmation({

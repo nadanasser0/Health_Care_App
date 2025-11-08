@@ -4,16 +4,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:health_care_app/Features/patient_side/notification/notification_screen.dart';
 
 class HeaderWidget extends StatefulWidget {
-  const HeaderWidget({Key? key}) : super(key: key);
+  final ValueChanged<String>? onUserNameLoaded;
+  // 👆 دي دالة callback ترجع اسم المستخدم بعد تحميله
+
+  const HeaderWidget({Key? key, this.onUserNameLoaded}) : super(key: key);
 
   @override
   State<HeaderWidget> createState() => _HeaderWidgetState();
 }
 
 class _HeaderWidgetState extends State<HeaderWidget> {
-  String userName = "";
-  bool hasNewNotification =
-      true; //  مؤقتًا خليه true عشان النقطة تظهر (تقدر تربطه بفايربيز لاحقًا)
+  String userName = '';
+  bool hasNewNotification = true; // مؤقت لحين الربط بفايربيز Notifications
 
   @override
   void initState() {
@@ -22,17 +24,33 @@ class _HeaderWidgetState extends State<HeaderWidget> {
   }
 
   Future<void> _loadUserData() async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      final doc = await FirebaseFirestore.instance
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return;
+
+      final userDoc = await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
           .get();
-      if (doc.exists) {
+
+      if (userDoc.exists) {
+        final data = userDoc.data();
+        final name = (data?['name'] as String?)?.trim() ?? 'User';
+
         setState(() {
-          userName = doc['name'] ?? "";
+          userName = name;
         });
+
+        // ✅ نرجع الاسم للصفحة اللي استخدمت الودجت
+        if (widget.onUserNameLoaded != null) {
+          widget.onUserNameLoaded!(name);
+        }
+      } else {
+        setState(() => userName = 'User');
       }
+    } catch (e) {
+      debugPrint('⚠️ Error fetching user data: $e');
+      setState(() => userName = 'User');
     }
   }
 
@@ -43,7 +61,7 @@ class _HeaderWidgetState extends State<HeaderWidget> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          //  نص الترحيب
+          // 👋 الترحيب بالمستخدم (UI)
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -52,17 +70,21 @@ class _HeaderWidgetState extends State<HeaderWidget> {
                 style: const TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
               ),
               const SizedBox(height: 5),
               const Text(
                 "Welcome back 👋",
-                style: TextStyle(fontSize: 16, color: Colors.grey),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey,
+                ),
               ),
             ],
           ),
 
-          //  زر الإشعارات بشكل احترافي داخل دائرة + نقطة تنبيه
+          // 🔔 زر الإشعارات
           Stack(
             children: [
               Container(
@@ -78,23 +100,23 @@ class _HeaderWidgetState extends State<HeaderWidget> {
                   ],
                 ),
                 child: IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const NotificationScreen(),
-                      ),
-                    );
-                  },
                   icon: const Icon(
                     Icons.notifications_none_outlined,
                     size: 28,
                     color: Colors.blueAccent,
                   ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const NotificationScreen(),
+                      ),
+                    );
+                  },
                 ),
               ),
 
-              //  النقطة الصغيرة لو فيه إشعارات جديدة
+              // 🔴 النقطة الحمراء (تنبيه جديد)
               if (hasNewNotification)
                 Positioned(
                   right: 8,

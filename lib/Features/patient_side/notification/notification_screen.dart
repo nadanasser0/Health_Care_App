@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 import 'package:health_care_app/core/constants/sizes.dart';
-import 'package:health_care_app/core/routes/app_routes.dart';
 
 class NotificationScreen extends StatelessWidget {
   const NotificationScreen({super.key});

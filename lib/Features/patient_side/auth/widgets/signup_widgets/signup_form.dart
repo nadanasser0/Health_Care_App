@@ -32,17 +32,6 @@ class SignupForm extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          CustomTextField(
-            label: "Enter your name",
-            icon: Icons.person,
-            controller: userNameController,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return "Please enter your name";
-              }
-              return null;
-            },
-          ),
           // CustomTextField(
           //   label: "Enter your name",
           //   icon: Icons.person,
@@ -51,22 +40,33 @@ class SignupForm extends StatelessWidget {
           //     if (value == null || value.isEmpty) {
           //       return "Please enter your name";
           //     }
-
-          //     final parts = value.trim().split(' ');
-
-          //     if (parts.length < 2) {
-          //       return "Please enter your full name (first and last)";
-          //     }
-
-          //     for (var part in parts) {
-          //       if (part.length < 3) {
-          //         return "Each part of your name must be at least 3 letters";
-          //       }
-          //     }
-
           //     return null;
           //   },
           // ),
+          CustomTextField(
+            label: "Enter your name",
+            icon: Icons.person,
+            controller: userNameController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return "Please enter your name";
+              }
+
+              final parts = value.trim().split(' ');
+
+              if (parts.length < 2) {
+                return "Please enter your full name (first and last)";
+              }
+
+              for (var part in parts) {
+                if (part.length < 3) {
+                  return "Each part of your name must be at least 3 letters";
+                }
+              }
+
+              return null;
+            },
+          ),
 
           SizedBox(height: 20),
 
@@ -85,42 +85,43 @@ class SignupForm extends StatelessWidget {
 
           SizedBox(height: 20),
 
-          CustomTextField(
-            label: "Enter your phone",
-            icon: Icons.phone_callback,
-            controller: phoneNumberController,
-
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return "Please enter your phone number";
-              }
-              return null;
-            },
-          ),
           // CustomTextField(
           //   label: "Enter your phone",
           //   icon: Icons.phone_callback,
           //   controller: phoneNumberController,
+
           //   validator: (value) {
           //     if (value == null || value.isEmpty) {
           //       return "Please enter your phone number";
           //     }
-
-          //     if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
-          //       return "Phone number must contain only numbers";
-          //     }
-
-          //     if (value.length != 11) {
-          //       return "Phone number must be 11 digits";
-          //     }
-
-          //     if (!value.startsWith("011")) {
-          //       return "Phone number must start with 011";
-          //     }
-
           //     return null;
           //   },
           // ),
+          
+          CustomTextField(
+            label: "Enter your phone",
+            icon: Icons.phone_callback,
+            controller: phoneNumberController,
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return "Please enter your phone number";
+              }
+
+              if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
+                return "Phone number must contain only numbers";
+              }
+
+              if (value.length != 11) {
+                return "Phone number must be 11 digits";
+              }
+
+              if (!value.startsWith("011")) {
+                return "Phone number must start with 011";
+              }
+
+              return null;
+            },
+          ),
 
           const SizedBox(height: 16),
 

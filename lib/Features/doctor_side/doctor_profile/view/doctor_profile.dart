@@ -33,6 +33,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
         },
       ),
 
+
       body: Padding(
         padding: const EdgeInsets.only(top: 80.0, right: 20, left: 20),
         child: Column(

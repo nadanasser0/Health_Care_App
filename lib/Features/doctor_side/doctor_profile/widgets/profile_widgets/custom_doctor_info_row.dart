@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:health_care_app/core/constants/colors.dart';
-import 'package:health_care_app/core/constants/sizes.dart';
 
 class CustomDoctorInfoRow extends StatelessWidget {
   final TextEditingController controller;

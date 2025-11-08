@@ -82,13 +82,11 @@ class _SignupViewState extends State<SignupView> {
                       genderController: genderController,
                     ),
                     const SizedBox(height: 20),
-
                     UserDoctorSelector(onSelectionChanged: handleSelection),
-
-                    // edit mazen shabar
                     if (_selectedType == "Doctor") ...[
                       const SizedBox(height: 20),
 
+                      
                       CustomTextField(
                         label: "Enter your hospital name",
                         icon: Icons.local_hospital_outlined,
@@ -184,11 +182,12 @@ class _SignupViewState extends State<SignupView> {
                             UserModel newUser = UserModel(
                               user_id: userCredential.user!.uid,
                               name: userNameController.text.trim(),
-                              email: emailController.text.trim(),
+                              email: emailController.text.trim().toLowerCase(),
                               password: passwordController.text.trim(),
                               phoneNum: int.parse(
                                 phoneNumberController.text.trim(),
                               ),
+                              image:"lib/images/profile.png",
                               gender: genderController.text.trim(),
                               role: _selectedType,
                             );
@@ -202,9 +201,8 @@ class _SignupViewState extends State<SignupView> {
                                 doctorId: userCredential.user!.uid,
                                 name: userNameController.text.trim(),
                                 specialization: _selectedSpecialization!,
-                                hospital: hospitalName.isNotEmpty
-                                    ? hospitalName
-                                    : 'Unknown Hospital',
+                                hospital: hospitalController.text,
+                                    // imageUrl: "lib/images/profile.png",
                               );
 
                               await doctors
@@ -214,6 +212,7 @@ class _SignupViewState extends State<SignupView> {
                               PatientModel newPatient = PatientModel(
                                 patientId: userCredential.user!.uid,
                               );
+
                               await patients
                                   .doc(userCredential.user!.uid)
                                   .set(newPatient.toMap());

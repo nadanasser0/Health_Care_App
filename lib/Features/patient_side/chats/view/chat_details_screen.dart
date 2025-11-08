@@ -19,7 +19,12 @@ class ChatsPagePatient extends StatefulWidget {
   final String doctorName;
   final String chatId;
 
-  const ChatsPagePatient({super.key, required this.doctorName, required this.chatId, required chatName});
+  const ChatsPagePatient({
+    super.key,
+    required this.doctorName,
+    required this.chatId,
+    required chatName,
+  });
 
   @override
   State<ChatsPagePatient> createState() => _ChatsPagePatientState();
@@ -41,9 +46,9 @@ class _ChatsPagePatientState extends State<ChatsPagePatient> {
     FirebaseFirestore.instance
         .collection('chats')
         .doc(widget.chatId)
-        .update({'unreadCount_${currentUserId}': 0}).catchError((_) {});
+        .update({'unreadCount_${currentUserId}': 0})
+        .catchError((_) {});
   }
-
   void _scrollToBottom() {
     if (_scrollController.hasClients) {
       _scrollController.animateTo(
@@ -81,14 +86,22 @@ class _ChatsPagePatientState extends State<ChatsPagePatient> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Dr. ${widget.doctorName}',
-                          style: TextStyle(
-                              color: AppColors.blackColor,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 19)),
+                      Text(
+                        'Dr. ${widget.doctorName}',
+                        style: TextStyle(
+                          color: AppColors.blackColor,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 19,
+                        ),
+                      ),
                       const SizedBox(height: 2),
-                      Text("Online",
-                          style: TextStyle(color: AppColors.greyColor, fontSize: 12)),
+                      Text(
+                        "Online",
+                        style: TextStyle(
+                          color: AppColors.greyColor,
+                          fontSize: 12,
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -96,9 +109,10 @@ class _ChatsPagePatientState extends State<ChatsPagePatient> {
             ),
 
             Expanded(
-              child:
-               StreamBuilder<QuerySnapshot>(
-                stream: messages.orderBy('createdAt', descending: true).snapshots(),
+              child: StreamBuilder<QuerySnapshot>(
+                stream: messages
+                    .orderBy('createdAt', descending: true)
+                    .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -106,8 +120,11 @@ class _ChatsPagePatientState extends State<ChatsPagePatient> {
 
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                     return const Center(
-                        child: Text("Say hi 👋 to start the conversation",
-                            style: TextStyle(fontSize: 16, color: Colors.grey)));
+                      child: Text(
+                        "Say hi 👋 to start the conversation",
+                        style: TextStyle(fontSize: 16, color: Colors.grey),
+                      ),
+                    );
                   }
 
                   final docs = snapshot.data!.docs;
@@ -120,8 +137,9 @@ class _ChatsPagePatientState extends State<ChatsPagePatient> {
                       final data = docs[index].data() as Map<String, dynamic>;
                       final bool isMe = data['senderId'] == currentUserId;
                       final MessageType type = MessageType.values.firstWhere(
-                          (e) => e.name == data['type'],
-                          orElse: () => MessageType.text);
+                        (e) => e.name == data['type'],
+                        orElse: () => MessageType.text,
+                      );
 
                       Widget messageContent;
 
@@ -130,7 +148,9 @@ class _ChatsPagePatientState extends State<ChatsPagePatient> {
                           messageContent = Text(
                             data['text'] ?? '',
                             style: TextStyle(
-                              color: isMe ? AppColors.whiteColor : AppColors.blackColor,
+                              color: isMe
+                                  ? AppColors.whiteColor
+                                  : AppColors.blackColor,
                             ),
                           );
                           break;
@@ -138,71 +158,103 @@ class _ChatsPagePatientState extends State<ChatsPagePatient> {
                           final filePath = data['filePath'] ?? '';
                           messageContent = ClipRRect(
                             borderRadius: BorderRadius.circular(12),
-                            child: filePath.isNotEmpty && File(filePath).existsSync()
-                                ? Image.file(File(filePath), width: 200, fit: BoxFit.cover)
-                                : const SizedBox(width: 200, height: 150, child: Center(child: Text("Image not found"))),
+                            child:
+                                filePath.isNotEmpty &&
+                                    File(filePath).existsSync()
+                                ? Image.file(
+                                    File(filePath),
+                                    width: 200,
+                                    fit: BoxFit.cover,
+                                  )
+                                : const SizedBox(
+                                    width: 200,
+                                    height: 150,
+                                    child: Center(
+                                      child: Text("Image not found"),
+                                    ),
+                                  ),
                           );
                           break;
                         case MessageType.audio:
-  final filePath = data['filePath'] ?? '';
-  bool isPlaying = false;
-  final player = FlutterSoundPlayer();
+                          final filePath = data['filePath'] ?? '';
+                          bool isPlaying = false;
+                          final player = FlutterSoundPlayer();
 
-  messageContent = StatefulBuilder(
-    builder: (context, setState) => Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton(
-          icon: Icon(
-            isPlaying ? Icons.stop : Icons.play_arrow,
-            color: isMe ? AppColors.whiteColor : AppColors.blueColor,
-          ),
-          onPressed: () async {
-            if (!isPlaying) {
-              await player.openPlayer();
-              await player.startPlayer(
-                fromURI: filePath,
-                whenFinished: () {
-                  setState(() => isPlaying = false);
-                },
-              );
-              setState(() => isPlaying = true);
-            } else {
-              await player.stopPlayer();
-              setState(() => isPlaying = false);
-            }
-          },
-        ),
-        const SizedBox(width: 8),
-        const Text("Voice message"),
-      ],
-    ),
-  );
-  break;
+                          messageContent = StatefulBuilder(
+                            builder: (context, setState) => Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: Icon(
+                                    isPlaying ? Icons.stop : Icons.play_arrow,
+                                    color: isMe
+                                        ? AppColors.whiteColor
+                                        : AppColors.blueColor,
+                                  ),
+                                  onPressed: () async {
+                                    if (!isPlaying) {
+                                      await player.openPlayer();
+                                      await player.startPlayer(
+                                        fromURI: filePath,
+                                        whenFinished: () {
+                                          setState(() => isPlaying = false);
+                                        },
+                                      );
+                                      setState(() => isPlaying = true);
+                                    } else {
+                                      await player.stopPlayer();
+                                      setState(() => isPlaying = false);
+                                    }
+                                  },
+                                ),
+                                const SizedBox(width: 8),
+                                const Text("Voice message"),
+                              ],
+                            ),
+                          );
+                          break;
                           break;
                         case MessageType.video:
                           final filePath = data['filePath'] ?? '';
-                          messageContent = filePath.isNotEmpty && File(filePath).existsSync()
-                              ? SizedBox(width: 200, height: 150, child: VideoPlayerWidget(filePath: filePath))
-                              : const SizedBox(width: 200, height: 150, child: Center(child: Text("Video not found")));
+                          messageContent =
+                              filePath.isNotEmpty && File(filePath).existsSync()
+                              ? SizedBox(
+                                  width: 200,
+                                  height: 150,
+                                  child: VideoPlayerWidget(filePath: filePath),
+                                )
+                              : const SizedBox(
+                                  width: 200,
+                                  height: 150,
+                                  child: Center(child: Text("Video not found")),
+                                );
                           break;
                         case MessageType.file:
                           final filePath = data['filePath'] ?? '';
                           final fileName = data['text'] ?? 'File';
                           messageContent = GestureDetector(
                             onTap: () async {
-                              if (filePath.isNotEmpty && File(filePath).existsSync()) {
+                              if (filePath.isNotEmpty &&
+                                  File(filePath).existsSync()) {
                                 await OpenFile.open(filePath);
                               }
                             },
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(Icons.insert_drive_file, color: Colors.grey),
+                                const Icon(
+                                  Icons.insert_drive_file,
+                                  color: Colors.grey,
+                                ),
                                 const SizedBox(width: 8),
                                 Flexible(
-                                  child: Text(fileName,
-                                      style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline)),
+                                  child: Text(
+                                    fileName,
+                                    style: const TextStyle(
+                                      color: Colors.blue,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
@@ -211,21 +263,39 @@ class _ChatsPagePatientState extends State<ChatsPagePatient> {
                       }
 
                       return Align(
-                        alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
+                        alignment: isMe
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft,
                         child: Column(
-                          crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                          crossAxisAlignment: isMe
+                              ? CrossAxisAlignment.end
+                              : CrossAxisAlignment.start,
                           children: [
                             Container(
                               margin: const EdgeInsets.symmetric(vertical: 6),
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: isMe ? AppColors.blueColor : AppColors.whiteColor,
+                                color: isMe
+                                    ? AppColors.blueColor
+                                    : AppColors.whiteColor,
                                 borderRadius: BorderRadius.circular(16),
-                                boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 3, offset: Offset(0, 2))],
+                                boxShadow: const [
+                                  BoxShadow(
+                                    color: Colors.black12,
+                                    blurRadius: 3,
+                                    offset: Offset(0, 2),
+                                  ),
+                                ],
                               ),
                               child: messageContent,
                             ),
-                            Text(data['time'] ?? '', style: TextStyle(fontSize: 10, color: AppColors.greyColor)),
+                            Text(
+                              data['time'] ?? '',
+                              style: TextStyle(
+                                fontSize: 10,
+                                color: AppColors.greyColor,
+                              ),
+                            ),
                           ],
                         ),
                       );
@@ -237,37 +307,40 @@ class _ChatsPagePatientState extends State<ChatsPagePatient> {
 
             SafeArea(
               child: ChatInput(
-                onSend: (msg, {type = MessageType.text, String? filePath}) async {
-                  if (msg.trim().isEmpty && filePath == null) return;
+                onSend:
+                    (msg, {type = MessageType.text, String? filePath}) async {
+                      if (msg.trim().isEmpty && filePath == null) return;
 
-                  await messages.add({
-                    'text': msg,
-                    'senderId': currentUserId,
-                    'time': TimeOfDay.now().format(context),
-                    'type': type.name,
-                    'filePath': filePath,
-                    'createdAt': DateTime.now(),
-                  });
+                      await messages.add({
+                        'text': msg,
+                        'senderId': currentUserId,
+                        'time': TimeOfDay.now().format(context),
+                        'type': type.name,
+                        'filePath': filePath,
+                        'createdAt': DateTime.now(),
+                      });
 
-                  final chatRef = FirebaseFirestore.instance.collection('chats').doc(widget.chatId);
+                      final chatRef = FirebaseFirestore.instance
+                          .collection('chats')
+                          .doc(widget.chatId);
 
-                  await chatRef.set({
-                    'lastMessage': msg.isNotEmpty
-                        ? msg
-                        : (type == MessageType.image
-                            ? '📷 Photo'
-                            : (type == MessageType.video
-                                ? '🎬 Video'
-                                : (type == MessageType.audio ? '🎤 Voice message' : '📎 File'))),
-                    'updatedAt': FieldValue.serverTimestamp(),
-                    'patientId': FirebaseAuth.instance.currentUser!.uid,
-                  }, 
-                  
-                  SetOptions(merge: true));
+                      await chatRef.set({
+                        'lastMessage': msg.isNotEmpty
+                            ? msg
+                            : (type == MessageType.image
+                                  ? '📷 Photo'
+                                  : (type == MessageType.video
+                                        ? '🎬 Video'
+                                        : (type == MessageType.audio
+                                              ? '🎤 Voice message'
+                                              : '📎 File'))),
+                        'updatedAt': FieldValue.serverTimestamp(),
+                        'patientId': FirebaseAuth.instance.currentUser!.uid,
+                      }, SetOptions(merge: true));
 
-                  await Future.delayed(const Duration(milliseconds: 200));
-                  _scrollToBottom();
-                },
+                      await Future.delayed(const Duration(milliseconds: 200));
+                      _scrollToBottom();
+                    },
               ),
             ),
           ],
@@ -276,7 +349,6 @@ class _ChatsPagePatientState extends State<ChatsPagePatient> {
     );
   }
 }
-
 
 class VideoPlayerWidget extends StatefulWidget {
   final String filePath;
@@ -314,24 +386,23 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                   ? _controller.pause()
                   : _controller.play();
             },
-            
+
             child: Stack(
               alignment: Alignment.center,
               children: [
                 VideoPlayer(_controller),
                 if (!_controller.value.isPlaying)
-                  const Icon(Icons.play_circle_fill,
-                      size: 50, color: Colors.white),
+                  const Icon(
+                    Icons.play_circle_fill,
+                    size: 50,
+                    color: Colors.white,
+                  ),
               ],
             ),
           )
         : const Center(child: CircularProgressIndicator());
   }
 }
-
-
-
-
 
 class ChatInput extends StatefulWidget {
   final Function(String, {MessageType type, String? filePath}) onSend;
@@ -372,11 +443,13 @@ class _ChatInputState extends State<ChatInput>
     _recorder = FlutterSoundRecorder();
     _initRecorder();
 
-    _animationController =
-        AnimationController(vsync: this, duration: const Duration(seconds: 1))
-          ..repeat(reverse: true);
-    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.2)
-        .animate(CurvedAnimation(parent: _animationController, curve: Curves.easeInOut));
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..repeat(reverse: true);
+    _scaleAnimation = Tween<double>(begin: 1.0, end: 1.2).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
   }
 
   Future<void> _initRecorder() async {
@@ -391,10 +464,7 @@ class _ChatInputState extends State<ChatInput>
     final dir = await getApplicationDocumentsDirectory();
     final filePath = '${dir.path}/${DateTime.now().millisecondsSinceEpoch}.aac';
 
-    await _recorder.startRecorder(
-      toFile: filePath,
-      codec: Codec.aacADTS,
-    );
+    await _recorder.startRecorder(toFile: filePath, codec: Codec.aacADTS);
 
     setState(() {
       _isRecording = true;
@@ -534,8 +604,10 @@ class _ChatInputState extends State<ChatInput>
                   if (_hasText) {
                     sendMessage();
                   } else {
-                    if (_isRecording) await _stopRecording();
-                    else await _startRecording();
+                    if (_isRecording)
+                      await _stopRecording();
+                    else
+                      await _startRecording();
                   }
                 },
               ),
@@ -547,7 +619,10 @@ class _ChatInputState extends State<ChatInput>
             padding: const EdgeInsets.only(top: 4),
             child: Text(
               _formatDuration(_recordDuration),
-              style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                color: Colors.red,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         if (_isEmojiVisible)

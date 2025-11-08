@@ -5,7 +5,7 @@ import 'package:health_care_app/Features/doctor_side/calender_screen/calender_sc
 import 'package:health_care_app/Features/doctor_side/chats_doctor/view/chats_list_screen.dart';
 import 'package:health_care_app/Features/doctor_side/doctor_profile/view/doctor_profile.dart';
 import 'package:health_care_app/Features/doctor_side/home_screen/home_screen.dart';
-import 'package:health_care_app/Features/doctor_side/profile_screen/profile_screen.dart';
+// import 'package:health_care_app/Features/doctor_side/profile_screen/profile_screen.dart';
 import 'package:health_care_app/Features/doctor_side/search_screen/search_screen.dart';
 
 class NavigationScreen extends StatefulWidget {
