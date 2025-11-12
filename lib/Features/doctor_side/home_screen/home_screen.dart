@@ -4,11 +4,12 @@ import 'package:health_care_app/Features/doctor_side/appointment/doctor_appoinme
 import 'package:health_care_app/Features/doctor_side/home_screen/widgets/patient_card.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 import '../../../models/appiontment_model.dart';
+import '../../../shared/user_session.dart';
 
 class HomeScreenD extends StatelessWidget {
-  const HomeScreenD({super.key});
+   HomeScreenD({super.key});
 
-  final String doctorId = '67890'; // ID الخاص بالدكتور
+  final String doctorId = UserSession.currentDoctor?.doctorId ?? '';
 
   @override
   Widget build(BuildContext context) {
@@ -49,9 +50,9 @@ class HomeScreenD extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 5),
-              const Text(
-                "Hi, Doctor Omar!",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+              Text(
+                "Hi, Dr. ${UserSession.currentDoctor?.name ?? 'Doctor'}!",
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
               ),
               Text(
                 "How are you today?",

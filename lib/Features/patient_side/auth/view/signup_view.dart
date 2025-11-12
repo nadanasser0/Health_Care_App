@@ -25,21 +25,15 @@ class SignupView extends StatefulWidget {
 
 class _SignupViewState extends State<SignupView> {
   CollectionReference users = FirebaseFirestore.instance.collection('users');
-  CollectionReference patients = FirebaseFirestore.instance.collection(
-    'patients',
-  );
-  CollectionReference doctors = FirebaseFirestore.instance.collection(
-    'doctors',
-  );
+  CollectionReference patients = FirebaseFirestore.instance.collection('patients');
+  CollectionReference doctors = FirebaseFirestore.instance.collection('doctors');
 
   final TextEditingController userNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneNumberController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   final TextEditingController hospitalController = TextEditingController();
-
-  final TextEditingController confirmPasswordController =
-      TextEditingController();
+  final TextEditingController confirmPasswordController = TextEditingController();
   final TextEditingController genderController = TextEditingController();
 
   bool loading = false;
@@ -85,27 +79,10 @@ class _SignupViewState extends State<SignupView> {
                     UserDoctorSelector(onSelectionChanged: handleSelection),
                     if (_selectedType == "Doctor") ...[
                       const SizedBox(height: 20),
-
-                      
                       CustomTextField(
                         label: "Enter your hospital name",
                         icon: Icons.local_hospital_outlined,
                         controller: hospitalController,
-                        // validator: (value) {
-                        //   if (value == null || value.trim().isEmpty) {
-                        //     return "Please enter your hospital name";
-                        //   }
-                        //   final trimmedValue = value.trim();
-                        //   if (trimmedValue.length < 3) {
-                        //     return "Hospital name must be at least 3 letters";
-                        //   }
-                        //   if (!RegExp(
-                        //     r'^[a-zA-Z\s]+$',
-                        //   ).hasMatch(trimmedValue)) {
-                        //     return "Hospital name should contain letters only";
-                        //   }
-                        //   return null;
-                        // },
                       ),
                     ],
                     const SizedBox(height: 30),
@@ -114,26 +91,20 @@ class _SignupViewState extends State<SignupView> {
                       text: "Sign up",
                       onPressed: () async {
                         if (formkey.currentState!.validate()) {
-                          // تحقق من اختيار التخصص لو المستخدم دكتور
                           if (_selectedType == "Doctor" &&
                               _selectedSpecialization == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                content: Text(
-                                  "Please choose your specialization",
-                                ),
+                                content: Text("Please choose your specialization"),
                               ),
                             );
                             if (_selectedType == "Doctor") {
-                              final hospitalName = hospitalController.text
-                                  .trim();
+                              final hospitalName = hospitalController.text.trim();
 
                               if (hospitalName.isEmpty) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text(
-                                      "Please enter your hospital name",
-                                    ),
+                                    content: Text("Please enter your hospital name"),
                                   ),
                                 );
                                 return;
@@ -142,59 +113,46 @@ class _SignupViewState extends State<SignupView> {
                               if (hospitalName.length < 3) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text(
-                                      "Hospital name must be at least 3 letters",
-                                    ),
+                                    content: Text("Hospital name must be at least 3 letters"),
                                   ),
                                 );
                                 return;
                               }
 
-                              if (!RegExp(
-                                r'^[a-zA-Z\s]+$',
-                              ).hasMatch(hospitalName)) {
+                              if (!RegExp(r'^[a-zA-Z\s]+$').hasMatch(hospitalName)) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text(
-                                      "Hospital name should contain letters only",
-                                    ),
+                                    content: Text("Hospital name should contain letters only"),
                                   ),
                                 );
                                 return;
                               }
                             }
-
                             return;
                           }
 
                           loading = true;
                           setState(() {});
+
                           try {
                             var auth = FirebaseAuth.instance;
-                            UserCredential userCredential = await auth
-                                .createUserWithEmailAndPassword(
-                                  email: emailController.text
-                                      .toLowerCase()
-                                      .trim(),
-                                  password: passwordController.text.trim(),
-                                );
+                            UserCredential userCredential = await auth.createUserWithEmailAndPassword(
+                              email: emailController.text.toLowerCase().trim(),
+                              password: passwordController.text.trim(),
+                            );
 
                             UserModel newUser = UserModel(
                               user_id: userCredential.user!.uid,
                               name: userNameController.text.trim(),
                               email: emailController.text.trim().toLowerCase(),
                               password: passwordController.text.trim(),
-                              phoneNum: int.parse(
-                                phoneNumberController.text.trim(),
-                              ),
-                              image:"lib/images/profile.png",
+                              phoneNum: int.parse(phoneNumberController.text.trim()),
+                              image: "lib/images/profile.png",
                               gender: genderController.text.trim(),
                               role: _selectedType,
                             );
 
-                            await users
-                                .doc(userCredential.user!.uid)
-                                .set(newUser.toMap());
+                            await users.doc(userCredential.user!.uid).set(newUser.toMap());
 
                             if (_selectedType == "Doctor") {
                               DoctorModel newDoctor = DoctorModel(
@@ -202,20 +160,22 @@ class _SignupViewState extends State<SignupView> {
                                 name: userNameController.text.trim(),
                                 specialization: _selectedSpecialization!,
                                 hospital: hospitalController.text,
-                                    // imageUrl: "lib/images/profile.png",
                               );
 
-                              await doctors
-                                  .doc(userCredential.user!.uid)
-                                  .set(newDoctor.toMap());
+                              await doctors.doc(userCredential.user!.uid).set(newDoctor.toMap());
+
+                              // ✅ تعديل: نحفظ الدكتور في الجلسة مباشرة
+                              UserSession.currentDoctor = newDoctor;
+
                             } else {
                               PatientModel newPatient = PatientModel(
                                 patientId: userCredential.user!.uid,
                               );
 
-                              await patients
-                                  .doc(userCredential.user!.uid)
-                                  .set(newPatient.toMap());
+                              await patients.doc(userCredential.user!.uid).set(newPatient.toMap());
+
+                              // ✅ تعديل: نحفظ المريض في الجلسة مباشرة
+                              UserSession.currentPatient = newPatient;
                             }
 
                             Navigator.pushReplacement(
@@ -228,17 +188,13 @@ class _SignupViewState extends State<SignupView> {
                             if (e.code == 'weak-password') {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text(
-                                    'The password provided is too weak.',
-                                  ),
+                                  content: Text('The password provided is too weak.'),
                                 ),
                               );
                             } else if (e.code == 'email-already-in-use') {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text(
-                                    'The account already exists for that email.',
-                                  ),
+                                  content: Text('The account already exists for that email.'),
                                 ),
                               );
                             }

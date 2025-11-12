@@ -44,8 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               LoginHeader(),
-              SizedBox(height: 20),
-
+              const SizedBox(height: 20),
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: Column(
@@ -56,13 +55,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       emailController: emailController,
                       passwordController: passwordController,
                     ),
-
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     TextButton(
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context)=> ForgotpasswordView())
+                          MaterialPageRoute(
+                              builder: (context) => const ForgotpasswordView()),
                         );
                       },
                       child: Text(
@@ -74,7 +73,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     CustomButton(
                       text: 'Login',
                       onPressed: () async {
@@ -83,56 +82,62 @@ class _LoginScreenState extends State<LoginScreen> {
                           setState(() {});
                           try {
                             var auth = FirebaseAuth.instance;
-                            UserCredential userCredential = await auth
-                                .signInWithEmailAndPassword(
-                                  email: emailController.text.trim(),
-                                  password: passwordController.text.trim(),
-                                );
+                            UserCredential userCredential =
+                            await auth.signInWithEmailAndPassword(
+                              email: emailController.text.trim(),
+                              password: passwordController.text.trim(),
+                            );
 
                             FirestoreService firestoreService =
-                                FirestoreService();
+                            FirestoreService();
 
+                            // ✅ نحمل بيانات المستخدم الأساسية
                             UserModel user = await firestoreService.getUser(
                               userCredential.user!.uid,
                             );
-                            UserSession.currentUser = user;                       
-                             
-                            
-                      
-                            if (user.role == 'Doctor') {
+                            UserSession.currentUser = user;
 
-                             UserSession.currentDoctor = await firestoreService.getDoctor( 
+                            // ✅ لو المستخدم دكتور
+                            if (user.role == 'Doctor') {
+                              UserSession.currentDoctor =
+                              await firestoreService.getDoctor(
                                 userCredential.user!.uid,
                               );
 
-                              Navigator.push(
+                              debugPrint(
+                                  "✅ Logged in Doctor: ${UserSession.currentDoctor?.name} (${UserSession.currentDoctor?.doctorId})");
+
+                              Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => NavigationScreen(),
+                                  builder: (context) =>  NavigationScreen(),
                                 ),
                               );
-                            } 
-                            
-                            
-                            else {
+                            }
 
-                              UserSession.currentPatient = await firestoreService.getPatient( 
+                            // ✅ لو المستخدم مريض
+                            else {
+                              UserSession.currentPatient =
+                              await firestoreService.getPatient(
                                 userCredential.user!.uid,
                               );
-                              Navigator.push(
+
+                              debugPrint(
+                                  "✅ Logged in Patient: (${UserSession.currentPatient?.patientId})");
+
+                              Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => NavigationnScreen(),
                                 ),
                               );
                             }
+
                             snackBarMessage(
                               context,
                               "Sign in successfully",
                               color: Colors.green,
                             );
-
-                            
                           } on FirebaseAuthException catch (e) {
                             if (e.code == 'user-not-found') {
                               snackBarMessage(
@@ -159,8 +164,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         }
                       },
                     ),
-                    SizedBox(height: 20),
-
+                    const SizedBox(height: 20),
                     LoginTail(),
                   ],
                 ),

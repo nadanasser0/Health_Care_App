@@ -21,6 +21,26 @@ class FirestoreService {
         .set(doctor.toMap());
   }
 
+  Future<void> updateDoctorData(String doctorId, Map<String, dynamic> data) async {
+    await FirebaseFirestore.instance.collection('doctors').doc(doctorId).update(data);
+  }
+  // 🔹 Stream حيحدث بيانات الدكتور تلقائيًا عند أي تعديل في Firestore
+  Stream<DoctorModel> streamDoctorData(String doctorId) {
+    return FirebaseFirestore.instance
+        .collection('doctors')
+        .doc(doctorId)
+        .snapshots()
+        .map((snapshot) {
+      final data = snapshot.data();
+      if (data == null) {
+        throw Exception("Doctor not found: $doctorId");
+      }
+      return DoctorModel.fromMap(data, snapshot.id);
+    });
+  }
+
+
+
   Future<void> addPatient(PatientModel patient) async {
     await _firestore
         .collection('patients')

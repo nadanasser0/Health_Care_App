@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../models/appiontment_model.dart';
 import '../../../../core/constants/colors.dart';
+import '../../../../shared/user_session.dart';
 
 class Canceled extends StatelessWidget {
-  final String patientId = '12345'; // استخدمي الـ ID الخاص بالمريض
+  final String doctorId = UserSession.currentDoctor?.doctorId ?? '';
   Canceled({super.key});
 
   final CollectionReference appointmentsRef =
@@ -29,22 +30,25 @@ class Canceled extends StatelessWidget {
 
         if (!snapshot.hasData || snapshot.data!.isEmpty) {
           return const Center(
-              child: Text(
-                "No canceled appointments yet.",
-                style: TextStyle(fontSize: 16, color: Colors.grey),
-              ));
+            child: Text(
+              "No canceled appointments yet.",
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+          );
         }
 
+        // ✅ تم تصحيح الفلترة لتستخدم doctorId بدل patientId
         final canceledAppointments = snapshot.data!
-            .where((app) => app.patientId == patientId && app.status == 'canceled')
+            .where((app) => app.doctorId == doctorId && app.status == 'canceled')
             .toList();
 
         if (canceledAppointments.isEmpty) {
           return const Center(
-              child: Text(
-                "No canceled appointments yet.",
-                style: TextStyle(fontSize: 16, color: Colors.grey),
-              ));
+            child: Text(
+              "No canceled appointments yet.",
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+          );
         }
 
         return ListView.separated(
@@ -68,12 +72,13 @@ class Canceled extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       "Appointment Canceled",
                       style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: const Color(0xff9B0A0A)),
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xff9B0A0A),
+                      ),
                     ),
                     const SizedBox(height: 5),
                     Text(
@@ -87,7 +92,7 @@ class Canceled extends StatelessWidget {
                     const SizedBox(height: 20),
                     Row(
                       children: [
-                        CircleAvatar(
+                        const CircleAvatar(
                           radius: 30,
                           backgroundImage: AssetImage('lib/images/img.png'),
                         ),
@@ -98,16 +103,18 @@ class Canceled extends StatelessWidget {
                             Text(
                               appointment.name,
                               style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.blackColor),
+                                fontSize: 20,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.blackColor,
+                              ),
                             ),
                             Text(
                               appointment.appointmentType,
                               style: TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                  color: AppColors.greyColor),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                color: AppColors.greyColor,
+                              ),
                             ),
                           ],
                         ),

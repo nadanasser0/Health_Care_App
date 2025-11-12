@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../models/appiontment_model.dart';
+import '../../../../shared/user_session.dart';
 import 'custom_card_appoinment.dart';
 
 class Completed extends StatelessWidget {
-  const Completed({super.key});
+   Completed({super.key});
 
-  final String doctorId = '67890';
+  final String doctorId = UserSession.currentDoctor?.doctorId ?? '';
 
   Stream<List<AppointmentModel>> getCompletedAppointments() {
     return FirebaseFirestore.instance

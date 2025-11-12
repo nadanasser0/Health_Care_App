@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:health_care_app/models/user_model.dart';
 import 'package:health_care_app/shared/user_session.dart';
+import 'package:uuid/uuid.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../models/review_model.dart';
+import '../../../../models/doctor_model.dart';
 import '../../../../services/firestore_services.dart';
 import '../widgets/review_card.dart';
 
@@ -23,7 +25,6 @@ class _DoctorDetailsReviewScreenState extends State<DoctorDetailsReviewScreen> {
     double selectedRating = 0;
     TextEditingController reviewController = TextEditingController();
 
-    // <<<<<<< oppint_firebase
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -91,28 +92,63 @@ class _DoctorDetailsReviewScreenState extends State<DoctorDetailsReviewScreen> {
                         );
                         return;
                       }
-                      // =======
-                      //   void _handleTabSelection() {
-                      //     if (_tabController.indexIsChanging && _tabController.index == 0) {
-                      //       // If switching to About tab, navigate to DoctorDetailsAboutScreen
-                      //       Navigator.pushReplacement(
-                      //         context,
-                      //         MaterialPageRoute(builder: (context) => DoctorDetailsAboutScreen(doctor: null,)),
-                      //       );
-                      //     }
-                      //   }
-                      // >>>>>>> main
 
-                      final newReview = ReviewModel(
-                        reviewId: '',
-                        patientId: UserSession.currentUser!.user_id,
-                        doctorId: widget.doctorId,
-                        rating: selectedRating,
-                        comment: reviewController.text,
-                      );
+                      if (UserSession.currentUser == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("You must be logged in to make a review."),
+                          ),
+                        );
+                        return;
+                      }
 
-                      await _firestoreService.addReview(newReview);
-                      Navigator.pop(context);
+                      try {
+                        // 🟢 إنشاء الريفيو
+                        final newReview = ReviewModel(
+                          reviewId: const Uuid().v4(),
+                          patientId: UserSession.currentUser!.user_id,
+                          doctorId: widget.doctorId,
+                          rating: selectedRating,
+                          comment: reviewController.text,
+                        );
+
+                        await _firestoreService.addReview(newReview);
+
+                        // 🟢 تحديث بيانات الدكتور بعد إضافة الريفيو
+                        final doctorDoc = await _firestoreService.getDoctor(widget.doctorId);
+
+                        if (doctorDoc != null) {
+                          final currentReviews = doctorDoc.reviews;
+                          final currentRating = doctorDoc.rating;
+
+                          // حساب المتوسط الجديد
+                          final newTotalReviews = currentReviews + 1;
+                          final newAverageRating = ((currentRating * currentReviews) + selectedRating) / newTotalReviews;
+
+                          await _firestoreService.updateDoctorData(
+                            widget.doctorId,
+                            {
+                              'reviews': newTotalReviews,
+                              'rating': double.parse(newAverageRating.toStringAsFixed(1)),
+                            },
+                          );
+                        }
+
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Review added successfully!"),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+                      } catch (e) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Error adding review: $e"),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.blueColor,
@@ -163,12 +199,8 @@ class _DoctorDetailsReviewScreenState extends State<DoctorDetailsReviewScreen> {
               return FutureBuilder<UserModel?>(
                 future: _firestoreService.getUser(review.patientId),
                 builder: (context, snapshot) {
-                  // if (snapshot.connectionState == ConnectionState.waiting) {
-                  //   return const Center(child: CircularProgressIndicator());
-                  // }
-
                   if (!snapshot.hasData || snapshot.data == null) {
-                    return SizedBox();
+                    return const SizedBox();
                   }
 
                   final userModel = snapshot.data!;
@@ -176,12 +208,13 @@ class _DoctorDetailsReviewScreenState extends State<DoctorDetailsReviewScreen> {
                   return ReviewCard(
                     reviewerName: userModel.name,
                     reviewerImageUrl:
-                        userModel.image ?? 'lib/images/doctor_avatar.png',
+                    userModel.image ?? 'lib/images/doctor_avatar.png',
                     rating: review.rating ?? 0,
                     reviewText: review.comment ?? '',
-                    timeAgo: review.createdAt.toLocal().toString().split(
-                      ' ',
-                    )[0],
+                    timeAgo: review.createdAt
+                        .toLocal()
+                        .toString()
+                        .split(' ')[0],
                   );
                 },
               );
@@ -190,7 +223,6 @@ class _DoctorDetailsReviewScreenState extends State<DoctorDetailsReviewScreen> {
         },
       ),
 
-      // 👇 زرار ثابت في الأسفل
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.all(16),
         child: ElevatedButton(
@@ -202,62 +234,9 @@ class _DoctorDetailsReviewScreenState extends State<DoctorDetailsReviewScreen> {
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-          // <<<<<<< oppint_firebase
           child: const Text(
             "Make a Review",
             style: TextStyle(fontSize: 16, color: Colors.white),
-            // =======
-            //           const SizedBox(height: 8),
-            //           CustomTabBar(
-            //             tabController: _tabController,
-            //             onTabTap: (index) {
-            //               if (index == 0) {
-            //                 // If About tab is tapped, navigate
-            //                 Navigator.pushReplacement(
-            //                   context,
-            //                   MaterialPageRoute(
-            //                     builder: (context) => DoctorDetailsAboutScreen(doctor:null ),
-            //                   ),
-            //                 );
-            //               }
-            //             },
-            //           ),
-            //           Expanded(
-            //             child: SingleChildScrollView(
-            //               padding: const EdgeInsets.symmetric(
-            //                 horizontal: 16.0,
-            //                 vertical: 8.0,
-            //               ),
-            //               child: Column(
-            //                 children: [
-            //                   ReviewCard(
-            //                     reviewerName: 'Jane Cooper',
-            //                     reviewerImageUrl: 'lib/images/jane_cooper.png',
-            //                     rating: 5,
-            //                     reviewText:
-            //                         'As someone who lives in a remote area with limited access to healthcare, this telemedicine app has been a game changer for me. I can easily schedule virtual appointments with doctors and get the care I need without having to travel long distances.',
-            //                     timeAgo: 'Today',
-            //                   ),
-            //                   ReviewCard(
-            //                     reviewerName: 'Robert Fox',
-            //                     reviewerImageUrl: 'lib/images/robert_fox.png',
-            //                     rating: 5,
-            //                     reviewText:
-            //                         'I was initially skeptical about using a telemedicine app but this app has exceeded my expectations. The doctors are highly qualified and provide excellent care.',
-            //                     timeAgo: 'Today',
-            //                   ),
-            //                   ReviewCard(
-            //                     reviewerName: 'Jacob Jones',
-            //                     reviewerImageUrl: 'lib/images/jacob_jones.png',
-            //                     rating: 5,
-            //                     reviewText:
-            //                         'I was initially skeptical about using a telemedicine app but this app has exceeded my expectations. The doctors are highly qualified and provide excellent care.',
-            //                     timeAgo: 'Today',
-            //                   ),
-            //                 ],
-            //               ),
-            //             ),
-            // >>>>>>> main
           ),
         ),
       ),

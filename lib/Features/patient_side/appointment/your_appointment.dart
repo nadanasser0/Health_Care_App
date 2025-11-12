@@ -5,10 +5,10 @@ import 'package:health_care_app/Features/patient_side/appointment/widget_screen/
 import 'package:health_care_app/Features/patient_side/appointment/widget_screen/price_view.dart';
 import 'package:health_care_app/Features/patient_side/confirmation/booking_confirmation.dart';
 import 'package:uuid/uuid.dart';
-
 import '../../../core/constants/colors.dart';
 import '../../../models/appiontment_model.dart';
 import '../../../services/firestore_services.dart';
+import '../../../shared/user_session.dart';
 
 class YourAppointment extends StatefulWidget {
   const YourAppointment({
@@ -18,7 +18,16 @@ class YourAppointment extends StatefulWidget {
     required this.age,
     required this.gender,
     required this.appointmentDate,
-    required this.appointmentTime, required this.doctorName, required this.specialty, required this.hospitalName, required this.rating, required this.doctorImageUrl, required this.numberOfReviews, required this.workingDays, required this.workingHours, required this.price,
+    required this.appointmentTime,
+    required this.doctorName,
+    required this.specialty,
+    required this.hospitalName,
+    required this.rating,
+    required this.doctorImageUrl,
+    required this.numberOfReviews,
+    required this.workingDays,
+    required this.workingHours,
+    required this.price,
   });
 
   final String bookingFor;
@@ -44,8 +53,8 @@ class YourAppointment extends StatefulWidget {
 class _YourAppointmentState extends State<YourAppointment> {
   final FirestoreService firestoreService = FirestoreService();
 
-  String? paymentMethod; // 🟢 لتخزين طريقة الدفع
-  double prise = 250.0;  // 🟢 السعر الثابت أو يمكن ربطه بـ PriceView
+  String? paymentMethod;
+  double prise = 250.0;
 
   @override
   Widget build(BuildContext context) {
@@ -65,10 +74,10 @@ class _YourAppointmentState extends State<YourAppointment> {
           padding: const EdgeInsets.all(20.0),
           child: Column(
             children: [
+              // 🧾 Doctor Info
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // 🧑‍⚕️ صورة أو أيقونة الطبيب
                   Container(
                     height: 74,
                     width: 74,
@@ -83,52 +92,27 @@ class _YourAppointmentState extends State<YourAppointment> {
                         ),
                       ],
                     ),
-                    child: Icon(
-                      Icons.person,
-                      size: 60,
-                      color: AppColors.blueColor,
-                    ),
+                    child: Icon(Icons.person, size: 60, color: AppColors.blueColor),
                   ),
-
                   const SizedBox(width: 15),
-
-                  // 🧾 بيانات الطبيب
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                         Text(
-                          widget.doctorName,
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                        Text(widget.doctorName,
+                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                         const SizedBox(height: 4),
-                         Text(
-                          "${widget.specialty} | ${widget.hospitalName}",
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                            color: Color(0xff616161),
-                          ),
-                        ),
+                        Text("${widget.specialty} | ${widget.hospitalName}",
+                            style: const TextStyle(fontSize: 13, color: Color(0xff616161))),
                         const SizedBox(height: 8),
-
-                        // 🔘 الزر والتقييم
                         Row(
                           children: [
                             const Icon(Icons.star, color: Colors.yellow, size: 18),
                             const SizedBox(width: 4),
                             Text(
                               "${widget.rating} (${widget.numberOfReviews} reviews)",
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                                color: AppColors.greyColor,
-                              ),
+                              style: TextStyle(fontSize: 13, color: AppColors.greyColor),
                             ),
-
                           ],
                         ),
                       ],
@@ -136,6 +120,7 @@ class _YourAppointmentState extends State<YourAppointment> {
                   ),
                 ],
               ),
+
               Divider(color: AppColors.purpleColor),
               const SizedBox(height: 12),
               Body1(
@@ -163,8 +148,9 @@ class _YourAppointmentState extends State<YourAppointment> {
                   });
                 },
               ),
-
               const SizedBox(height: 20),
+
+              // 🟢 Confirm Button
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xff247CFF),
@@ -185,12 +171,16 @@ class _YourAppointmentState extends State<YourAppointment> {
                   }
 
                   try {
-                    final appointmentId = Uuid().v4();
+                    final appointmentId = const Uuid().v4();
+
+                    // 🟢 استخدم بيانات المستخدم الحقيقية بدل الثابتة
+                    final patientId = UserSession.currentPatient?.patientId ?? 'unknown';
+                    final doctorId = UserSession.currentDoctor?.doctorId ?? 'unknown';
 
                     final appointment = AppointmentModel(
                       appointmentId: appointmentId,
-                      patientId: "12345",
-                      doctorId: "67890", // ID الدكتور
+                      patientId: patientId,
+                      doctorId: doctorId,
                       appointmentDate: widget.appointmentDate,
                       appointmentTime: widget.appointmentTime,
                       appointmentType: "General Checkup",
@@ -201,7 +191,6 @@ class _YourAppointmentState extends State<YourAppointment> {
                       billingMethod: paymentMethod!,
                     );
 
-                    // 🟢 حفظ الموعد في Firestore
                     await firestoreService.addAppointment(appointment);
 
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -211,7 +200,6 @@ class _YourAppointmentState extends State<YourAppointment> {
                       ),
                     );
 
-                    // الانتقال لصفحة التأكيد
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -241,7 +229,6 @@ class _YourAppointmentState extends State<YourAppointment> {
                   style: TextStyle(color: Colors.white, fontSize: 16),
                 ),
               ),
-
             ],
           ),
         ),
