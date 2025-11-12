@@ -96,8 +96,6 @@ class _LoginScreenState extends State<LoginScreen> {
                               userCredential.user!.uid,
                             );
                             UserSession.currentUser = user;
-
-                            // ✅ لو المستخدم دكتور
                             if (user.role == 'Doctor') {
                               UserSession.currentDoctor =
                               await firestoreService.getDoctor(

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:health_care_app/Features/doctor_side/appointment/doctor_appoinment.dart';
-import 'package:health_care_app/Features/doctor_side/home_screen/widgets/patient_card.dart';
+import 'package:health_care_app/Features/doctor_side/appointment/widgets/upcoming.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 import '../../../models/appiontment_model.dart';
 import '../../../shared/user_session.dart';
 
 class HomeScreenD extends StatelessWidget {
-   HomeScreenD({super.key});
+  HomeScreenD({super.key});
 
   final String doctorId = UserSession.currentDoctor?.doctorId ?? '';
 
@@ -15,31 +15,68 @@ class HomeScreenD extends StatelessWidget {
   Widget build(BuildContext context) {
     final CollectionReference appointmentsRef =
     FirebaseFirestore.instance.collection('appointments');
+    final CollectionReference notificationsRef =
+    FirebaseFirestore.instance.collection('notifications');
 
+    // ✅ Stream لجلب كل المواعيد
     Stream<List<AppointmentModel>> getAllAppointments() {
       return appointmentsRef.snapshots().map((snapshot) {
-        return snapshot.docs.map((doc) {
-          return AppointmentModel.fromMap(doc.data() as Map<String, dynamic>);
-        }).toList();
+        return snapshot.docs
+            .map((doc) =>
+            AppointmentModel.fromMap(doc.data() as Map<String, dynamic>))
+            .toList();
       });
     }
 
-    // دالة لإلغاء الموعد
-    void cancelAppointment(AppointmentModel appointment, BuildContext context) async {
-      final docRef = appointmentsRef.doc(appointment.appointmentId);
-      await docRef.update({'status': 'canceled'});
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Appointment canceled")),
-      );
+    // ✅ دالة لإضافة إشعار للمريض
+    Future<void> addNotification(String patientId, String title, String body) async {
+      await notificationsRef.add({
+        'receiverId': patientId,
+        'title': title,
+        'body': body,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
     }
 
-    // دالة لتعيين الموعد كمكتمل
+    // ✅ دالة لإلغاء الموعد + إرسال إشعار
+    void cancelAppointment(AppointmentModel appointment, BuildContext context) async {
+      try {
+        final docRef = appointmentsRef.doc(appointment.appointmentId);
+        await docRef.update({'status': 'canceled'});
+
+        await addNotification(
+          appointment.patientId,
+          'Appointment Canceled',
+          'Dr. ${UserSession.currentDoctor?.name ?? 'Your doctor'} canceled your appointment scheduled on '
+              '${appointment.appointmentDate.day}/${appointment.appointmentDate.month} at ${appointment.appointmentTime}.',
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Appointment canceled & notification sent")),
+        );
+      } catch (e) {
+        debugPrint('❌ Error canceling appointment: $e');
+      }
+    }
+
+    // ✅ دالة لتعيين الموعد كمكتمل + إرسال إشعار
     void completeAppointment(AppointmentModel appointment, BuildContext context) async {
-      final docRef = appointmentsRef.doc(appointment.appointmentId);
-      await docRef.update({'status': 'done'});
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Appointment marked as done")),
-      );
+      try {
+        final docRef = appointmentsRef.doc(appointment.appointmentId);
+        await docRef.update({'status': 'done'});
+
+        await addNotification(
+          appointment.patientId,
+          'Appointment Completed',
+          'Dr. ${UserSession.currentDoctor?.name ?? 'Your doctor'} marked your appointment as completed.',
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Appointment done & notification sent")),
+        );
+      } catch (e) {
+        debugPrint('❌ Error completing appointment: $e');
+      }
     }
 
     return Scaffold(
@@ -52,7 +89,8 @@ class HomeScreenD extends StatelessWidget {
               const SizedBox(height: 5),
               Text(
                 "Hi, Dr. ${UserSession.currentDoctor?.name ?? 'Doctor'}!",
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                style:
+                const TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
               ),
               Text(
                 "How are you today?",
@@ -60,7 +98,7 @@ class HomeScreenD extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              // ======= الكارد الخاصة بأقرب موعد =======
+              // ✅ الكارد الخاصة بأقرب موعد
               StreamBuilder<List<AppointmentModel>>(
                 stream: getAllAppointments(),
                 builder: (context, snapshot) {
@@ -89,7 +127,8 @@ class HomeScreenD extends StatelessWidget {
                   return Container(
                     width: double.maxFinite,
                     decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(Radius.circular(20)),
+                      borderRadius:
+                      const BorderRadius.all(Radius.circular(20)),
                       color: AppColors.cyanColor,
                     ),
                     child: Padding(
@@ -99,15 +138,9 @@ class HomeScreenD extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              CircleAvatar(
-                                backgroundColor: AppColors.whiteColor,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: CircleAvatar(
-                                    backgroundImage:
-                                    AssetImage('lib/images/img.png'),
-                                  ),
-                                ),
+                              const CircleAvatar(
+                                backgroundImage:
+                                AssetImage('lib/images/img.png'),
                               ),
                               Column(
                                 children: [
@@ -144,24 +177,21 @@ class HomeScreenD extends StatelessWidget {
                           Container(
                             width: double.maxFinite,
                             decoration: BoxDecoration(
-                              borderRadius: const BorderRadius.all(Radius.circular(15)),
+                              borderRadius:
+                              const BorderRadius.all(Radius.circular(15)),
                               color: AppColors.darkBlueColor,
                             ),
                             child: Padding(
                               padding: const EdgeInsets.all(10.0),
                               child: Row(
                                 children: [
-                                  Icon(
-                                    Icons.calendar_month,
-                                    color: AppColors.whiteColor,
-                                  ),
-                                  const SizedBox(width: 15),
+                                  const Icon(Icons.calendar_month,
+                                      color: Colors.white),
+                                  const SizedBox(width: 10),
                                   Text(
                                     "${appointment.appointmentDate.day}/${appointment.appointmentDate.month}/${appointment.appointmentDate.year} | ${appointment.appointmentTime}",
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: AppColors.whiteColor,
-                                    ),
+                                    style: const TextStyle(
+                                        fontSize: 16, color: Colors.white),
                                   ),
                                 ],
                               ),
@@ -176,15 +206,15 @@ class HomeScreenD extends StatelessWidget {
 
               const SizedBox(height: 25),
 
-              // ======= قائمة المواعيد القادمة =======
+              // ✅ قائمة المواعيد القادمة
               Row(
                 children: [
                   const Text(
                     "Upcoming Appointments",
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+                    style:
+                    TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
                   ),
                   const Spacer(),
-
                   TextButton(
                     onPressed: () {
                       Navigator.push(
@@ -193,20 +223,17 @@ class HomeScreenD extends StatelessWidget {
                             builder: (context) => DoctorAppointment()),
                       );
                     },
-                    child: Text(
-                      "See All",
-                      style: TextStyle(color: AppColors.blueColor),
-                    ),
+                    child: Text("See All",
+                        style: TextStyle(color: AppColors.blueColor)),
                   ),
                 ],
               ),
               const SizedBox(height: 10),
-
-              // ======= قائمة المواعيد القادمة =======
               StreamBuilder<List<AppointmentModel>>(
                 stream: getAllAppointments(),
                 builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
+                  if (snapshot.connectionState ==
+                      ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   }
 
@@ -234,45 +261,12 @@ class HomeScreenD extends StatelessWidget {
                     );
                   }
 
-                  // ✅ هنا بنشيك لو المعاد عدى وقته نحوله تلقائيًا لـ canceled
-                  for (var appointment in doctorAppointments) {
-                    try {
-                      // بنبني تاريخ ووقت الموعد
-                      final date = appointment.appointmentDate;
-                      final timeParts = appointment.appointmentTime.split(' ');
-                      final hourMinute = timeParts[0].split(':');
-                      int hour = int.parse(hourMinute[0]);
-                      int minute = int.parse(hourMinute[1]);
-                      if (timeParts.length > 1 &&
-                          timeParts[1].toUpperCase() == 'PM' &&
-                          hour != 12) {
-                        hour += 12;
-                      }
-
-                      final appointmentDateTime = DateTime(
-                        date.year,
-                        date.month,
-                        date.day,
-                        hour,
-                        minute,
-                      );
-
-                      // لو الوقت الحالي بعد وقت الموعد نحوله تلقائيًا
-                      if (appointmentDateTime.isBefore(DateTime.now())) {
-                        final docRef = appointmentsRef.doc(appointment.appointmentId);
-                        docRef.update({'status': 'canceled'});
-                      }
-                    } catch (e) {
-                      debugPrint('Error parsing appointment time: $e');
-                    }
-                  }
-
-                  // ======= عرض الكروت =======
                   return ListView.separated(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
                     itemCount: doctorAppointments.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 7),
+                    separatorBuilder: (_, __) =>
+                    const SizedBox(height: 7),
                     itemBuilder: (context, index) {
                       final appointment = doctorAppointments[index];
                       return Card(
@@ -290,87 +284,82 @@ class HomeScreenD extends StatelessWidget {
                             children: [
                               Row(
                                 children: [
-                                  CircleAvatar(
+                                  const CircleAvatar(
                                     radius: 25,
-                                    backgroundImage: AssetImage('lib/images/img.png'),
+                                    backgroundImage:
+                                    AssetImage('lib/images/img.png'),
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                      CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           appointment.name,
                                           style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16,
-                                          ),
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16),
                                         ),
                                         Text(
                                           appointment.appointmentType,
                                           style: const TextStyle(
-                                            color: Colors.grey,
-                                            fontSize: 12,
-                                          ),
+                                              color: Colors.grey,
+                                              fontSize: 12),
                                         ),
                                         Text(
                                           "${appointment.appointmentDate.day}/${appointment.appointmentDate.month}/${appointment.appointmentDate.year} | ${appointment.appointmentTime}",
                                           style: const TextStyle(
-                                            color: Colors.grey,
-                                            fontSize: 12,
-                                          ),
+                                              color: Colors.grey,
+                                              fontSize: 12),
                                         ),
                                       ],
-                                    ),
-                                  ),
-                                  IconButton(
-                                    onPressed: () {},
-                                    icon: Image.asset(
-                                      'lib/images/message-text.png',
-                                      width: 28,
-                                      height: 28,
-                                      color: AppColors.blueColor,
                                     ),
                                   ),
                                 ],
                               ),
                               Padding(
-                                padding: const EdgeInsets.only(left: 10, bottom: 5, top: 5),
+                                padding: const EdgeInsets.only(
+                                    left: 10, bottom: 5, top: 5),
                                 child: Row(
                                   children: [
-                                    // زر Cancel
                                     OutlinedButton(
-                                      onPressed: () {
-                                        cancelAppointment(appointment, context);
-                                      },
+                                      onPressed: () =>
+                                          cancelAppointment(appointment, context),
                                       style: OutlinedButton.styleFrom(
-                                        minimumSize: const Size(120, 35),
-                                        side: BorderSide(color: AppColors.blueColor),
+                                        minimumSize:
+                                        const Size(120, 35),
+                                        side: BorderSide(
+                                            color: AppColors.blueColor),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(18),
+                                          borderRadius:
+                                          BorderRadius.circular(18),
                                         ),
                                       ),
                                       child: Text(
                                         "Cancel",
-                                        style: TextStyle(color: AppColors.blackColor),
+                                        style: TextStyle(
+                                            color: AppColors.blackColor),
                                       ),
                                     ),
                                     const SizedBox(width: 10),
-                                    // زر Done
                                     ElevatedButton(
-                                      onPressed: () {
-                                        completeAppointment(appointment, context);
-                                      },
+                                      onPressed: () =>
+                                          completeAppointment(appointment, context),
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: AppColors.blueColor,
-                                        minimumSize: const Size(120, 35),
+                                        backgroundColor:
+                                        AppColors.blueColor,
+                                        minimumSize:
+                                        const Size(120, 35),
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(18),
+                                          borderRadius:
+                                          BorderRadius.circular(18),
                                         ),
                                       ),
                                       child: const Text(
                                         "Done",
-                                        style: TextStyle(color: Colors.white),
+                                        style: TextStyle(
+                                            color: Colors.white),
                                       ),
                                     ),
                                   ],
@@ -384,64 +373,6 @@ class HomeScreenD extends StatelessWidget {
                   );
                 },
               ),
-
-
-              const SizedBox(height: 25),
-              //
-              // // ======= المرضى الأخيرين =======
-              // Row(
-              //   children: [
-              //     const Text(
-              //       "Recent Patients",
-              //       style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-              //     ),
-              //     const Spacer(),
-              //     TextButton(
-              //       onPressed: () {
-              //         Navigator.push(
-              //           context,
-              //           MaterialPageRoute(
-              //               builder: (context) => DoctorAppointment()),
-              //         );
-              //       },
-              //       child: Text(
-              //         "See All",
-              //         style: TextStyle(color: AppColors.blueColor),
-              //       ),
-              //     ),
-              //   ],
-              // ),
-              //
-              // StreamBuilder<List<AppointmentModel>>(
-              //   stream: getAllAppointments(),
-              //   builder: (context, snapshot) {
-              //     if (snapshot.connectionState == ConnectionState.waiting) {
-              //       return const Center(child: CircularProgressIndicator());
-              //     }
-              //     if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              //       return const Center(child: Text("No patients yet"));
-              //     }
-              //
-              //     final appointments = snapshot.data!
-              //         .where((app) => app.doctorId == doctorId)
-              //         .toList();
-              //
-              //     return ListView.separated(
-              //       shrinkWrap: true,
-              //       physics: const NeverScrollableScrollPhysics(),
-              //       itemCount: appointments.length,
-              //       separatorBuilder: (_, __) => const SizedBox(height: 7),
-              //       itemBuilder: (context, index) {
-              //         final appointment = appointments[index];
-              //         return PatientCard(
-              //           name: appointment.name,
-              //           status: appointment.appointmentType,
-              //           imgPath: 'lib/images/img.png',
-              //         );
-              //       },
-              //     );
-              //   },
-              // ),
             ],
           ),
         ),
