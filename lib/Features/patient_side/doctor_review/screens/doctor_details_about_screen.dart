@@ -11,7 +11,7 @@ class DoctorDetailsAboutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    UserSession.currentDoctor = doctor;
+    // UserSession.currentDoctor = doctor;
     return Scaffold(
       backgroundColor: AppColors.whiteColor,
       body: Column(
@@ -39,6 +39,7 @@ class DoctorDetailsAboutScreen extends StatelessWidget {
                         ? doctor.workingTime!
                         : "Not specified.",
                   ),
+                  _buildSection("Phone number", UserSession.currentUser!.phoneNum.toString()),
                   
                   _buildSection("STR", doctor.STR.toString()),
                   _buildSection("Price", "\$${doctor.price.toStringAsFixed(2)}"),

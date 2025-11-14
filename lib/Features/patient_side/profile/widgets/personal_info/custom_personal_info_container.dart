@@ -28,81 +28,104 @@ class _CustomPersonalInfoContainerState
             topRight: Radius.circular(25),
           ),
         ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(height: 65),
-              Text(
-                UserSession.currentUser!.name,
-                style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const SizedBox(height: 65),
+                Text(
+                  UserSession.currentUser!.name,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              // const SizedBox(height: 5),
-              Text(
-                UserSession.currentUser!.email,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.greyColor,
+                // const SizedBox(height: 5),
+                Text(
+                  UserSession.currentUser!.email,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.greyColor,
+                  ),
                 ),
-              ),
-
-              const SizedBox(height: 20),
-
-              CustomProfileInfoRow(
-                text: UserSession.currentUser!.name,
-                onSave: (newValue) {
-                  UserSession.currentUser = UserSession.currentUser?.copyWith(
-                    name: newValue,
-                  );
-                  setState(() {});
-                  firestoreService.updateUserField("name", newValue);
-                },
-              ),
-
-              const Divider(),
-
-              CustomProfileInfoRow(
-                text: UserSession.currentUser!.email,
-                onSave: (newValue) {
-                  UserSession.currentUser = UserSession.currentUser?.copyWith(
-                    email: newValue,
-                  );
-                  setState(() {});
-                  firestoreService.updateUserField("email", newValue);
-
-                },
-              ),
-
-              const Divider(),
-
-              CustomProfileInfoRow(
-                text: UserSession.currentUser!.gender ?? 'Gender not set',
-                onSave: (newValue) {
-                  UserSession.currentUser = UserSession.currentUser?.copyWith(
-                    gender: newValue,
-                  );
-                  setState(() {});
-                },
-              ),
-            const Divider(),
-              CustomProfileInfoRow(
-                text: UserSession.currentUser!.age.toString() ,
-                onSave: (newValue) {
-                  UserSession.currentUser = UserSession.currentUser?.copyWith(
-                    age:int.parse( newValue),
-                  );
-                  setState(() {});
-                  firestoreService.updateUserField("age", int.parse(newValue));
-                },
-              ),
-
-              const Divider(),
-            ],
+          
+                const SizedBox(height: 20),
+          
+                CustomProfileInfoRow(
+                  label: "Name",
+                  text: UserSession.currentUser!.name,
+                  onSave: (newValue) {
+                    UserSession.currentUser = UserSession.currentUser?.copyWith(
+                      name: newValue,
+                    );
+                    setState(() {});
+                    firestoreService.updateUserField("name", newValue);
+                  },
+                ),
+          
+               
+          
+                CustomProfileInfoRow(
+                  label: "Email",
+                  text: UserSession.currentUser!.email,
+                  onSave: (newValue) {
+                    UserSession.currentUser = UserSession.currentUser?.copyWith(
+                      email: newValue,
+                    );
+                    setState(() {});
+                    firestoreService.updateUserField("email", newValue);
+          
+                  },
+                ),
+          
+                // const Divider(),
+                CustomProfileInfoRow
+                (
+                  label: "Phone Number",
+                  text: UserSession.currentUser!.phoneNum.toString(),
+                  onSave: (newValue) {
+                    int intNewValue = int.parse( newValue);
+                    UserSession.currentUser = UserSession.currentUser?.copyWith(
+                      phoneNum: intNewValue,
+                    );
+                    setState(() {});
+                    firestoreService.updateUserField("phoneNum", intNewValue);
+                  },
+                ),
+          
+                // const Divider(),
+          
+                CustomProfileInfoRow(
+                  label: "Gender",
+                  text: UserSession.currentUser!.gender ?? 'Gender not set',
+                  onSave: (newValue) {
+                    UserSession.currentUser = UserSession.currentUser?.copyWith(
+                      gender: newValue,
+                    );
+                    setState(() {});
+                  },
+                ),
+              // const Divider(),
+              
+                CustomProfileInfoRow(
+          
+                  label: "Age",
+                  text: UserSession.currentUser!.age.toString() ,
+                  onSave: (newValue) {
+                    UserSession.currentUser = UserSession.currentUser?.copyWith(
+                      age:int.parse( newValue),
+                    );
+                    setState(() {});
+                    firestoreService.updateUserField("age", int.parse(newValue));
+                  },
+                ),
+          
+                // const Divider(),
+              ],
+            ),
           ),
         ),
       ),
