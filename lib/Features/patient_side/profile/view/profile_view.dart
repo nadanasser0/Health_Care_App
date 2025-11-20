@@ -33,22 +33,25 @@ class _ProfilePatientScreenState extends State<ProfilePatientScreen> {
         },
       ),
       extendBodyBehindAppBar: true,
-      body: Stack(
-        children: [
-          Container(
-            width: double.infinity,
-            height: double.infinity,
-            decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 5, 132, 236),
+      body: Expanded(
+        child: Stack(
+          children: [
+            Container(
+              width: double.infinity,
+              height: double.infinity,
+              decoration: BoxDecoration(
+                color: const Color.fromARGB(255, 5, 132, 236),
+              ),
+              child: Column(children: [SizedBox(height: 200), CustomContainer()]),
             ),
-            child: Column(children: [SizedBox(height: 200), CustomContainer()]),
-          ),
-          Positioned(
-            top: 120,
-            left: (MediaQuery.of(context).size.width / 2) - 70,
-            child: UserImageProfile(),
-          ),
-        ],
+            Positioned(
+              top: 125,
+              // top: 120,
+              left: (MediaQuery.of(context).size.width / 2) - 60,
+              child: UserImageProfile(),
+            ),
+          ],
+        ),
       ),
     );
   }

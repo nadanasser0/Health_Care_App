@@ -28,11 +28,11 @@ class CustomContainer extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(height: 65),
+              SizedBox(height: 53),
 
               Text(
                 UserSession.currentUser?.name ?? 'User Name',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               // SizedBox(height: 20),
               Text(

@@ -33,13 +33,13 @@ class DoctorDetailsAboutScreen extends StatelessWidget {
                     "Hospital Name",
                     "${doctor.hospital}",
                   ),
+                  _buildSection("Phone number", UserSession.currentUser!.phoneNum.toString()),
                   _buildSection(
                     "Working Time",
                     doctor.workingTime?.isNotEmpty == true
                         ? doctor.workingTime!
                         : "Not specified.",
                   ),
-                  _buildSection("Phone number", UserSession.currentUser!.phoneNum.toString()),
                   
                   _buildSection("STR", doctor.STR.toString()),
                   _buildSection("Price", "\$${doctor.price.toStringAsFixed(2)}"),

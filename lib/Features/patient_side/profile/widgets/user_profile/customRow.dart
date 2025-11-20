@@ -16,19 +16,19 @@ class CustomRow extends StatelessWidget {
         Row(
           children: [
             CircleAvatar(
-              radius: 20,
+              radius: 16,
               backgroundColor: Colors.grey[200]!.withOpacity(0.6),
               child: Icon(icon, color: Colors.blue, size: 25),
             
             ),
             SizedBox(width: 20,),
-            Text(text, style: TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.w500),),
+            Text(text, style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w500),),
             SizedBox(width: 50,),
           ],
         ),
         // SizedBox(width: 20,),
         IconButton(
-          icon: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.blue , size: 25,),
+          icon: const Icon(Icons.arrow_forward_ios_rounded, color: Colors.blue , size: 20,),
           onPressed: onTap,
         ),
       ],

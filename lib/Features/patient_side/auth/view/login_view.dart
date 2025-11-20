@@ -44,7 +44,7 @@ class _LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               LoginHeader(),
-              SizedBox(height: 20),
+              SizedBox(height: 30),
 
               Padding(
                 padding: const EdgeInsets.all(20.0),
@@ -74,11 +74,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 15),
+                    SizedBox(height: 20),
                     CustomButton(
                       text: 'Login',
                       onPressed: () async {
+
                         if (formKey.currentState!.validate()) {
+
                           loading = true;
                           setState(() {});
                           try {
@@ -119,6 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               UserSession.currentPatient = await firestoreService.getPatient( 
                                 userCredential.user!.uid,
                               );
+
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -154,6 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               );
                             }
                           }
+
                           loading = false;
                           setState(() {});
                         }

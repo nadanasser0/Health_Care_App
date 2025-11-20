@@ -87,69 +87,62 @@ class _DoctorPersonalInfoState extends State<DoctorPersonalInfo> {
             children: [
               Stack(
                 children: [
-                  Column(
-                    children: [
-                      Stack(
-                        children: [
-                          CustomDoctorAvatar(
-                            docName: UserSession.currentDoctor!.name,
-                            imageUrl: UserSession.currentDoctor!.imageUrl,
-                          ),
-                          Positioned(
-                            right: 25,
-                            top: 88,
-
-                            child: CircleAvatar(
-                              radius: 13,
-                              backgroundColor: AppColors.blueColor.withOpacity(
-                                0.8,
-                              ),
-
-                              child: IconButton(
-                                icon: Icon(
-                                  Icons.mode_edit_outline_outlined,
-                                  color: AppColors.whiteColor,
-                                  size: 13,
-                                ),
-                                onPressed: () async {
-                                  final userId =
-                                      FirebaseAuth.instance.currentUser!.uid;
-
-                                  // ✳️ استني sheet ترجع الرابط الجديد
-                                  final newImageUrl =
-                                      await showImagePickerSheet(
-                                        context,
-                                        userId,
-                                      );
-
-                                  if (newImageUrl != null) {
-                                    setState(() {
-                                      UserSession.currentDoctor = UserSession
-                                          .currentDoctor!
-                                          .copyWith(imageUrl: newImageUrl);
-                                      UserSession.currentUser = UserSession
-                                          .currentUser!
-                                          .copyWith(image: newImageUrl);
-                                    });
-                                  }
-                                },
-                              ),
-                            ),
-                          ),
-                        ],
+                  CustomDoctorAvatar(
+                    docName: UserSession.currentDoctor!.name,
+                    imageUrl: UserSession.currentDoctor!.imageUrl,
+                  ),
+                  Positioned(
+                    right: 15,
+                    // right: 25,
+                    top: 95,
+                    // top: 88,
+                            
+                    child: CircleAvatar(
+                      radius: 13,
+                      backgroundColor: AppColors.blueColor.withOpacity(
+                        0.8,
                       ),
-                      Text(
-                        '${UserSession.currentUser!.email}',
-                        style: TextStyle(
-                          color: AppColors.greyColor,
-                          fontSize: 14,
+                            
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.mode_edit_outline_outlined,
+                          color: AppColors.whiteColor,
+                          size: 13,
                         ),
+                        onPressed: () async {
+                          final userId =
+                              FirebaseAuth.instance.currentUser!.uid;
+                            
+                          final newImageUrl =
+                              await showImagePickerSheet(
+                                context,
+                                userId,
+                              );
+                            
+                          if (newImageUrl != null) {
+                            setState(() {
+                              UserSession.currentDoctor = UserSession
+                                  .currentDoctor!
+                                  .copyWith(imageUrl: newImageUrl);
+                              UserSession.currentUser = UserSession
+                                  .currentUser!
+                                  .copyWith(image: newImageUrl);
+                            });
+                          }
+                        },
                       ),
-                      SizedBox(height: 20),
-                    ],
+                    ),
                   ),
                 ],
               ),
+              Text(
+                '${UserSession.currentUser!.email}',
+                style: TextStyle(
+                  color: AppColors.greyColor,
+                  fontSize: 14,
+                ),
+              ),
+              SizedBox(height: 20),
 
               Container(
                 padding: EdgeInsets.only(top: 13, right: 8, left: 0 , bottom: 5),

@@ -115,8 +115,8 @@ class SignupForm extends StatelessWidget {
                 return "Phone number must be 11 digits";
               }
 
-              if (!value.startsWith("011")) {
-                return "Phone number must start with 011";
+              if (!value.startsWith("011")&&!value.startsWith("010")&&!value.startsWith("015")) {
+                return "please enter a right phone number";
               }
 
               return null;

@@ -32,7 +32,7 @@ class _CustomProfileInfoRowState extends State<CustomProfileInfoRow> {
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-       Text(widget.label ,style: TextStyle(fontSize: 16 , fontWeight: FontWeight.bold , color: AppColors.blackColor), ),
+       Text(widget.label ,style: TextStyle(fontSize: 16 , fontWeight: FontWeight.bold , color: Colors.black), ),
         // SizedBox(height: 5,),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -58,8 +58,8 @@ class _CustomProfileInfoRowState extends State<CustomProfileInfoRow> {
                   : 
                   Text(
                       _controller.text,
-                      style: const TextStyle(
-                        color: Color.fromARGB(255, 76, 76, 76),                    fontSize: 16,
+                      style:  TextStyle(
+                        color:AppColors.greyColor,                    fontSize: 15,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -84,7 +84,10 @@ class _CustomProfileInfoRowState extends State<CustomProfileInfoRow> {
             ),
           ],
         ),
-         const Divider(),
+          Divider(
+          thickness: 0.8,
+          color: AppColors.greyColor.withOpacity(0.8),
+         ),
       ],
     );
   }

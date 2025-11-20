@@ -41,20 +41,21 @@ class _PersonalInfoState extends State<PersonalInfo> {
               color: const Color.fromARGB(255, 5, 132, 236),
             ),
             child: Column(
-              children: [SizedBox(height: 200), CustomPersonalInfoContainer()],
+              children: [SizedBox(height: 200),
+               CustomPersonalInfoContainer()],
             ),
           ),
           Positioned(
             // right: 150,
             top: 120,
-            left: (MediaQuery.of(context).size.width / 2) - 70,
+            left: (MediaQuery.of(context).size.width / 2) - 60,
             child: UserImageProfile(),
           ),
           Positioned(
-            // right: 130,
-            right: 175,
-            // top: 220,
-            top: 225,
+            right: 130,
+            // right: 175,
+            top: 200,
+            // top: 225,
             child: CircleAvatar(
               radius: 13,
               backgroundColor: AppColors.blackColor.withOpacity(0.8),

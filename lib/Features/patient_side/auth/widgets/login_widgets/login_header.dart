@@ -25,7 +25,7 @@ class LoginHeader extends StatelessWidget {
         ),
 
         Padding(
-          padding: const EdgeInsets.only(left: 16.0, top: 20, right: 130,bottom: 20),
+          padding: const EdgeInsets.only(left: 16.0, top: 20, right: 100,bottom: 20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -39,10 +39,10 @@ class LoginHeader extends StatelessWidget {
                   color: AppColors.blueColor,
                 ),
               ),
-              SizedBox(height: 10),
+              SizedBox(height: 12),
               Text(
                 'We\'re excited to have you back, can\'t wait to see what you\'ve been up to since you last logged in',
-                style: TextStyle(fontSize: 15, color: AppColors.greyColor),
+                style: TextStyle(fontSize: 14, color: AppColors.greyColor),
                 overflow: TextOverflow.fade,
               ),
 

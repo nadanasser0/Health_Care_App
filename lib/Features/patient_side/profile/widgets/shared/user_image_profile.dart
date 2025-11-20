@@ -47,7 +47,7 @@ class UserImageProfile extends StatelessWidget {
             border: Border.all(color: AppColors.whiteColor, width: 2.5),
           ),
           child: CircleAvatar(
-            radius: 65,
+            radius: 55,
             backgroundColor: Colors.white,
             backgroundImage: AssetImage(UserSession.currentUser?.image ?? 'lib/images/patientt.png'), 
           ),

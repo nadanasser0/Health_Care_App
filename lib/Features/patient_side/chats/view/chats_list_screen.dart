@@ -128,7 +128,7 @@ final displayMessage = (lastMessage == null || lastMessage.isEmpty)
                         );
                       },
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 30,vertical: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 15,vertical: 2),
                         child: Column(
                           children: [
                       Row(
