@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:health_care_app/core/constants/colors.dart';
-import 'package:health_care_app/models/doctor_model.dart';
-import 'package:health_care_app/shared/user_session.dart';
+import 'package:health_care_app/data/models/doctor_model.dart';
+import 'package:health_care_app/data/user_session.dart';
 import '../widgets/make_appointment_button.dart';
 
 class DoctorDetailsAboutScreen extends StatelessWidget {
@@ -31,7 +31,7 @@ class DoctorDetailsAboutScreen extends StatelessWidget {
                   ),
                   _buildSection(
                     "Hospital Name",
-                    "${doctor.hospital}",
+                    doctor.hospital,
                   ),
                   _buildSection("Phone number", UserSession.currentUser!.phoneNum.toString()),
                   _buildSection(

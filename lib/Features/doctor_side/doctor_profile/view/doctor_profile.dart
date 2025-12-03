@@ -8,7 +8,7 @@ import 'package:health_care_app/Features/patient_side/auth/view/login_view.dart'
 import 'package:health_care_app/Features/patient_side/profile/view/settings_page.dart';
 import 'package:health_care_app/Features/patient_side/profile/widgets/user_profile/logout_dialog.dart';
 import 'package:health_care_app/services/auth_services.dart';
-import 'package:health_care_app/shared/user_session.dart';
+import 'package:health_care_app/data/user_session.dart';
 
 class DoctorProfile extends StatefulWidget {
   const DoctorProfile({super.key});
@@ -23,6 +23,7 @@ class _DoctorProfileState extends State<DoctorProfile> {
     super.initState();
   }
 
+  @override
   Widget build(BuildContext context) {
     AuthService authService = AuthService();
     return Scaffold(
@@ -34,82 +35,84 @@ class _DoctorProfileState extends State<DoctorProfile> {
       ),
 
 
-      body: Padding(
-        padding: const EdgeInsets.only(top: 80.0, right: 20, left: 20),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Center(
-              child: Column(
-                children: [
-                  CustomDoctorAvatar(
-                    docName: UserSession.currentUser!.name,
-                    imageUrl: UserSession.currentUser!.image ?? '',
-                  ),
-                ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 80.0, right: 20, left: 20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Center(
+                child: Column(
+                  children: [
+                    CustomDoctorAvatar(
+                      docName: UserSession.currentUser!.name,
+                      imageUrl: UserSession.currentUser!.image ?? '',
+                    ),
+                  ],
+                ),
               ),
-            ),
-
-            SizedBox(height: 40),
-
-            CustomDoctorRow(
-              onpress: (){
-                 Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const DoctorPersonalInfo(),
-                  ),
-                );
-                // setState(() {});
-              },
-              icon: Icons.person_2_outlined,
-              text: 'personal info',
-            ),
-
-            SizedBox(height: 30),
-            CustomDoctorRow(
-              onpress: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SettingsPage()),
-                );
-              },
-              icon: Icons.settings,
-              text: 'settings',
-            ),
-            SizedBox(height: 30),
-            //  Divider(),
-            CustomDoctorRow(
-              onpress: () {},
-              icon: Icons.help_outline_rounded,
-              text: 'help',
-            ),
-            SizedBox(height: 30),
-            //  Divider(),
-            CustomDoctorRow(
-              onpress: () {
-                LogoutDialog.show(
-                  context,
-                  onLogout: () {
-                    UserSession.clear();
-                    authService.logout();
-                    
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LoginScreen(),
-                      ),
-                    );
-                  },
-                );
-              },
-              icon: Icons.login_outlined,
-              text: 'logout',
-            ),
-            SizedBox(height: 30),
-            //  Divider(),
-            //  CustomDoctorRow(onpress: () { }, icon: Icons.settings, text: 'personal info',),
-          ],
+        
+              SizedBox(height: 40),
+        
+              CustomDoctorRow(
+                onpress: (){
+                   Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const DoctorPersonalInfo(),
+                    ),
+                  );
+                  // setState(() {});
+                },
+                icon: Icons.person_2_outlined,
+                text: 'personal info',
+              ),
+        
+              SizedBox(height: 30),
+              CustomDoctorRow(
+                onpress: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SettingsPage()),
+                  );
+                },
+                icon: Icons.settings,
+                text: 'settings',
+              ),
+              SizedBox(height: 30),
+              //  Divider(),
+              CustomDoctorRow(
+                onpress: () {},
+                icon: Icons.help_outline_rounded,
+                text: 'help',
+              ),
+              SizedBox(height: 30),
+              //  Divider(),
+              CustomDoctorRow(
+                onpress: () {
+                  LogoutDialog.show(
+                    context,
+                    onLogout: () {
+                      UserSession.clear();
+                      authService.logout();
+                      
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const LoginScreen(),
+                        ),
+                      );
+                    },
+                  );
+                },
+                icon: Icons.login_outlined,
+                text: 'logout',
+              ),
+              SizedBox(height: 30),
+              //  Divider(),
+              //  CustomDoctorRow(onpress: () { }, icon: Icons.settings, text: 'personal info',),
+            ],
+          ),
         ),
       ),
     );

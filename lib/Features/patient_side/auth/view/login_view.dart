@@ -8,10 +8,10 @@ import 'package:health_care_app/Features/patient_side/auth/widgets/login_widgets
 import 'package:health_care_app/Features/patient_side/auth/widgets/login_widgets/login_header.dart';
 import 'package:health_care_app/Features/patient_side/auth/widgets/login_widgets/login_tail.dart';
 import 'package:health_care_app/core/constants/colors.dart';
-import 'package:health_care_app/models/user_model.dart';
+import 'package:health_care_app/data/models/user_model.dart';
 import 'package:health_care_app/services/firestore_services.dart';
 import 'package:health_care_app/shared/widgets/navigator.dart';
-import 'package:health_care_app/shared/user_session.dart';
+import 'package:health_care_app/data/user_session.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

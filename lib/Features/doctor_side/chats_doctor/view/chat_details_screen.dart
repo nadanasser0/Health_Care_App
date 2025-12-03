@@ -41,7 +41,7 @@ class _ChatsPageDoctorState extends State<ChatsPageDoctor> {
     FirebaseFirestore.instance
         .collection('chats')
         .doc(widget.chatId)
-        .update({'unreadCount_${currentUserId}': 0}).catchError((_) {});
+        .update({'unreadCount_$currentUserId': 0}).catchError((_) {});
   }
 
   void _scrollToBottom() {

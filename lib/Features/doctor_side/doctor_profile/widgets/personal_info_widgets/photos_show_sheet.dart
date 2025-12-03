@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:health_care_app/services/firestore_services.dart';
-import 'package:health_care_app/shared/user_session.dart';
+import 'package:health_care_app/data/user_session.dart';
 
 Future<String?> showImagePickerSheet(
   BuildContext context,
@@ -51,6 +51,7 @@ Future<String?> showImagePickerSheet(
             crossAxisSpacing: 10,
             mainAxisSpacing: 10,
           ),
+
           itemCount: imagePaths.length,
           itemBuilder: (context, index) {
             final imagePath = imagePaths[index];
@@ -62,13 +63,14 @@ Future<String?> showImagePickerSheet(
                     'imageUrl',
                     imagePath,
                   );
+
                   await firestoreService.updateUserField('image', imagePath);
-                  UserSession.currentDoctor = UserSession.currentDoctor!
-                      .copyWith(imageUrl: imagePath);
+                  UserSession.currentDoctor = UserSession.currentDoctor!.copyWith(imageUrl: imagePath);
                   UserSession.currentUser = UserSession.currentUser!.copyWith(
                     image: imagePath,
                   );
-                } else {
+                } 
+                else {
                   await firestoreService.updateUserField('image', imagePath);
                   UserSession.currentUser = UserSession.currentUser!.copyWith(
                     image: imagePath,
@@ -78,12 +80,11 @@ Future<String?> showImagePickerSheet(
 
                 // 👇 إغلاق النافذة بعد الاختيار
                 Navigator.pop(context, imagePath);
-
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
                       
-                           'your profile photo updated successfully',
+                  'your profile photo updated successfully',
                     ),
                     duration: const Duration(seconds: 2),
                   ),

@@ -7,7 +7,7 @@ import 'package:health_care_app/core/constants/sizes.dart';
 import 'package:health_care_app/Features/patient_side/home_screen/model/recomendation_doctor.dart';
 import 'package:health_care_app/services/firestore_services.dart';
 
-import '../../../../models/doctor_model.dart';
+import '../../../../data/models/doctor_model.dart';
 
 class RecomendationDoc extends StatelessWidget {
   const RecomendationDoc({super.key, this.searchQuery = ''});
@@ -66,20 +66,18 @@ class RecomendationDoc extends StatelessWidget {
                   d.id,
                 );
 
-                if (doctorModel != null) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => DoctorDetailsTabbarScreen(
-                        docModel: doctorModel,
-                        doctorId: d.id,
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DoctorDetailsTabbarScreen(
+                      docModel: doctorModel,
+                      doctorId: d.id,
 
-                        
-                      ),
+                      
                     ),
-                  );
-                }
-              },
+                  ),
+                );
+                            },
               child: Card(
                 margin: const EdgeInsets.symmetric(vertical: 8),
                 shape: RoundedRectangleBorder(

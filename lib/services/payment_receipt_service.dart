@@ -55,7 +55,7 @@ class FirestoreService {
     }
     return UserModel.fromMap(doc.data()!,doc.id);
   }
-  
+
   Future<DoctorModel> getDoctor(String docId) async {
     final doc = await _firestore.collection('doctors').doc(docId).get();
     if (!doc.exists || doc.data() == null) {
@@ -72,15 +72,15 @@ class FirestoreService {
     }
     return PatientModel.fromMap(doc.data()!,doc.id);
   }
-  
+
   Future<void> updateDoctorField(String field, dynamic newValue) async {
     final doctorId = UserSession.currentDoctor!.doctorId;
     await _firestore.collection('doctors').doc(doctorId).update({field: newValue});
   }
 
   Future<void> updateUserField(String field, dynamic newValue) async {
-    final userId = UserSession.currentUser!.user_id;
-    await _firestore.collection('users').doc(userId).update({field: newValue});
+    final user_id = UserSession.currentUser!.user_id;
+    await _firestore.collection('users').doc(user_id).update({field: newValue});
   }
 
   //////////add your services here

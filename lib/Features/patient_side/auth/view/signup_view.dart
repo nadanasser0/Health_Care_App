@@ -10,10 +10,10 @@ import 'package:health_care_app/Features/patient_side/auth/widgets/signup_widget
 import 'package:health_care_app/Features/patient_side/auth/widgets/signup_widgets/signup_tail.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 import 'package:health_care_app/core/constants/sizes.dart';
-import 'package:health_care_app/models/doctor_model.dart';
-import 'package:health_care_app/models/patient_model.dart';
-import 'package:health_care_app/models/user_model.dart';
-import 'package:health_care_app/shared/user_session.dart';
+import 'package:health_care_app/data/models/doctor_model.dart';
+import 'package:health_care_app/data/models/patient_model.dart';
+import 'package:health_care_app/data/models/user_model.dart';
+import 'package:health_care_app/data/user_session.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class SignupView extends StatefulWidget {
@@ -55,7 +55,10 @@ class _SignupViewState extends State<SignupView> {
       _selectedSpecialization = specialization;
     });
   }
-
+ @override
+  void dispose() {
+  // userNameController
+ }
   @override
   Widget build(BuildContext context) {
     return ModalProgressHUD(
@@ -112,9 +115,10 @@ class _SignupViewState extends State<SignupView> {
 
                     CustomButton(
                       text: "Sign up",
-                      onPressed: () async {
+                      onPressed: () 
+                      async {
                         if (formkey.currentState!.validate()) {
-                          // تحقق من اختيار التخصص لو المستخدم دكتور
+                         
                           if (_selectedType == "Doctor" &&
                               _selectedSpecialization == null) {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -160,11 +164,11 @@ class _SignupViewState extends State<SignupView> {
                                     ),
                                   ),
                                 );
-                                return;
+                                // return;
                               }
                             }
 
-                            return;
+                            // return;
                           }
 
                           loading = true;

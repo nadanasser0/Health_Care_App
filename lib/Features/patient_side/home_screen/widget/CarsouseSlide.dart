@@ -1,5 +1,4 @@
 //             CarsouseSlide
-import 'package:carousel_slider/carousel_options.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:health_care_app/core/constants/colors.dart';

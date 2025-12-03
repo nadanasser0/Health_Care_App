@@ -7,7 +7,7 @@ class HeaderWidget extends StatefulWidget {
   final ValueChanged<String>? onUserNameLoaded;
   // 👆 دي دالة callback ترجع اسم المستخدم بعد تحميله
 
-  const HeaderWidget({Key? key, this.onUserNameLoaded}) : super(key: key);
+  const HeaderWidget({super.key, this.onUserNameLoaded});
 
   @override
   State<HeaderWidget> createState() => _HeaderWidgetState();

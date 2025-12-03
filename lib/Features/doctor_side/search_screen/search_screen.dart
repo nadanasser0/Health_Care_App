@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:health_care_app/Features/doctor_side/chats_doctor/view/chat_details_screen.dart';
+import 'package:health_care_app/Features/doctor_side/navigation_screen.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 
 class SearchScreenD extends StatefulWidget {
@@ -65,62 +66,72 @@ class _SearchScreenState extends State<SearchScreenD> {
     return FirebaseFirestore.instance.collection('users').snapshots();
   }
 
- Future<String> createOrGetChat(
-    String patientId, String patientName, String patientImage) async {
-  final doctor = FirebaseAuth.instance.currentUser!;
-  final doctorId = doctor.uid;
+  Future<String> createOrGetChat(
+    String patientId,
+    String patientName,
+    String patientImage,
+  ) async {
+    final doctor = FirebaseAuth.instance.currentUser!;
+    final doctorId = doctor.uid;
 
-  final doctorDoc =
-      await FirebaseFirestore.instance.collection('users').doc(doctorId).get();
-  final doctorData = doctorDoc.data() ?? {};
+    final doctorDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(doctorId)
+        .get();
+    final doctorData = doctorDoc.data() ?? {};
 
-  final doctorName = doctorData['name'] ?? 'Doctor';
-  final doctorImage = doctorData['imageUrl'] ?? 'lib/images/doctor.png';
+    final doctorName = doctorData['name'] ?? 'Doctor';
+    final doctorImage = doctorData['imageUrl'] ?? 'lib/images/doctor.png';
 
-  final sortedIds = [doctorId, patientId]..sort();
-  final chatId = "${sortedIds[0]}_${sortedIds[1]}";
+    final sortedIds = [doctorId, patientId]..sort();
+    final chatId = "${sortedIds[0]}_${sortedIds[1]}";
 
-  final chatRef = FirebaseFirestore.instance.collection('chats').doc(chatId);
-  final chatDoc = await chatRef.get();
+    final chatRef = FirebaseFirestore.instance.collection('chats').doc(chatId);
+    final chatDoc = await chatRef.get();
 
-  if (!chatDoc.exists) {
-    await chatRef.set({
-      'doctorId': doctorId,
-      'doctorName': doctorName,
-      'doctorImage': doctorImage,
-      'patientId': patientId,
-      'patientName': patientName,
-      'patientImage': patientImage,
-      'createdAt': FieldValue.serverTimestamp(),
-      'updatedAt': FieldValue.serverTimestamp(),
-      'lastMessage': "",
-      'unreadCountForPatient': 0,
-      'unreadCountForDoctor': 0,
-    });
+    if (!chatDoc.exists) {
+      await chatRef.set({
+        'doctorId': doctorId,
+        'doctorName': doctorName,
+        'doctorImage': doctorImage,
+        'patientId': patientId,
+        'patientName': patientName,
+        'patientImage': patientImage,
+        'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+        'lastMessage': "",
+        'unreadCountForPatient': 0,
+        'unreadCountForDoctor': 0,
+      });
+    }
+
+    return chatId;
   }
 
-  return chatId;
-} void _onPatientTapAndOpenChat({
+  void _onPatientTapAndOpenChat({
     required String patientId,
     required String name,
     required String image,
-  }) 
-  async {
+  }) async {
     await _addToSearchHistory(name);
     final chatId = await createOrGetChat(patientId, name, image);
     if (!mounted) return;
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => ChatsPageDoctor(chatName: name, chatId: chatId, doctorName: name)
+        builder: (_) =>
+            ChatsPageDoctor(chatName: name, chatId: chatId, doctorName: name),
       ),
     );
   }
 
   Widget _buildSearchHistoryView() {
     if (searchHistory.isEmpty) {
-      return  Center(
-        child: Text("Start typing to search", style: TextStyle(color:AppColors.greyColor)),
+      return Center(
+        child: Text(
+          "Start typing to search",
+          style: TextStyle(color: AppColors.greyColor),
+        ),
       );
     }
 
@@ -198,33 +209,38 @@ class _SearchScreenState extends State<SearchScreenD> {
               ),
               child: Column(
                 children: [
-                  SizedBox(height: 12,),
+                  SizedBox(height: 12),
                   ListTile(
                     minTileHeight: 100,
-                    leading:
-                         ClipRRect(
+                    leading: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: Image.asset(
                         data['image'],
                         width: 80,
                         height: 100,
                         fit: BoxFit.fitHeight,
-                        errorBuilder: (context, error, stackTrace) => Image.asset(
-                          'lib/images/patientt.png',
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.cover,
-                        ),
+                        errorBuilder: (context, error, stackTrace) =>
+                            Image.asset(
+                              'lib/images/patientt.png',
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.cover,
+                            ),
                       ),
                     ),
-                    title: Text(name, style: const TextStyle(fontWeight: FontWeight.w600)),
-                    trailing:  Icon(Icons.chat_bubble_outline, color:AppColors.blueColor),
+                    title: Text(
+                      name,
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    trailing: Icon(
+                      Icons.chat_bubble_outline,
+                      color: AppColors.blueColor,
+                    ),
                     onTap: () => _onPatientTapAndOpenChat(
                       patientId: patientId,
                       name: name,
                       image: image,
                     ),
-                    
                   ),
                 ],
               ),
@@ -234,7 +250,6 @@ class _SearchScreenState extends State<SearchScreenD> {
       },
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -242,10 +257,19 @@ class _SearchScreenState extends State<SearchScreenD> {
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: AppColors.whiteColor,
-        title: const Text("Search",
-        textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+        title: const Text(
+          "Search",
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+        ),
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => NavigationScreen()),
+          ),
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(12.0),
@@ -270,8 +294,9 @@ class _SearchScreenState extends State<SearchScreenD> {
               ),
             ),
             Expanded(
-              child:
-                  searchText.isEmpty ? _buildSearchHistoryView() : _buildPatientsResults(),
+              child: searchText.isEmpty
+                  ? _buildSearchHistoryView()
+                  : _buildPatientsResults(),
             ),
           ],
         ),

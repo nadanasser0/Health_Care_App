@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 // import 'package:health_care_app/Features/patient_side/appointment/your_appointment.dart';
 import 'package:health_care_app/Features/patient_side/book/book_appointment.dart';
 import 'package:health_care_app/core/constants/colors.dart';
-import 'package:health_care_app/models/doctor_model.dart';
+import 'package:health_care_app/data/models/doctor_model.dart';
 
 class MakeAppointmentButton extends StatelessWidget {
   const MakeAppointmentButton({

@@ -24,7 +24,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:health_care_app/core/constants/colors.dart';
-import 'package:health_care_app/shared/user_session.dart';
+import 'package:health_care_app/data/user_session.dart';
 
 class UserImageProfile extends StatelessWidget {
   const UserImageProfile({
@@ -47,7 +47,7 @@ class UserImageProfile extends StatelessWidget {
             border: Border.all(color: AppColors.whiteColor, width: 2.5),
           ),
           child: CircleAvatar(
-            radius: 55,
+            radius: 61, //55
             backgroundColor: Colors.white,
             backgroundImage: AssetImage(UserSession.currentUser?.image ?? 'lib/images/patientt.png'), 
           ),

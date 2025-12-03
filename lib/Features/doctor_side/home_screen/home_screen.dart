@@ -3,8 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:health_care_app/Features/doctor_side/appointment/doctor_appoinment.dart';
 import 'package:health_care_app/Features/doctor_side/appointment/widgets/upcoming.dart';
 import 'package:health_care_app/core/constants/colors.dart';
-import '../../../models/appiontment_model.dart';
-import '../../../shared/user_session.dart';
+import 'package:health_care_app/data/models/appiontment_model.dart';
+import 'package:health_care_app/data/user_session.dart';
 
 class HomeScreenD extends StatelessWidget {
   HomeScreenD({super.key});
@@ -18,7 +18,6 @@ class HomeScreenD extends StatelessWidget {
     final CollectionReference notificationsRef =
     FirebaseFirestore.instance.collection('notifications');
 
-    // ✅ Stream لجلب كل المواعيد
     Stream<List<AppointmentModel>> getAllAppointments() {
       return appointmentsRef.snapshots().map((snapshot) {
         return snapshot.docs
@@ -28,7 +27,6 @@ class HomeScreenD extends StatelessWidget {
       });
     }
 
-    // ✅ دالة لإضافة إشعار للمريض
     Future<void> addNotification(String patientId, String title, String body) async {
       await notificationsRef.add({
         'receiverId': patientId,
@@ -38,7 +36,6 @@ class HomeScreenD extends StatelessWidget {
       });
     }
 
-    // ✅ دالة لإلغاء الموعد + إرسال إشعار
     void cancelAppointment(AppointmentModel appointment, BuildContext context) async {
       try {
         final docRef = appointmentsRef.doc(appointment.appointmentId);
@@ -59,7 +56,6 @@ class HomeScreenD extends StatelessWidget {
       }
     }
 
-    // ✅ دالة لتعيين الموعد كمكتمل + إرسال إشعار
     void completeAppointment(AppointmentModel appointment, BuildContext context) async {
       try {
         final docRef = appointmentsRef.doc(appointment.appointmentId);
@@ -98,7 +94,6 @@ class HomeScreenD extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              // ✅ الكارد الخاصة بأقرب موعد
               StreamBuilder<List<AppointmentModel>>(
                 stream: getAllAppointments(),
                 builder: (context, snapshot) {
@@ -206,7 +201,6 @@ class HomeScreenD extends StatelessWidget {
 
               const SizedBox(height: 25),
 
-              // ✅ قائمة المواعيد القادمة
               Row(
                 children: [
                   const Text(
@@ -229,150 +223,7 @@ class HomeScreenD extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 10),
-              StreamBuilder<List<AppointmentModel>>(
-                stream: getAllAppointments(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState ==
-                      ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  }
-
-                  if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                    return const Center(
-                      child: Text(
-                        "No upcoming appointments yet.",
-                        style: TextStyle(fontSize: 16, color: Colors.grey),
-                      ),
-                    );
-                  }
-
-                  final doctorAppointments = snapshot.data!
-                      .where((app) =>
-                  app.doctorId == doctorId &&
-                      app.status == 'upcoming')
-                      .toList();
-
-                  if (doctorAppointments.isEmpty) {
-                    return const Center(
-                      child: Text(
-                        "No upcoming appointments yet.",
-                        style: TextStyle(fontSize: 16, color: Colors.grey),
-                      ),
-                    );
-                  }
-
-                  return ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: doctorAppointments.length,
-                    separatorBuilder: (_, __) =>
-                    const SizedBox(height: 7),
-                    itemBuilder: (context, index) {
-                      final appointment = doctorAppointments[index];
-                      return Card(
-                        elevation: 2,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          side: BorderSide(
-                            color: AppColors.greyColor.withOpacity(0.8),
-                            width: 1,
-                          ),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  const CircleAvatar(
-                                    radius: 25,
-                                    backgroundImage:
-                                    AssetImage('lib/images/img.png'),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          appointment.name,
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 16),
-                                        ),
-                                        Text(
-                                          appointment.appointmentType,
-                                          style: const TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 12),
-                                        ),
-                                        Text(
-                                          "${appointment.appointmentDate.day}/${appointment.appointmentDate.month}/${appointment.appointmentDate.year} | ${appointment.appointmentTime}",
-                                          style: const TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 12),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(
-                                    left: 10, bottom: 5, top: 5),
-                                child: Row(
-                                  children: [
-                                    OutlinedButton(
-                                      onPressed: () =>
-                                          cancelAppointment(appointment, context),
-                                      style: OutlinedButton.styleFrom(
-                                        minimumSize:
-                                        const Size(120, 35),
-                                        side: BorderSide(
-                                            color: AppColors.blueColor),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                          BorderRadius.circular(18),
-                                        ),
-                                      ),
-                                      child: Text(
-                                        "Cancel",
-                                        style: TextStyle(
-                                            color: AppColors.blackColor),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 10),
-                                    ElevatedButton(
-                                      onPressed: () =>
-                                          completeAppointment(appointment, context),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor:
-                                        AppColors.blueColor,
-                                        minimumSize:
-                                        const Size(120, 35),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                          BorderRadius.circular(18),
-                                        ),
-                                      ),
-                                      child: const Text(
-                                        "Done",
-                                        style: TextStyle(
-                                            color: Colors.white),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  );
-                },
-              ),
+              Upcoming(),
             ],
           ),
         ),

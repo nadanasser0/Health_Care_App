@@ -3,10 +3,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:health_care_app/Features/patient_side/chats/view/chat_details_screen.dart';
-import 'package:health_care_app/Features/patient_side/doctor_review/screens/doctor_details_about_screen.dart';
 import 'package:health_care_app/Features/patient_side/doctor_review/screens/doctor_details_tabBar.dart';
 import 'package:health_care_app/core/constants/colors.dart';
-import 'package:health_care_app/models/doctor_model.dart';
+import 'package:health_care_app/data/models/doctor_model.dart';
 import 'package:health_care_app/services/firestore_services.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -20,8 +19,7 @@ class _SearchDoctorsFullUIState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   String searchText = "";
   final String currentUserId = FirebaseAuth.instance.currentUser!.uid;
-  List searchHistory = [];
-
+List<String> searchHistory = [];
   String? selectedSpeciality;
   double? selectedRating;
 
@@ -224,16 +222,20 @@ class _SearchDoctorsFullUIState extends State<SearchScreen> {
         .set({'history': searchHistory});
   }
 
-  Future _addToSearchHistory(String term) async {
-    term = term.trim();
-    if (term.isEmpty) return;
-    searchHistory.removeWhere((t) => t.toLowerCase() == term.toLowerCase());
-    searchHistory.insert(0, term);
-    if (searchHistory.length > 10) searchHistory = searchHistory.sublist(0, 10);
-    setState(() {});
-    await _saveSearchHistoryToRemote();
+Future _addToSearchHistory(String term) async {
+  term = term.trim();
+  if (term.isEmpty) return;
+
+  searchHistory.removeWhere((t) => t.toLowerCase() == term.toLowerCase());
+  searchHistory.add(term);   // خليها نفس النظام الناجح في الصفحة الأولى
+
+  if (searchHistory.length > 10) {
+    searchHistory = searchHistory.sublist(searchHistory.length - 10);
   }
 
+  setState(() {});
+  await _saveSearchHistoryToRemote();
+}
   Future _loadSpecialities() async {
     try {
       final snapshot = await FirebaseFirestore.instance.collection('doctors').get();
@@ -288,7 +290,7 @@ class _SearchDoctorsFullUIState extends State<SearchScreen> {
     required String name,
     required String image,
   }) async {
-    await _addToSearchHistory(name);
+await _addToSearchHistory(searchText);
     final chatId = await createOrGetChat(doctorId, name, image);
     if (!mounted) return;
     Navigator.push(
@@ -357,93 +359,102 @@ List<Map<String, dynamic>> _filterDoctors(List docs) {
               ),
             ],
           ),
-          child: InkWell(
-        onTap: () async {
-  FirestoreService firestoreService = FirestoreService();
-  DoctorModel? doctorModel = await firestoreService.getDoctor(doctor['id']);
+       child: InkWell(
+  onTap: () async {
+    FirestoreService firestoreService = FirestoreService();
+    DoctorModel? doctorModel = await firestoreService.getDoctor(doctor['id']);
 
-  if (doctorModel != null) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => DoctorDetailsTabbarScreen(docModel: doctorModel, doctorId:doctor['id'],
-        ),
-      ),
-    );
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Doctor data not found")),
-    );
-  }
-},
-
-
-
-            child:
-             Expanded(
-               child: Container(
-                padding: const EdgeInsets.all(15),
-                child: 
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ClipRRect(
-                      // borderRadius: BorderRadius.circular(15),
-                      child: Image.asset(
-                        doctor['image'],
-                        width: 90,
-                        height: 90,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Image.asset(
-                          'lib/images/patientt.png',
-                          width: 100,
-                          height: 100,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 15),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Dr. ${doctor['name']}',
-                              style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
-                          const SizedBox(height: 5),
-                          Row(children: [
-               
-                             Text(doctor['specialization'], style: TextStyle(color: AppColors.greyColor, fontSize: 13)),
-                             const SizedBox(width: 5),
-                Text('|'),
-                             const SizedBox(width: 5),
-               
-                          Text("${doctor['hospital']}", style: TextStyle(color: AppColors.greyColor, fontSize: 13)),
-                         
-               
-                          ],),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              Icon(Icons.star, color: AppColors.starColor, size: 16),
-                              const SizedBox(width: 5),
-                              Text("${doctor['rating']} (${doctor['reviews']} reviews)",
-                                  style: TextStyle(color: AppColors.greyColor, fontSize: 13)),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    // IconButton(
-                    //   icon: const Icon(Icons.chat_bubble_outline, color: Colors.blue),
-                    //   onPressed: () =>
-                    //       _onDoctorTapAndOpenChat(doctorId: doctor['id'], name: doctor['name'], image: doctor['image']),
-                    // )
-                  ],
-                ),
-                           ),
-             ),
+    if (doctorModel != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DoctorDetailsTabbarScreen(
+            docModel: doctorModel,
+            doctorId: doctor['id'],
           ),
-        );
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Doctor data not found")),
+      );
+    }
+        await _addToSearchHistory(doctor['name']);
+
+  },
+
+  child: Container(
+    padding: const EdgeInsets.all(15),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ClipRRect(
+          child: Image.asset(
+            doctor['image'],
+            width: 90,
+            height: 90,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) =>
+                Image.asset("lib/images/patientt.png",
+                    width: 90, height: 90, fit: BoxFit.cover),
+          ),
+        ),
+
+        const SizedBox(width: 15),
+
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Dr. ${doctor['name']}",
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
+                ),
+              ),
+
+              const SizedBox(height: 5),
+
+              Row(
+                children: [
+                  Text(
+                    doctor['specialization'],
+                    style: TextStyle(color: AppColors.greyColor, fontSize: 13),
+                  ),
+                  const SizedBox(width: 5),
+                  Text("|", style: TextStyle(color: AppColors.greyColor)),
+                  const SizedBox(width: 5),
+                  Expanded(
+                    child: Text(
+                      doctor['hospital'],
+                      style: TextStyle(color: AppColors.greyColor, fontSize: 13),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 8),
+
+              Row(
+                children: [
+                  Icon(Icons.star,
+                      color: AppColors.starColor, size: 16),
+                  const SizedBox(width: 5),
+                  Text(
+                    "${doctor['rating']} (${doctor['reviews']} reviews)",
+                    style: TextStyle(color: AppColors.greyColor, fontSize: 13),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  ),
+), );
       },
     );
   }
@@ -547,10 +558,12 @@ SingleChildScrollView(
                     setState(() {});
                   },
                 ),
-                onTap: () {
-                  _searchController.text = term;
-                  setState(() => searchText = term);
-                },
+                onTap: () async {
+                  
+  _searchController.text = term;
+  setState(() => searchText = term);
+  await _addToSearchHistory(term);
+}
               );
             },
           ),
@@ -562,9 +575,16 @@ SingleChildScrollView(
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
+      
       backgroundColor: AppColors.whiteColor,
       appBar: AppBar(
+        automaticallyImplyLeading:false ,
         centerTitle: true,
+        // leading: IconButton(
+        //   icon: Icon(Icons.arrow_back, color: AppColors.blackColor),
+        //   onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) =>  NavigationnScreen())),
+        // ),
         backgroundColor: AppColors.whiteColor,
         title: const Text(
           "Search ",
@@ -583,8 +603,9 @@ SingleChildScrollView(
                   Expanded(
                     child: TextField(
                       controller: _searchController,
-                      onChanged: (v) => setState(() => searchText = v.trim()),
-                      onSubmitted: (v) async => await _addToSearchHistory(v.trim()),
+onChanged: (v) {
+  setState(() => searchText = v.trim());
+},                      onSubmitted: (v) {},
                       decoration: InputDecoration(
                         hintText: "Search ...",
                         prefixIcon: const Icon(CupertinoIcons.search),
@@ -611,7 +632,7 @@ SingleChildScrollView(
             ),
             const SizedBox(height: 10),
             _buildFilters(),
-            const SizedBox(height: 20),
+            // const SizedBox(height: 20),
             Expanded(
               child: searchText.isEmpty
                   ? _buildSearchHistoryView()

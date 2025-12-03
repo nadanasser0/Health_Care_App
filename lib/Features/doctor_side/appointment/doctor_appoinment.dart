@@ -38,9 +38,9 @@ class DoctorAppointment extends StatelessWidget {
         ),
         body: TabBarView(
           children: [
-            Upcoming(), // ✅ التبويب الأول
-             Completed(), // ✅ التبويب الثاني
-             Canceled(),  // ✅ التبويب الثالث
+            Upcoming(),
+             Completed(),
+             Canceled(),
           ],
         ),
         backgroundColor: AppColors.whiteColor,

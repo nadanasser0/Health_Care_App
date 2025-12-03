@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:health_care_app/core/constants/colors.dart';
-import 'package:health_care_app/models/appiontment_model.dart';
-import 'package:health_care_app/shared/user_session.dart';
+import 'package:health_care_app/data/models/appiontment_model.dart';
+import 'package:health_care_app/data/user_session.dart';
+
+import '../../appointment_details/doctor_appointment_details_screen.dart';
 
 class Upcoming extends StatelessWidget {
   const Upcoming({super.key});
@@ -15,7 +17,6 @@ class Upcoming extends StatelessWidget {
     final CollectionReference notificationsRef =
     FirebaseFirestore.instance.collection('notifications');
 
-    // ✅ دالة لإرسال إشعار إلى المريض
     Future<void> addNotification(String patientId, String title, String body) async {
       await notificationsRef.add({
         'receiverId': patientId,
@@ -25,7 +26,6 @@ class Upcoming extends StatelessWidget {
       });
     }
 
-    // ✅ دالة لإلغاء الموعد + إشعار المريض
     Future<void> cancelAppointment(AppointmentModel appointment, BuildContext context) async {
      
       try {
@@ -49,7 +49,6 @@ class Upcoming extends StatelessWidget {
       }
     }
 
-    // ✅ دالة لتعيين الموعد كمكتمل + إشعار المريض
     Future<void> completeAppointment(AppointmentModel appointment, BuildContext context) async {
       try {
         final docRef = appointmentsRef.doc(appointment.appointmentId);
@@ -69,7 +68,6 @@ class Upcoming extends StatelessWidget {
       }
     }
 
-    // ✅ جلب كل المواعيد
     Stream<List<AppointmentModel>> getAllAppointments() {
       return appointmentsRef.snapshots().map((snapshot) {
         return snapshot.docs
@@ -79,7 +77,6 @@ class Upcoming extends StatelessWidget {
       });
     }
 
-    // ✅ واجهة المستخدم
     return StreamBuilder<List<AppointmentModel>>(
       stream: getAllAppointments(),
       builder: (context,snapshot) {
@@ -111,99 +108,207 @@ class Upcoming extends StatelessWidget {
 
         return ListView.separated(
           padding: const EdgeInsets.all(8),
+          shrinkWrap: true, // 👈 مهم عشان يشتغل جوه Scroll تاني
+          physics: const NeverScrollableScrollPhysics(), // 👈 يخلي الليست نفسها مش سكرول
           itemCount: doctorAppointments.length,
           separatorBuilder: (_, __) => const SizedBox(height: 7),
           itemBuilder: (context, index) {
             final appointment = doctorAppointments[index];
-            return Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-                side: BorderSide(
-                  color: AppColors.greyColor.withOpacity(0.8),
-                  width: 1,
+            return InkWell(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => DoctorAppointmentDetailsScreen(
+                      appointmentId: appointment.appointmentId,
+                    ),
+                  ),
+                );
+              },
+              child: Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  side: BorderSide(
+                    color: AppColors.greyColor.withOpacity(0.8),
+                    width: 1,
+                  ),
                 ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(15.0),
-                child: Column(
-                  children: [
-                    Row(
-                      children: [
-                        const CircleAvatar(
-                          radius: 25,
-                          backgroundImage: AssetImage('lib/images/img.png'),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                appointment.name,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 16),
-                              ),
-                              Text(
-                                appointment.appointmentType,
-                                style: const TextStyle(
-                                    color: Colors.grey, fontSize: 12),
-                              ),
-                              Text(
-                                "${appointment.appointmentDate.day}/${appointment.appointmentDate.month}/${appointment.appointmentDate.year} | ${appointment.appointmentTime}",
-                                style: const TextStyle(
-                                    color: Colors.grey, fontSize: 12),
-                              ),
-                            ],
+                child: Padding(
+                  padding: const EdgeInsets.all(15.0),
+                  child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          const CircleAvatar(
+                            radius: 25,
+                            backgroundImage: AssetImage('lib/images/img.png'),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // ❌ Cancel
-                        OutlinedButton(
-                          onPressed: () =>
-                              cancelAppointment(appointment, context),
-                          style: OutlinedButton.styleFrom(
-                            minimumSize: const Size(120, 35),
-                            side: BorderSide(color: AppColors.blueColor),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  appointment.name,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold, fontSize: 16),
+                                ),
+                                Text(
+                                  appointment.appointmentType,
+                                  style: const TextStyle(
+                                      color: Colors.grey, fontSize: 12),
+                                ),
+                                Text(
+                                  "${appointment.appointmentDate.day}/${appointment.appointmentDate.month}/${appointment.appointmentDate.year} | ${appointment.appointmentTime}",
+                                  style: const TextStyle(
+                                      color: Colors.grey, fontSize: 12),
+                                ),
+                              ],
                             ),
                           ),
-                          child: Text(
-                            "Cancel",
-                            style: TextStyle(color: AppColors.blackColor),
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        // ✅ Done
-                        ElevatedButton(
-                          onPressed: () =>
-                              completeAppointment(appointment, context),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.blueColor,
-                            minimumSize: const Size(120, 35),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          OutlinedButton(
+                            onPressed: () => cancelAppointment(appointment, context),
+                            style: OutlinedButton.styleFrom(
+                              minimumSize: const Size(120, 35),
+                              side: BorderSide(color: AppColors.blueColor),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(18),
+                              ),
+                            ),
+                            child: Text(
+                              "Cancel",
+                              style: TextStyle(color: AppColors.blackColor),
                             ),
                           ),
-                          child: const Text(
-                            "Done",
-                            style: TextStyle(color: Colors.white),
+                          const SizedBox(width: 10),
+                          ElevatedButton(
+                            onPressed: () => completeAppointment(appointment, context),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.blueColor,
+                              minimumSize: const Size(120, 35),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(18),
+                              ),
+                            ),
+                            child: const Text(
+                              "Done",
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             );
           },
         );
+
+
+
+        // return ListView.separated(
+        //   padding: const EdgeInsets.all(8),
+        //   itemCount: doctorAppointments.length,
+        //   separatorBuilder: (_, __) => const SizedBox(height: 7),
+        //   itemBuilder: (context, index) {
+        //     final appointment = doctorAppointments[index];
+        //     return Card(
+        //       elevation: 2,
+        //       shape: RoundedRectangleBorder(
+        //         borderRadius: BorderRadius.circular(20),
+        //         side: BorderSide(
+        //           color: AppColors.greyColor.withOpacity(0.8),
+        //           width: 1,
+        //         ),
+        //       ),
+        //       child: Padding(
+        //         padding: const EdgeInsets.all(15.0),
+        //         child: Column(
+        //           children: [
+        //             Row(
+        //               children: [
+        //                 const CircleAvatar(
+        //                   radius: 25,
+        //                   backgroundImage: AssetImage('lib/images/img.png'),
+        //                 ),
+        //                 const SizedBox(width: 12),
+        //                 Expanded(
+        //                   child: Column(
+        //                     crossAxisAlignment: CrossAxisAlignment.start,
+        //                     children: [
+        //                       Text(
+        //                         appointment.name,
+        //                         style: const TextStyle(
+        //                             fontWeight: FontWeight.bold, fontSize: 16),
+        //                       ),
+        //                       Text(
+        //                         appointment.appointmentType,
+        //                         style: const TextStyle(
+        //                             color: Colors.grey, fontSize: 12),
+        //                       ),
+        //                       Text(
+        //                         "${appointment.appointmentDate.day}/${appointment.appointmentDate.month}/${appointment.appointmentDate.year} | ${appointment.appointmentTime}",
+        //                         style: const TextStyle(
+        //                             color: Colors.grey, fontSize: 12),
+        //                       ),
+        //                     ],
+        //                   ),
+        //                 ),
+        //               ],
+        //             ),
+        //             const SizedBox(height: 8),
+        //             Row(
+        //               mainAxisAlignment: MainAxisAlignment.center,
+        //               children: [
+        //                 // ❌ Cancel
+        //                 OutlinedButton(
+        //                   onPressed: () =>
+        //                       cancelAppointment(appointment, context),
+        //                   style: OutlinedButton.styleFrom(
+        //                     minimumSize: const Size(120, 35),
+        //                     side: BorderSide(color: AppColors.blueColor),
+        //                     shape: RoundedRectangleBorder(
+        //                       borderRadius: BorderRadius.circular(18),
+        //                     ),
+        //                   ),
+        //                   child: Text(
+        //                     "Cancel",
+        //                     style: TextStyle(color: AppColors.blackColor),
+        //                   ),
+        //                 ),
+        //                 const SizedBox(width: 10),
+        //                 // ✅ Done
+        //                 ElevatedButton(
+        //                   onPressed: () =>
+        //                       completeAppointment(appointment, context),
+        //                   style: ElevatedButton.styleFrom(
+        //                     backgroundColor: AppColors.blueColor,
+        //                     minimumSize: const Size(120, 35),
+        //                     shape: RoundedRectangleBorder(
+        //                       borderRadius: BorderRadius.circular(18),
+        //                     ),
+        //                   ),
+        //                   child: const Text(
+        //                     "Done",
+        //                     style: TextStyle(color: Colors.white),
+        //                   ),
+        //                 ),
+        //               ],
+        //             ),
+        //           ],
+        //         ),
+        //       ),
+        //     );
+        //   },
+        // );
       },
     );
   }

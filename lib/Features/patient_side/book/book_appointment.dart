@@ -5,14 +5,13 @@ import 'package:health_care_app/Features/patient_side/book/widget_screen/gender.
 import 'package:health_care_app/Features/patient_side/book/widget_screen/patient_information.dart';
 import 'package:health_care_app/Features/patient_side/book/widget_screen/select_date.dart';
 import 'package:health_care_app/Features/patient_side/book/widget_screen/text_field_view.dart';
-import 'package:health_care_app/models/doctor_model.dart';
+import 'package:health_care_app/data/models/doctor_model.dart';
 import '../appointment/your_appointment.dart';
 
 class BookAppointment extends StatefulWidget {
   const BookAppointment({
     super.key,
     required this.doctorName,
-    // required this.doctorId,
     required this.specialty,
     required this.hospitalName,
     required this.rating,
@@ -21,12 +20,12 @@ class BookAppointment extends StatefulWidget {
     required this.workingDays,
     required this.workingHours,
     required this.price,
-     required this.docModel,
+    required this.docModel,
   });
 
   final String doctorName;
   // final String doctorId;
-  
+
   final DoctorModel docModel;
   final String specialty;
   final String hospitalName;
@@ -47,8 +46,6 @@ class _BookAppointmentState extends State<BookAppointment> {
   String age = '';
   String gender = '';
   bool bookingForYou = true;
-
-  // 🟢 متغيرات لتخزين التاريخ والوقت المختار
   DateTime? selectedDate;
   String? selectedTime;
 
@@ -78,7 +75,6 @@ class _BookAppointmentState extends State<BookAppointment> {
               ),
               const SizedBox(height: 20),
 
-              // 🟢 اختيار الوقت
               AvailableTime(
                 onTimeSelected: (time) {
                   selectedTime = time;
@@ -86,7 +82,6 @@ class _BookAppointmentState extends State<BookAppointment> {
               ),
               const SizedBox(height: 20),
 
-              // 🟢 اختيار نوع الموعد
               AppointmentType(
                 onTypeSelected: (value) {
                   setState(() {
@@ -98,7 +93,6 @@ class _BookAppointmentState extends State<BookAppointment> {
               const Divider(color: Color(0xff6D7CCD)),
               const SizedBox(height: 5),
 
-              // 🟢 اختيار لمن يتم الحجز
               PatientInformation(
                 onSelectionChanged: (value) {
                   setState(() {
@@ -108,18 +102,15 @@ class _BookAppointmentState extends State<BookAppointment> {
               ),
               const SizedBox(height: 10),
 
-              // 🟢 الاسم والعمر
               TextFieldView(
                 onNameChanged: (value) => fullName = value,
                 onAgeChanged: (value) => age = value,
               ),
               const SizedBox(height: 7),
 
-              // 🟢 اختيار الجنس
               Gender(onGenderChanged: (value) => gender = value),
               const SizedBox(height: 15),
 
-              // 🟢 زر المتابعة
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xff247CFF),
@@ -129,7 +120,6 @@ class _BookAppointmentState extends State<BookAppointment> {
                   ),
                 ),
                 onPressed: () {
-                  // 🟢 التحقق من ملء جميع الحقول
                   if (fullName.isEmpty ||
                       age.isEmpty ||
                       gender.isEmpty ||
@@ -145,7 +135,6 @@ class _BookAppointmentState extends State<BookAppointment> {
                     return;
                   }
 
-                  // 🟢 الانتقال لصفحة YourAppointment
                   Navigator.push(
                     context,
                     MaterialPageRoute(

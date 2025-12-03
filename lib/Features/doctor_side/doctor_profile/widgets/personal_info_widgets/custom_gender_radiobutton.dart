@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:health_care_app/Features/doctor_side/doctor_profile/widgets/personal_info_widgets/custom_profile_button.dart';
 import 'package:health_care_app/services/firestore_services.dart';
-import 'package:health_care_app/shared/user_session.dart';
+import 'package:health_care_app/data/user_session.dart';
 
 class CustomGenderSelector extends StatefulWidget {
   const CustomGenderSelector({super.key});

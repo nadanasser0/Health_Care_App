@@ -6,7 +6,7 @@ import 'package:health_care_app/Features/patient_side/profile/widgets/shared/cus
 import 'package:health_care_app/Features/patient_side/profile/widgets/personal_info/custom_personal_info_container.dart';
 import 'package:health_care_app/Features/patient_side/profile/widgets/shared/user_image_profile.dart';
 import 'package:health_care_app/core/constants/colors.dart';
-import 'package:health_care_app/shared/user_session.dart';
+import 'package:health_care_app/data/user_session.dart';
 
 class PersonalInfo extends StatefulWidget {
   const PersonalInfo({super.key});
@@ -54,7 +54,7 @@ class _PersonalInfoState extends State<PersonalInfo> {
           Positioned(
             right: 130,
             // right: 175,
-            top: 200,
+            top: 220,
             // top: 225,
             child: CircleAvatar(
               radius: 13,

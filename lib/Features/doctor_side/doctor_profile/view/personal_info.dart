@@ -9,7 +9,7 @@ import 'package:health_care_app/Features/doctor_side/doctor_profile/widgets/prof
 import 'package:health_care_app/Features/doctor_side/doctor_profile/widgets/profile_widgets/custom_doctor_navbar.dart';
 import 'package:health_care_app/core/constants/colors.dart';
 import 'package:health_care_app/services/firestore_services.dart';
-import 'package:health_care_app/shared/user_session.dart';
+import 'package:health_care_app/data/user_session.dart';
 
 class DoctorPersonalInfo extends StatefulWidget {
   const DoctorPersonalInfo({super.key});
@@ -54,6 +54,7 @@ class _DoctorPersonalInfoState extends State<DoctorPersonalInfo> {
   final TextEditingController workingConroller = TextEditingController(
     text: UserSession.currentDoctor!.workingTime.toString(),
   );
+  @override
   void dispose() {
     _nameController.dispose();
     // _emailController.dispose();
@@ -136,7 +137,7 @@ class _DoctorPersonalInfoState extends State<DoctorPersonalInfo> {
                 ],
               ),
               Text(
-                '${UserSession.currentUser!.email}',
+                UserSession.currentUser!.email,
                 style: TextStyle(
                   color: AppColors.greyColor,
                   fontSize: 14,

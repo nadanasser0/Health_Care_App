@@ -9,7 +9,7 @@ import 'package:health_care_app/Features/doctor_side/home_screen/home_screen.dar
 import 'package:health_care_app/Features/doctor_side/search_screen/search_screen.dart';
 
 class NavigationScreen extends StatefulWidget {
-  NavigationScreen({super.key});
+  const NavigationScreen({super.key});
 
   @override
   State<NavigationScreen> createState() => _NavigationScreenState();

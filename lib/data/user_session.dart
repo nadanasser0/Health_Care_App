@@ -1,6 +1,6 @@
-import 'package:health_care_app/models/doctor_model.dart';
-import 'package:health_care_app/models/patient_model.dart';
-import 'package:health_care_app/models/user_model.dart';
+import 'package:health_care_app/data/models/doctor_model.dart';
+import 'package:health_care_app/data/models/patient_model.dart';
+import 'package:health_care_app/data/models/user_model.dart';
 
 class UserSession {
   static UserModel? currentUser;

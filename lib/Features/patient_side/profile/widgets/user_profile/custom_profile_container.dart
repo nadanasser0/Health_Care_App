@@ -5,7 +5,7 @@ import 'package:health_care_app/Features/patient_side/profile/view/settings_page
 import 'package:health_care_app/Features/patient_side/profile/widgets/user_profile/customRow.dart';
 import 'package:health_care_app/Features/patient_side/profile/widgets/user_profile/logout_dialog.dart';
 import 'package:health_care_app/services/auth_services.dart';
-import 'package:health_care_app/shared/user_session.dart';
+import 'package:health_care_app/data/user_session.dart';
 // import 'package:health_care_app/Features/patient_side/profile/widgets/custom_personal_info_container.dart';
 
 class CustomContainer extends StatelessWidget {
