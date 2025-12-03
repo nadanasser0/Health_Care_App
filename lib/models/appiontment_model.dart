@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart'; // For Timestamp
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class AppointmentModel {
@@ -14,7 +14,14 @@ class AppointmentModel {
   final double price;
   final String billingMethod;
   final DateTime createdAt;
-  final String status; // جديد: upcoming, canceled, completed
+  final String status; // upcoming, canceled, done
+  final String? prescription;
+
+  // ✅ Receipt fields
+  final String? paymentStatus; // pending, submitted, paid, rejected
+  final String? receiptUrl;
+  final String? receiptNote;
+  final DateTime? receiptUploadedAt;
 
   AppointmentModel({
     required this.appointmentId,
@@ -29,10 +36,14 @@ class AppointmentModel {
     required this.price,
     required this.billingMethod,
     DateTime? createdAt,
-    this.status = 'upcoming', // الحالة الافتراضية
+    this.status = 'upcoming',
+    this.prescription,
+    this.paymentStatus = 'pending',
+    this.receiptUrl,
+    this.receiptNote,
+    this.receiptUploadedAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
-  // Helper to parse DateTime from various types
   static DateTime _parseDate(dynamic value) {
     if (value == null) return DateTime.now();
     if (value is Timestamp) return value.toDate();
@@ -40,45 +51,33 @@ class AppointmentModel {
     return DateTime.tryParse(value.toString()) ?? DateTime.now();
   }
 
-  static String _timeOfDayToString(TimeOfDay? time) {
-    if (time == null) return '';
-    final hour = time.hourOfPeriod == 0 ? 12 : time.hourOfPeriod;
-    final period = time.period == DayPeriod.am ? 'AM' : 'PM';
-    return '$hour:${time.minute.toString().padLeft(2, '0')} $period';
-  }
-
-  static TimeOfDay _stringToTimeOfDay(String? timeStr) {
-    if (timeStr == null || timeStr.isEmpty) return const TimeOfDay(hour: 0, minute: 0);
-    final format = RegExp(r'(\d{1,2}):(\d{2})\s*(AM|PM)', caseSensitive: false);
-    final match = format.firstMatch(timeStr);
-    if (match != null) {
-      int hour = int.parse(match.group(1)!);
-      final minute = int.parse(match.group(2)!);
-      final period = match.group(3)!.toUpperCase();
-      if (period == 'PM' && hour != 12) hour += 12;
-      if (period == 'AM' && hour == 12) hour = 0;
-      return TimeOfDay(hour: hour, minute: minute);
-    }
-    return const TimeOfDay(hour: 0, minute: 0);
-  }
-
   factory AppointmentModel.fromMap(Map<String, dynamic> map) {
     return AppointmentModel(
-      appointmentId: map['appointmentId']?.toString() ?? '',
-      patientId: map['patientId']?.toString() ?? '',
-      doctorId: map['doctorId']?.toString() ?? '',
+      appointmentId: (map['appointmentId'] ?? '').toString(),
+      patientId: (map['patientId'] ?? '').toString(),
+      doctorId: (map['doctorId'] ?? '').toString(),
+
+      // ✅ لو مخزنها Timestamp (وأنت بتخزنها Timestamp بالفعل)
       appointmentDate: _parseDate(map['appointmentDate']),
-      appointmentTime: map['appointmentTime'] is TimeOfDay
-          ? _timeOfDayToString(map['appointmentTime'])
-          : (map['appointmentTime']?.toString() ?? ''),
-      appointmentType: map['appointmentType']?.toString() ?? '',
-      gender: map['gender']?.toString() ?? '',
-      name: map['name']?.toString() ?? '',
-      age: (map['age'] is num) ? map['age'].toInt() : 0,
-      price: (map['price'] is num) ? map['price'].toDouble() : 0.0,
-      billingMethod: map['billingMethod']?.toString() ?? '',
+
+      appointmentTime: (map['appointmentTime'] ?? '').toString(),
+      appointmentType: (map['appointmentType'] ?? '').toString(),
+      gender: (map['gender'] ?? '').toString(),
+      name: (map['name'] ?? '').toString(),
+      age: (map['age'] is num) ? (map['age'] as num).toInt() : 0,
+      price: (map['price'] is num) ? (map['price'] as num).toDouble() : 0.0,
+      billingMethod: (map['billingMethod'] ?? '').toString(),
+
+      // ✅ انتِ بتخزني createdAt كـ String iso
       createdAt: _parseDate(map['createdAt']),
-      status: map['status']?.toString() ?? 'upcoming', // قراءة الحالة من قاعدة البيانات
+      status: (map['status'] ?? 'upcoming').toString(),
+      prescription: map['prescription']?.toString(),
+
+      // ✅ Receipt
+      paymentStatus: (map['paymentStatus'] ?? 'pending').toString(),
+      receiptUrl: map['receiptUrl']?.toString(),
+      receiptNote: map['receiptNote']?.toString(),
+      receiptUploadedAt: _parseDate(map['receiptUploadedAt']),
     );
   }
 
@@ -95,8 +94,19 @@ class AppointmentModel {
       'age': age,
       'price': price,
       'billingMethod': billingMethod,
-      'createdAt': createdAt.toIso8601String(),
-      'status': status, // إضافة الحالة
+
+      // ✅ خليه Timestamp أفضل (حتى لو كان شغال String عندك)
+      'createdAt': Timestamp.fromDate(createdAt),
+
+      'status': status,
+      'prescription': prescription,
+
+      // ✅ Receipt
+      'paymentStatus': paymentStatus ?? 'pending',
+      'receiptUrl': receiptUrl,
+      'receiptNote': receiptNote,
+      'receiptUploadedAt':
+      receiptUploadedAt == null ? null : Timestamp.fromDate(receiptUploadedAt!),
     };
   }
 
@@ -114,6 +124,11 @@ class AppointmentModel {
     String? billingMethod,
     DateTime? createdAt,
     String? status,
+    String? prescription,
+    String? paymentStatus,
+    String? receiptUrl,
+    String? receiptNote,
+    DateTime? receiptUploadedAt,
   }) {
     return AppointmentModel(
       appointmentId: appointmentId ?? this.appointmentId,
@@ -128,7 +143,12 @@ class AppointmentModel {
       price: price ?? this.price,
       billingMethod: billingMethod ?? this.billingMethod,
       createdAt: createdAt ?? this.createdAt,
-      status: status ?? this.status, // تحديث الحالة
+      status: status ?? this.status,
+      prescription: prescription ?? this.prescription,
+      paymentStatus: paymentStatus ?? this.paymentStatus,
+      receiptUrl: receiptUrl ?? this.receiptUrl,
+      receiptNote: receiptNote ?? this.receiptNote,
+      receiptUploadedAt: receiptUploadedAt ?? this.receiptUploadedAt,
     );
   }
 }

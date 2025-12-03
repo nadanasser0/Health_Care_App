@@ -36,6 +36,7 @@ dependencies:
   open_file: ^3.5.10
   flutter_sound: ^9.28.0
   video_player: ^2.10.0
+  path: ^1.9.1
 
 
 dev_dependencies:
